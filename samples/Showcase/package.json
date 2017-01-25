@@ -1,0 +1,19 @@
+{
+  "name": "akashic-animation-sample-Showcase",
+  "private": true,
+  "version": "2.0.1",
+  "description": "",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "DWANGO Co., Ltd.",
+  "license": "MIT",
+  "dependencies": {
+    "@akashic-extension/akashic-animation": "~2.6.1"
+  },
+  "devDependencies": {
+    "@akashic/akashic-engine": "~1.10.1",
+    "typescript": "^1.8.2"
+  }
+}

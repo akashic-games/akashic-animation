@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "declaration": true,
+    "noLib": false,
+    "noImplicitAny": true,
+    "outDir": "lib",
+    "module": "commonjs"
+  },
+  "filesGlob": [
+    "./typings/**/*.ts",
+    "./src/**/*.ts",
+    "!./node_modules/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ],
+  "files": [
+    "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
+    "./typings/index.d.ts",
+    "./src/AABB.ts",
+    "./src/Actor.ts",
+    "./src/ActorParameterObject.ts",
+    "./src/AnimationHandlerParams.ts",
+    "./src/AnimeParams.ts",
+    "./src/Attachment.ts",
+    "./src/AttrId.ts",
+    "./src/Bone.ts",
+    "./src/BoneCellCollider.ts",
+    "./src/BoneSet.ts",
+    "./src/BoxVolume.ts",
+    "./src/Cell.ts",
+    "./src/CellAttachment.ts",
+    "./src/CellAttachmentCollider.ts",
+    "./src/CircleCollider.ts",
+    "./src/CircleVolume.ts",
+    "./src/Collider.ts",
+    "./src/ColliderInfo.ts",
+    "./src/Container.ts",
+    "./src/FinalizedCell.ts",
+    "./src/index.ts",
+    "./src/Posture.ts",
+    "./src/Resource.ts",
+    "./src/Size2.ts",
+    "./src/Skeleton.ts",
+    "./src/Skin.ts",
+    "./src/Vector2.ts",
+    "./src/Volume.ts"
+  ],
+  "atom": {
+    "rewriteTsconfig": true
+  }
+}

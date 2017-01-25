@@ -1,0 +1,103 @@
+{
+	"width": 640,
+	"height": 480,
+	"fps": 30,
+	"assets": {
+		"mainScene": {
+			"type": "script",
+			"path": "script/mainScene.js",
+			"global": true
+		},
+		"runningman": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/runningman.png"
+		},
+		"an_run": {
+			"type": "text",
+			"path": "text/an_run.asaan"
+		},
+		"bn_runningman": {
+			"type": "text",
+			"path": "text/bn_runningman.asabn"
+		},
+		"pj_runningman": {
+			"type": "text",
+			"path": "text/pj_runningman.asapj",
+			"global": true
+		},
+		"sk_runningman": {
+			"type": "text",
+			"path": "text/sk_runningman.asask"
+		},
+		"UI": {
+			"type": "script",
+			"path": "script/UI.js",
+			"global": true
+		},
+		"demo": {
+			"type": "script",
+			"path": "script/demo.js",
+			"global": true
+		},
+		"smoke": {
+			"type": "image",
+			"width": 128,
+			"height": 128,
+			"path": "image/smoke.png"
+		},
+		"Smoke": {
+			"type": "script",
+			"path": "script/Smoke.js",
+			"global": true
+		},
+		"TimeInfo": {
+			"type": "script",
+			"path": "script/TimeInfo.js",
+			"global": true
+		},
+		"speedctrl": {
+			"type": "image",
+			"width": 64,
+			"height": 32,
+			"path": "image/speedctrl.png"
+		},
+		"showbone": {
+			"type": "image",
+			"width": 64,
+			"height": 32,
+			"path": "image/showbone.png"
+		}
+	},
+	"globalScripts": [
+		"node_modules/@akashic-extension/akashic-animation/lib/Actor.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Skeleton.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/ActorParameterObject.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Skin.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Cell.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/FinalizedCell.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Bone.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/BoneSet.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Posture.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AnimeParams.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Attachment.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CellAttachment.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Collider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/BoneCellCollider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CircleCollider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CellAttachmentCollider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Resource.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Container.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Vector2.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Size2.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Volume.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/BoxVolume.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CircleVolume.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AABB.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AttrId.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AnimationHandlerParams.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/index.js",
+		"node_modules/@akashic-extension/akashic-animation/package.json"
+	]
+}

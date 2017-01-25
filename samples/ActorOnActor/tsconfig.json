@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": false,
+        "outDir": "script",
+        "rootDir": "src",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules",
+        "script"
+    ],
+    "files": [
+        "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
+        "./node_modules/@akashic-extension/akashic-animation/lib/@akashic-extension/akashic-animation.d.ts",
+        "src/UI.ts",
+        "src/demo.ts"
+    ]
+}
