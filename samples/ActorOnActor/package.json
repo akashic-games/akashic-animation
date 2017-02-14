@@ -14,6 +14,6 @@
   },
   "devDependencies": {
     "@akashic/akashic-engine": "~1.10.1",
-    "typescript": "^1.8.2"
+    "typescript": "^2.1.6"
   }
 }

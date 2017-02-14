@@ -5,7 +5,8 @@
     "noLib": false,
     "noImplicitAny": true,
     "outDir": "lib",
-    "module": "commonjs"
+    "module": "commonjs",
+    "types": []
   },
   "filesGlob": [
     "./typings/**/*.ts",
