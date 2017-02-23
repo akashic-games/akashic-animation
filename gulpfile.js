@@ -9,6 +9,8 @@ var jasmine = require("gulp-jasmine");
 var istanbul = require("gulp-istanbul");
 var reporters = require("jasmine-reporters");
 var Reporter = require("jasmine-terminal-reporter");
+var fs = require('fs');
+var execSync = require('child_process').execSync;
 
 var pkg = require("./package.json");
 
@@ -26,16 +28,30 @@ gulp.task("compile", ["compile:ts"], function () {
 });
 
 gulp.task("typedoc", function() {
-	return gulp
-		.src(["node_modules/@akashic/akashic-engine/lib/main.d.ts", "./typings/**/*.ts", "./src/**/*.ts"])
-		.pipe(typedoc({
-			module: "commonjs",
-			target: "es5",
-			out: "doc/",
-			name: "akashic-animation",
-			includeDeclarations: false
-		}));
+	fs.rename("node_modules/@types", "node_modules/@types.bak", function (err) {
+		if (err && err.code !== "ENOENT") {
+			throw err;
+		}
+
+		var command = "typedoc --out ./doc .";
+		var commandException;
+		try {
+			execSync(command);
+		} catch (e) {
+			commandException = e;
+		}
+
+		fs.rename("node_modules/@types.bak", "node_modules/@types", function (err) {
+			if (commandException) {
+				throw commandException;
+			}
+			if (err && err.code !== "ENOENT") {
+				throw err;
+			}
+		});
+	});
 });
+
 
 gulp.task("lint-md", function(){
 	return gulp.src(["**/*.md", "!node_modules/**/*.md"])

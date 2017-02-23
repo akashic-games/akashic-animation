@@ -1,6 +1,6 @@
 {
   "name": "@akashic-extension/akashic-animation",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A skeletal animation library for Akashic Engine",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
