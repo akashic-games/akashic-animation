@@ -5,14 +5,15 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "build": "gulp",
-    "doc": "gulp typedoc",
-    "prepublish": "gulp clean && npm run install:typings && npm run doc && npm run build",
-    "clean": "gulp clean",
-    "install:typings": "typings install",
-    "clean:typings": "gulp clean:typings",
-    "test": "gulp test",
-    "lint": "gulp lint lint-md"
+    "build": "tsc",
+    "doc": "typedoc --out ./doc",
+    "prepublish": "npm run build && npm run doc",
+    "clean": "rimraf lib",
+    "test": "npm run build && npm run test:jasmine && npm run lint",
+    "lint": "npm run lint:ts && npm run lint:md",
+    "lint:ts": "tslint -c tslint.json src/**/*.ts",
+    "lint:md": "remark ./*.md --frail --no-stdout --quiet --rc-path ./.remarkrc",
+    "test:jasmine": "istanbul cover --report text --report html --colors -i ./lib/index.js ./node_modules/jasmine/bin/jasmine.js"
   },
   "author": "DWANGO Co., Ltd.",
   "license": "MIT",
@@ -22,26 +23,19 @@
     "package.json"
   ],
   "devDependencies": {
-    "@akashic/akashic-engine": "~1.11.0",
-    "del": "~2.2.2",
-    "dts-bundle": "^0.3.0",
-    "gulp": "^3.9.0",
-    "gulp-istanbul": "^0.10.3",
-    "gulp-jasmine": "^2.2.1",
-    "gulp-shell": "~0.5.2",
-    "gulp-tslint": "^4.1.2",
-    "gulp-typedoc": "~2.0.2",
-    "jasmine": "^2.4.1",
-    "jasmine-reporters": "^2.0.7",
-    "jasmine-terminal-reporter": "^1.0.0",
-    "mdast": "~2.0.0",
+    "@types/node": "6.0.46",
+    "remark-cli": "~2.0.0",
+    "remark-lint": "~5.0.1",
+	"jasmine": "^2.4.1",
+    "istanbul": "^0.3.2",
     "mdast-lint": "~1.1.1",
-    "tslint": "^3.8.0",
-    "typedoc": "^0.5.1",
-    "typescript": "^2.1.6",
-    "typings": "~2.1.0"
+    "tslint": "^5.4.3",
+    "typedoc": "^0.8.0",
+    "typescript": "^2.1.6"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@akashic/akashic-engine": "~1.11.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/akashic-games/akashic-aniamtion.git"

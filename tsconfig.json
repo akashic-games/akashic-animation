@@ -1,25 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "es5",
     "declaration": true,
-    "noLib": false,
+	"noLib": false,
+	"lib": ["es5"],
     "noImplicitAny": true,
     "outDir": "lib",
     "module": "commonjs",
-    "types": []
+    "types": ["node"]
   },
-  "filesGlob": [
-    "./typings/**/*.ts",
-    "./src/**/*.ts",
-    "!./node_modules/**/*.ts"
-  ],
   "exclude": [
     "node_modules",
     "lib"
   ],
   "files": [
     "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
-    "./typings/index.d.ts",
     "./src/AABB.ts",
     "./src/Actor.ts",
     "./src/ActorParameterObject.ts",
