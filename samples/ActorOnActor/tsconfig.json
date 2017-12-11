@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-		"types": ["node"],
-		"lib": ["es5"],
-		"target": "es5",		
-		"noImplicitAny": false,
+        "types": ["node"],
+        "lib": ["es5"],
+        "target": "es5",		
+        "noImplicitAny": false,
         "outDir": "script",
         "rootDir": "src",
         "sourceMap": false
