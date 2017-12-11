@@ -16,7 +16,6 @@
     ],
     "files": [
         "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
-        "./node_modules/@akashic-extension/akashic-animation/lib/@akashic-extension/akashic-animation.d.ts",
         "src/Smoke.ts",
         "src/TimeInfo.ts",
         "src/UI.ts",

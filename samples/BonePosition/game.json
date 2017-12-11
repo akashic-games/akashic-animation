@@ -99,5 +99,8 @@
 		"node_modules/@akashic-extension/akashic-animation/lib/AnimationHandlerParams.js",
 		"node_modules/@akashic-extension/akashic-animation/lib/index.js",
 		"node_modules/@akashic-extension/akashic-animation/package.json"
-	]
+	],
+	"environment": {
+		"sandbox-runtime": "2"
+	}
 }

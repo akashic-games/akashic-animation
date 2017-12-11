@@ -1,6 +1,6 @@
 {
   "name": "@akashic-extension/akashic-animation",
-  "version": "2.7.1",
+  "version": "3.0.0",
   "description": "A skeletal animation library for Akashic Engine",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -11,7 +11,7 @@
     "clean": "rimraf lib",
     "test": "npm run build && npm run test:jasmine && npm run lint",
     "lint": "npm run lint:ts && npm run lint:md",
-    "lint:ts": "tslint -c tslint.json src/**/*.ts",
+    "lint:ts": "tslint --type-check -c tslint.json src/**/*.ts --project ./tsconfig.json",
     "lint:md": "remark ./*.md --frail --no-stdout --quiet --rc-path ./.remarkrc",
     "test:jasmine": "istanbul cover --report text --report html --colors -i ./lib/index.js ./node_modules/jasmine/bin/jasmine.js"
   },
@@ -23,7 +23,8 @@
     "package.json"
   ],
   "devDependencies": {
-    "@types/node": "6.0.46",
+	"@types/node": "6.0.46",
+    "rimraf": "^2.6.1",
     "remark-cli": "~2.0.0",
     "remark-lint": "~5.0.1",
 	"jasmine": "^2.4.1",
@@ -34,7 +35,7 @@
     "typescript": "^2.1.6"
   },
   "dependencies": {
-    "@akashic/akashic-engine": "~1.11.0"
+    "@akashic/akashic-engine": "~2.0.0"
   },
   "repository": {
     "type": "git",
