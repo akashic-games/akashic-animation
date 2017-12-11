@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 3.0.0
+
+* akashic-engine@2.0.0 系に追従。
+
 ## 2.7.1
 
 * TypeDocの実行に失敗する問題の修正。
