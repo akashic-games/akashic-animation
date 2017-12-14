@@ -47,13 +47,13 @@ function rotateBody(actor: asa.Actor): void {
 		param.posture.attrs[asa.AttrId.sx] = Math.cos(Math.PI * 2 * t * 4 + Math.PI / 2);
 		param.posture.updateMatrix();
 	};
-	actor.calculated("body", true).add(handler);
+	actor.calculated("body", true).add({func: handler, name: "bodyHandler"});
 }
 
 function stopBody(actor: asa.Actor): void {
 	const trigger = actor.calculated("body", false);
 	if (trigger) {
-		trigger.removeAll();
+		trigger.removeAll({ name: "bodyHandler" });
 	}
 }
 

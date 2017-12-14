@@ -359,7 +359,7 @@ class Skeleton {
 			const cache: Posture = this.caches[bone.arrayIndex];
 
 			// skip if there's no handler
-			if (! (cache._trigger.length > 0)) {
+			if (cache._trigger.length === 0) {
 				continue;
 			}
 

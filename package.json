@@ -23,11 +23,11 @@
     "package.json"
   ],
   "devDependencies": {
-	"@types/node": "6.0.46",
+    "@types/node": "6.0.46",
     "rimraf": "^2.6.1",
     "remark-cli": "~2.0.0",
     "remark-lint": "~5.0.1",
-	"jasmine": "^2.4.1",
+    "jasmine": "^2.4.1",
     "istanbul": "^0.3.2",
     "mdast-lint": "~1.1.1",
     "tslint": "^5.4.3",
