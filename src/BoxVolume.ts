@@ -43,7 +43,6 @@ class BoxVolume implements Volume {
 			this.dirty = false;
 
 			const points: Vector2[] = []; // ! 実際は CommonOffsetがpushされる
-			// TODO: 直す。multplyPointはtypoで廃止されるが、手元に新しいのがないのでこちらを使う。いまだけ
 			points.push(this.matrix.multiplyPoint(this.origin));
 			points.push(this.matrix.multiplyPoint(new Vector2(this.origin.x + this.size.width, this.origin.y)));
 			points.push(this.matrix.multiplyPoint(new Vector2(this.origin.x,                   this.origin.y + this.size.height)));
