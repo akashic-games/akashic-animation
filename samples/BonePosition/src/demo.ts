@@ -22,7 +22,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.handle(this, this.onLoaded);
+		this.loaded.add(this.onLoaded, this);
 		this.timeInfo = new TimeInfo(1.0);
 	}
 
@@ -74,7 +74,7 @@ class DemoScene extends g.Scene {
 
 		this.emitter = new SmokeEmitter({scene: this, src: this.assets["smoke"]}, this.timeInfo);
 
-		this.update.handle(this, this.onUpdate);
+		this.update.add(this.onUpdate, this);
 	}
 
 	onUpdate(): void {
@@ -99,7 +99,7 @@ class DemoScene extends g.Scene {
 		let btnX = 0;
 
 		const showBoneBtn = new UI.ToggleButton({scene: this, src: this.assets["showbone"], x: btnX, y: 0, touchable: true, onoff: this.actor.nullVisible});
-		showBoneBtn.toggled.handle((onoff: boolean) => {
+		showBoneBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.actor.boneCoordsVisible = true;
 			} else {
@@ -110,7 +110,7 @@ class DemoScene extends g.Scene {
 		btnX += showBoneBtn.width;
 
 		const speedCtrlBtn = new UI.ToggleButton({scene: this, src: this.assets["speedctrl"], x: btnX, y: 0, touchable: true, onoff: false});
-		speedCtrlBtn.toggled.handle((onoff: boolean) => {
+		speedCtrlBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.timeInfo.scale = 0.25;
 			} else {

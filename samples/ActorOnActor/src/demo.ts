@@ -69,7 +69,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.handle(this, this.onLoaded);
+		this.loaded.add(this.onLoaded, this);
 	}
 
 	onLoaded() {
@@ -118,7 +118,7 @@ class DemoScene extends g.Scene {
 		this.indicator = new UI.Indicator(this);
 		this.append(this.indicator);
 
-		this.update.handle(this, this.onUpdate);
+		this.update.add(this.onUpdate, this);
 	}
 
 	onUpdate(): void {
@@ -183,7 +183,7 @@ class DemoScene extends g.Scene {
 			touchable: true,
 			onoff: this.runner.nullVisible
 		});
-		showBoneBtn.toggled.handle((onoff: boolean) => {
+		showBoneBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.runner.boneCoordsVisible = true;
 			} else {
@@ -201,7 +201,7 @@ class DemoScene extends g.Scene {
 			touchable: true,
 			onoff: false
 		});
-		torchBtn.toggled.handle((onoff: boolean) => {
+		torchBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.runner.attach(this.attachment, "arm_l3");
 				this.runner.playSpeed = ACTOR_PLAY_SPEED * 2.5;

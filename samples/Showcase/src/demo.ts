@@ -42,17 +42,18 @@ function equipSecondaryBloodSword(actor: asa.Actor): any {
 }
 
 function rotateBody(actor: asa.Actor): void {
-	actor.calculated("body", true).handle(undefined, (param: asa.AnimationHandlerParams.AnimationHandlerParam) => {
+	var handler = (param: asa.AnimationHandlerParams.AnimationHandlerParam) => {
 		const t = param.currentFrame / param.frameCount;
 		param.posture.attrs[asa.AttrId.sx] = Math.cos(Math.PI * 2 * t * 4 + Math.PI / 2);
 		param.posture.updateMatrix();
-	}, "bodyHandHandler");
+	};
+	actor.calculated("body", true).add({func: handler, name: "bodyHandler"});
 }
 
 function stopBody(actor: asa.Actor): void {
 	const trigger = actor.calculated("body", false);
 	if (trigger) {
-		trigger.removeByName("bodyHandHandler");
+		trigger.removeAll({ name: "bodyHandler" });
 	}
 }
 
@@ -158,7 +159,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.handle(this, this.onLoaded);
+		this.loaded.add(this.onLoaded, this);
 	}
 
 	onLoaded() {
@@ -187,11 +188,11 @@ class DemoScene extends g.Scene {
 		this.actor.colliderVisible   = true;
 		this.actor.nullVisible       = false;
 		this.actor.boneCoordsVisible = false;
-		this.actor.ended.handle(() => {
+		this.actor.ended.add(() => {
 			this.playBtn.setState(false);
 			game.logger.info("アニメーション再生終了イベント");
 		});
-		this.actor.calculated("root", true).handle((param: asa.AnimationHandlerParams.AnimationHandlerParam) => {
+		this.actor.calculated("root", true).add((param: asa.AnimationHandlerParams.AnimationHandlerParam) => {
 			if (param.left.time === param.currentFrame && param.left.userData) {
 				game.logger.info(
 					(param.posture ? "[P]" : "[_]") +
@@ -221,7 +222,7 @@ class DemoScene extends g.Scene {
 			this.particles.push(new Particle(this));
 		}
 
-		this.update.handle(this, this.onUpdate);
+		this.update.add(this.onUpdate, this);
 	}
 
 	onUpdate(): void {
@@ -236,7 +237,7 @@ class DemoScene extends g.Scene {
 		let btnX = 0;
 
 		const showBoneBtn = new UI.ToggleButton({scene: this, src: this.assets["showbone"], x: btnX, y: 0, touchable: true, onoff: this.actor.nullVisible});
-		showBoneBtn.toggled.handle((onoff: boolean) => {
+		showBoneBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.actor.nullVisible = true;
 				this.actor.boneCoordsVisible = true;
@@ -253,7 +254,7 @@ class DemoScene extends g.Scene {
 		btnX += showBoneBtn.width;
 
 		const subWeaponBtn = new UI.ToggleButton({scene: this, src: this.assets["subweapon"], x: btnX, y: 0, touchable: true, onoff: false});
-		subWeaponBtn.toggled.handle((onoff: boolean) => {
+		subWeaponBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.equipment = equipSecondaryBloodSword(this.actor);
 				game.logger.info("サブウェポンの装備");
@@ -267,7 +268,7 @@ class DemoScene extends g.Scene {
 		btnX += subWeaponBtn.width;
 
 		const yrotBtn = new UI.ToggleButton({scene: this, src: this.assets["yrot"], x: btnX, y: 0, touchable: true, onoff: false});
-		yrotBtn.toggled.handle((onoff: boolean) => {
+		yrotBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				rotateBody(this.actor);
 				game.logger.info("アニメーション計算ハンドラによる回転開始");
@@ -280,7 +281,7 @@ class DemoScene extends g.Scene {
 		btnX += yrotBtn.width;
 
 		const particleBtn = new UI.ToggleButton({scene: this, src: this.assets["particle"], x: btnX, y: 0, touchable: true, onoff: false});
-		particleBtn.toggled.handle((onoff: boolean) => {
+		particleBtn.toggled.add((onoff: boolean) => {
 			Particle.running = onoff;
 			game.logger.info("衝突判定用パーティクル: " + (particleBtn.onoff ? "オン" : "オフ"))
 		});
@@ -288,7 +289,7 @@ class DemoScene extends g.Scene {
 		btnX += particleBtn.width;
 
 		const loopBtn = new UI.ToggleButton({scene: this, src: this.assets["loop"], x: btnX, y: 0, touchable: true, onoff: this.actor.loop});
-		loopBtn.toggled.handle((onoff: boolean) => {
+		loopBtn.toggled.add((onoff: boolean) => {
 			this.actor.loop = onoff;
 			game.logger.info("アニメーションループ: " + (loopBtn.onoff ? "オン" : "オフ"))
 		});
@@ -296,7 +297,7 @@ class DemoScene extends g.Scene {
 		btnX += loopBtn.width;
 
 		const playBtn = new UI.ToggleButton({scene: this, src: this.assets["play"], x: btnX, y: 0, touchable: true, onoff: true});
-		playBtn.toggled.handle((onoff: boolean) => {
+		playBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.actor.play(ANIMATION_NAME, this.actor.currentFrame, this.actor.loop, PLAY_SPEED);
 			} else {
