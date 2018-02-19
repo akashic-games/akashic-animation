@@ -17,6 +17,8 @@ const attributeInitialValues: any = {
 	rz: 0,
 	sx: 1.0,
 	sy: 1.0,
+	lsx: 1.0,
+	lsy: 1.0,
 	alpha: 1.0,
 	cv: undefined,
 	pvtx: 1.0,
@@ -311,7 +313,12 @@ class Skeleton {
 		// アニメーションを計算。結果をcacheに収める
 		this.updateCache(time, anim);
 		// キャッシュの中身を接続
-		this.traverse(this.bones[0]); // 0 番目にrootがあること
+		const composedCaches = new Array<Posture>(this.bones.length);
+		for (let i = 0; i < composedCaches.length; i++) {
+			composedCaches[i] = new Posture();
+			composedCaches[i].index = i;
+		}
+		this.traverse(this.bones[0], composedCaches); // 0 番目にrootがあること
 	}
 
 	_getBoneByName(boneName: string): Bone {
@@ -485,17 +492,18 @@ class Skeleton {
 		}
 	}
 
-	private traverse(bone: Bone): void {
+	private traverse(bone: Bone, _composedCaches: Posture[]): void {
 		const cache: Posture = this.caches[bone.arrayIndex];
 		const composedCache: Posture = this.composedCaches[bone.arrayIndex];
+		const composedCacheForInheritance: Posture = _composedCaches[bone.arrayIndex];
 
 		// compose
 		if (bone.parent) {
-			const parentComposedCache = this.composedCaches[bone.parent.arrayIndex];
+			const parentComposedCache = _composedCaches[bone.parent.arrayIndex];
 			if (parentComposedCache === undefined) {
 				g.game.logger.warn("Invalid array index for " + bone.parent.name);
 			} else {
-				const m0 = composedCache.m._matrix;
+				const m0 = composedCacheForInheritance.m._matrix;
 				const m1 = parentComposedCache.m._matrix;
 				const m2 = cache.m._matrix;
 
@@ -507,10 +515,19 @@ class Skeleton {
 				m0[4] = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
 				m0[5] = m1[1] * m2[4] + m1[3] * m2[5] + m1[5];
 
-				composedCache.attrs[AttrId.alpha] = parentComposedCache.attrs[AttrId.alpha] * cache.attrs[AttrId.alpha];
+				composedCacheForInheritance.attrs[AttrId.alpha] = parentComposedCache.attrs[AttrId.alpha] * cache.attrs[AttrId.alpha];
+
+				// 実際の表示用　ここでローカル系の計算を行う
+				composedCache.m._matrix[0] = m0[0] * cache.attrs[AttrId.lsx];
+				composedCache.m._matrix[1] = m0[1] * cache.attrs[AttrId.lsx];
+				composedCache.m._matrix[2] = m0[2] * cache.attrs[AttrId.lsy];
+				composedCache.m._matrix[3] = m0[3] * cache.attrs[AttrId.lsy];
+				composedCache.m._matrix[4] = m0[4];
+				composedCache.m._matrix[5] = m0[5];
+				composedCache.attrs[AttrId.alpha] = composedCacheForInheritance.attrs[AttrId.alpha];
 			}
 		} else { // root
-			const m1 = composedCache.m._matrix;
+			const m1 = composedCacheForInheritance.m._matrix;
 			if (this.matrixFunc) {
 				const m2 = this.matrixFunc()._matrix;
 				m1[0] = m2[0];
@@ -527,30 +544,35 @@ class Skeleton {
 				m1[4] = 0;
 				m1[5] = 0;
 			}
-			composedCache.m.multiply(cache.m);
+			composedCacheForInheritance.m.multiply(cache.m);
+			composedCacheForInheritance.attrs[AttrId.alpha] = 1.0;
 
+			composedCache.m.multiply(cache.m);
 			composedCache.attrs[AttrId.alpha] = 1.0;
 		}
 
 		// copy
 		const src = cache.attrs;
-		const dst = composedCache.attrs;
-		dst[AttrId.cv]    = src[AttrId.cv];
-		dst[AttrId.pvtx]  = src[AttrId.pvtx];
-		dst[AttrId.pvty]  = src[AttrId.pvty];
-		dst[AttrId.tu]    = src[AttrId.tu];
-		dst[AttrId.tv]    = src[AttrId.tv];
-		dst[AttrId.prio]  = src[AttrId.prio];
-		dst[AttrId.visibility] = src[AttrId.visibility];
-		composedCache.attachments = cache.attachments;
-		dst[AttrId.ccr]   = src[AttrId.ccr];
-		dst[AttrId.flipH] = src[AttrId.flipH];
-		dst[AttrId.flipV] = src[AttrId.flipV];
+		const copyData = (posture: Posture) => {
+			posture.attrs[AttrId.cv]    = src[AttrId.cv];
+			posture.attrs[AttrId.pvtx]  = src[AttrId.pvtx];
+			posture.attrs[AttrId.pvty]  = src[AttrId.pvty];
+			posture.attrs[AttrId.tu]    = src[AttrId.tu];
+			posture.attrs[AttrId.tv]    = src[AttrId.tv];
+			posture.attrs[AttrId.prio]  = src[AttrId.prio];
+			posture.attrs[AttrId.visibility] = src[AttrId.visibility];
+			posture.attachments = cache.attachments;
+			posture.attrs[AttrId.ccr]   = src[AttrId.ccr];
+			posture.attrs[AttrId.flipH] = src[AttrId.flipH];
+			posture.attrs[AttrId.flipV] = src[AttrId.flipV];
+		};
+		copyData(composedCacheForInheritance);
+		copyData(composedCache);
 
 		// go down well.
 		if (bone.children) {
 			for (let i = 0; i < bone.children.length; i++) {
-				this.traverse(bone.children[i]);
+				this.traverse(bone.children[i], _composedCaches);
 			}
 		}
 	}
