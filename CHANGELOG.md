@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased changes
+
+* X/Yローカルスケール機能の追加
+
 ## 3.0.0
 
 * akashic-engine@2.0.0 系に追従。
