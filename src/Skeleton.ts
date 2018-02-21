@@ -312,7 +312,6 @@ class Skeleton {
 		this.updateCache(time, anim);
 		// キャッシュの中身を接続
 		this.traverse(this.bones[0]); // 0 番目にrootがあること
-		this.calculateLocalAttributes();
 	}
 
 	_getBoneByName(boneName: string): Bone {
@@ -539,35 +538,25 @@ class Skeleton {
 				this.traverse(bone.children[i]);
 			}
 		}
-	}
 
-	/*
-	 * キャッシュに格納されている継承関係のない属性の値を、指定したボーンに反映させる
-	 */
-	private calculateLocalAttributes(): void {
-		for (let i = 0; i < this.composedCaches.length; i++) {
-			const composedCache: Posture = this.composedCaches[i];
-			const cache: Posture = this.caches[i];
+		// ローカルXVスケールの反映
+		composedCache.m._matrix[0] *= cache.attrs[AttrId.lsx];
+		composedCache.m._matrix[1] *= cache.attrs[AttrId.lsx];
+		composedCache.m._matrix[2] *= cache.attrs[AttrId.lsy];
+		composedCache.m._matrix[3] *= cache.attrs[AttrId.lsy];
 
-			// ローカルXVスケールの反映
-			composedCache.m._matrix[0] *= cache.attrs[AttrId.lsx];
-			composedCache.m._matrix[1] *= cache.attrs[AttrId.lsx];
-			composedCache.m._matrix[2] *= cache.attrs[AttrId.lsy];
-			composedCache.m._matrix[3] *= cache.attrs[AttrId.lsy];
-
-			// 継承関係のない属性の値を直接コピー
-			composedCache.attrs[AttrId.cv]    = cache.attrs[AttrId.cv];
-			composedCache.attrs[AttrId.pvtx]  = cache.attrs[AttrId.pvtx];
-			composedCache.attrs[AttrId.pvty]  = cache.attrs[AttrId.pvty];
-			composedCache.attrs[AttrId.tu]    = cache.attrs[AttrId.tu];
-			composedCache.attrs[AttrId.tv]    = cache.attrs[AttrId.tv];
-			composedCache.attrs[AttrId.prio]  = cache.attrs[AttrId.prio];
-			composedCache.attrs[AttrId.visibility] = cache.attrs[AttrId.visibility];
-			composedCache.attachments = cache.attachments;
-			composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
-			composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
-			composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
-		}
+		// 継承関係のない属性の値を直接コピー
+		composedCache.attrs[AttrId.cv]    = cache.attrs[AttrId.cv];
+		composedCache.attrs[AttrId.pvtx]  = cache.attrs[AttrId.pvtx];
+		composedCache.attrs[AttrId.pvty]  = cache.attrs[AttrId.pvty];
+		composedCache.attrs[AttrId.tu]    = cache.attrs[AttrId.tu];
+		composedCache.attrs[AttrId.tv]    = cache.attrs[AttrId.tv];
+		composedCache.attrs[AttrId.prio]  = cache.attrs[AttrId.prio];
+		composedCache.attrs[AttrId.visibility] = cache.attrs[AttrId.visibility];
+		composedCache.attachments = cache.attachments;
+		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
+		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
+		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
 	}
 }
 
