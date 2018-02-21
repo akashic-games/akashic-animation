@@ -1,0 +1,192 @@
+{
+	"width": 320,
+	"height": 400,
+	"fps": 30,
+	"main": "./script/samples/SupportXYLocalScale/src/main.js",
+	"assets": {
+		"stickman": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/stickman.png"
+		},
+		"an_stop_motion": {
+			"type": "text",
+			"path": "text/an_stop_motion.asaan"
+		},
+		"bn_stop_motion": {
+			"type": "text",
+			"path": "text/bn_stop_motion.asabn"
+		},
+		"pj_stop_motion": {
+			"type": "text",
+			"path": "text/pj_stop_motion.asapj"
+		},
+		"sk_stickman": {
+			"type": "text",
+			"path": "text/sk_stickman.asask"
+		},
+		"x_minus": {
+			"type": "image",
+			"width": 207,
+			"height": 167,
+			"path": "image/x_minus.png"
+		},
+		"x_plus": {
+			"type": "image",
+			"width": 207,
+			"height": 167,
+			"path": "image/x_plus.png"
+		},
+		"y_minus": {
+			"type": "image",
+			"width": 207,
+			"height": 167,
+			"path": "image/y_minus.png"
+		},
+		"y_plus": {
+			"type": "image",
+			"width": 207,
+			"height": 167,
+			"path": "image/y_plus.png"
+		},
+		"AABB": {
+			"type": "script",
+			"path": "script/src/AABB.js",
+			"global": true
+		},
+		"Actor": {
+			"type": "script",
+			"path": "script/src/Actor.js",
+			"global": true
+		},
+		"ActorParameterObject": {
+			"type": "script",
+			"path": "script/src/ActorParameterObject.js",
+			"global": true
+		},
+		"AnimationHandlerParams": {
+			"type": "script",
+			"path": "script/src/AnimationHandlerParams.js",
+			"global": true
+		},
+		"AnimeParams": {
+			"type": "script",
+			"path": "script/src/AnimeParams.js",
+			"global": true
+		},
+		"Attachment": {
+			"type": "script",
+			"path": "script/src/Attachment.js",
+			"global": true
+		},
+		"AttrId": {
+			"type": "script",
+			"path": "script/src/AttrId.js",
+			"global": true
+		},
+		"Bone": {
+			"type": "script",
+			"path": "script/src/Bone.js",
+			"global": true
+		},
+		"BoneCellCollider": {
+			"type": "script",
+			"path": "script/src/BoneCellCollider.js",
+			"global": true
+		},
+		"BoneSet": {
+			"type": "script",
+			"path": "script/src/BoneSet.js",
+			"global": true
+		},
+		"BoxVolume": {
+			"type": "script",
+			"path": "script/src/BoxVolume.js",
+			"global": true
+		},
+		"Cell": {
+			"type": "script",
+			"path": "script/src/Cell.js",
+			"global": true
+		},
+		"CellAttachment": {
+			"type": "script",
+			"path": "script/src/CellAttachment.js",
+			"global": true
+		},
+		"CircleCollider": {
+			"type": "script",
+			"path": "script/src/CircleCollider.js",
+			"global": true
+		},
+		"CircleVolume": {
+			"type": "script",
+			"path": "script/src/CircleVolume.js",
+			"global": true
+		},
+		"Collider": {
+			"type": "script",
+			"path": "script/src/Collider.js",
+			"global": true
+		},
+		"ColliderInfo": {
+			"type": "script",
+			"path": "script/src/ColliderInfo.js",
+			"global": true
+		},
+		"Container": {
+			"type": "script",
+			"path": "script/src/Container.js",
+			"global": true
+		},
+		"FinalizedCell": {
+			"type": "script",
+			"path": "script/src/FinalizedCell.js",
+			"global": true
+		},
+		"Posture": {
+			"type": "script",
+			"path": "script/src/Posture.js",
+			"global": true
+		},
+		"Resource": {
+			"type": "script",
+			"path": "script/src/Resource.js",
+			"global": true
+		},
+		"Size2": {
+			"type": "script",
+			"path": "script/src/Size2.js",
+			"global": true
+		},
+		"Skeleton": {
+			"type": "script",
+			"path": "script/src/Skeleton.js",
+			"global": true
+		},
+		"Skin": {
+			"type": "script",
+			"path": "script/src/Skin.js",
+			"global": true
+		},
+		"Vector2": {
+			"type": "script",
+			"path": "script/src/Vector2.js",
+			"global": true
+		},
+		"Volume": {
+			"type": "script",
+			"path": "script/src/Volume.js",
+			"global": true
+		},
+		"main": {
+			"type": "script",
+			"path": "script/samples/SupportXYLocalScale/src/main.js",
+			"global": true
+		}
+	},
+	"environment": {
+		"sandbox-runtime": "2"
+	}
+}

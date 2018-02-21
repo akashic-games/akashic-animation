@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 3.1.0
+
+* SpriteStudio6の新機能サポート
+  * X/Yローカルスケールサポート
+
 ## 3.0.0
 
 * akashic-engine@2.0.0 系に追従。

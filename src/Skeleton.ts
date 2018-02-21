@@ -17,6 +17,8 @@ const attributeInitialValues: any = {
 	rz: 0,
 	sx: 1.0,
 	sy: 1.0,
+	lsx: 1.0,
+	lsy: 1.0,
 	alpha: 1.0,
 	cv: undefined,
 	pvtx: 1.0,
