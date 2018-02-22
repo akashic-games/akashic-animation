@@ -44,6 +44,7 @@ class Posture {
 		attrs[AttrId.sx]    = attrs[AttrId.sy]   = 1;
 		attrs[AttrId.lsx]   = attrs[AttrId.lsy]  = 1;
 		attrs[AttrId.alpha] = 1;
+		attrs[AttrId.lalpha] = undefined;
 		attrs[AttrId.tu]    = attrs[AttrId.tv]   = 0;
 		attrs[AttrId.pvtx]  = attrs[AttrId.pvty] = 0;
 		attrs[AttrId.prio]  = 0;

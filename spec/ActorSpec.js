@@ -284,6 +284,7 @@ describe("Actor", function() {
 			scene = new g.Scene({game: game});
 
 			utils.createImageAsset("change_attributes.png", scene);
+			utils.createTextAsset("an_change_local_alpha.asaan", scene);
 			utils.createTextAsset("an_change_local_scale.asaan", scene);
 			utils.createTextAsset("bn_change_attributes.asabn", scene);
 			utils.createTextAsset("pj_change_attributes.asapj", scene);
@@ -335,6 +336,29 @@ describe("Actor", function() {
 				expect(actor.skeleton.composedCaches[3].m._matrix[3]).toBe(beforeMatrixs[3][3]);
 
 				beforeMatrixs = getTargetMatrixs();
+			}
+		});
+
+		it("should reflect local alpha", function() {
+			param.animationName = "change_local_alpha";
+			var actor = new Actor(param);
+			var getAlphaValues = function() {
+				return actor.skeleton.composedCaches.map(function(cache) {
+					return cache.attrs[AttrId.alpha];
+				});
+			};
+			actor.calc();
+			var beforeAlphaValues = getAlphaValues();
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// bodyパーツのローカルα値が固定値となっているためbodyパーツのα値は変わらないが、rootパーツでα値が設定されているため他パーツのα値は変わる
+				expect(actor.skeleton.composedCaches[0].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[0]);
+				expect(actor.skeleton.composedCaches[1].attrs[AttrId.alpha]).toBe(beforeAlphaValues[1]);
+				expect(actor.skeleton.composedCaches[2].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[2]);
+				expect(actor.skeleton.composedCaches[3].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[3]);
+
+				beforeAlphaValues = getAlphaValues();
 			}
 		});
 	});
