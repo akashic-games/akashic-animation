@@ -5,7 +5,7 @@ var Actor = require("../lib/Actor.js");
 var Resource = require("../lib/Resource.js");
 var CellAttachment = require("../lib/CellAttachment.js");
 var CircleCollider = require("../lib/CircleCollider.js");
-
+var AttrId = require("../lib/AttrId.js");
 
 describe("Actor", function() {
 	var scene;
@@ -276,7 +276,6 @@ describe("Actor", function() {
 	describe("support sprite studio v6", function() {
 		var gameForSsV6;
 		var sceneForSsV6;
-		var actorForSsV6;
 		var resourceForSsV6;
 		var paramForSsV6;
 
@@ -285,6 +284,7 @@ describe("Actor", function() {
 			sceneForSsV6 = new g.Scene({game: gameForSsV6});
 
 			utils.createImageAsset("support_ss_v6.png", sceneForSsV6);
+			utils.createTextAsset("an_change_local_alpha.asaan", sceneForSsV6);
 			utils.createTextAsset("an_change_local_scale.asaan", sceneForSsV6);
 			utils.createTextAsset("bn_support_ss_v6.asabn", sceneForSsV6);
 			utils.createTextAsset("pj_support_ss_v6.asapj", sceneForSsV6);
@@ -296,17 +296,17 @@ describe("Actor", function() {
 			paramForSsV6 = {
 				scene: sceneForSsV6,
 				resource: resourceForSsV6,
-				animationName: "change_local_scale",
+				animationName: "",
 				skinNames: ["support_ss_v6"],
 				boneSetName: "support_ss_v6",
 				width: 320,
 				height: 320
 			};
-
-			actorForSsV6 = new Actor(paramForSsV6);
 		});
 
 		it("should change local scale", function() {
+			paramForSsV6.animationName = "change_local_scale";
+			var actorForSsV6 = new Actor(paramForSsV6);
 			var getTargetMatrixs = function() {
 				return actorForSsV6.skeleton.composedCaches.map(function(cache) {
 					return cache.m._matrix.slice();
@@ -336,6 +336,29 @@ describe("Actor", function() {
 				expect(actorForSsV6.skeleton.composedCaches[3].m._matrix[3]).toBe(beforeMatrixs[3][3]);
 
 				beforeMatrixs = getTargetMatrixs();
+			}
+		});
+
+		it("should reflect local alpha", function() {
+			paramForSsV6.animationName = "change_local_alpha";
+			var actorForSsV6 = new Actor(paramForSsV6);
+			var getAlphaValues = function() {
+				return actorForSsV6.skeleton.composedCaches.map(function(cache) {
+					return cache.attrs[AttrId.alpha];
+				});
+			};
+			actorForSsV6.calc();
+			var beforeAlphaValues = getAlphaValues();
+			for (var i = 0; i < resourceForSsV6.getAnimationByName(paramForSsV6.animationName).frameCount; i++) {
+				actorForSsV6.calc();
+
+				// bodyパーツのローカルα値が固定値となっているためbodyパーツのα値は変わらないが、rootパーツでα値が設定されているため他パーツのα値は変わる
+				expect(actorForSsV6.skeleton.composedCaches[0].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[0]);
+				expect(actorForSsV6.skeleton.composedCaches[1].attrs[AttrId.alpha]).toBe(beforeAlphaValues[1]);
+				expect(actorForSsV6.skeleton.composedCaches[2].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[2]);
+				expect(actorForSsV6.skeleton.composedCaches[3].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[3]);
+
+				beforeAlphaValues = getAlphaValues();
 			}
 		});
 	});

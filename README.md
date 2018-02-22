@@ -39,6 +39,7 @@ var aa = require("@akashic-extension/akashic-animation");
 | X,Yスケール         | 1, 1       |
 | ローカルX,Yスケール | 1, 1       |
 | アルファ            | 1          |
+| ローカルアルファ    | 1          |
 | セル                | 無し       |
 | セル中心座標        | 0, 0       |
 | セルUV              | 0, 0       |

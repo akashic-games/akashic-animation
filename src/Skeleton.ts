@@ -20,6 +20,7 @@ const attributeInitialValues: any = {
 	lsx: 1.0,
 	lsy: 1.0,
 	alpha: 1.0,
+	lalpha: undefined,
 	cv: undefined,
 	pvtx: 1.0,
 	pvty: 1.0,
@@ -531,7 +532,7 @@ class Skeleton {
 			}
 			composedCache.m.multiply(cache.m);
 
-			composedCache.attrs[AttrId.alpha] = 1.0;
+			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.alpha];
 		}
 
 		// go down well.
@@ -546,6 +547,11 @@ class Skeleton {
 		composedCache.m._matrix[1] *= cache.attrs[AttrId.lsx];
 		composedCache.m._matrix[2] *= cache.attrs[AttrId.lsy];
 		composedCache.m._matrix[3] *= cache.attrs[AttrId.lsy];
+
+		// ローカル不透明度の反映
+		if (cache.attrs[AttrId.lalpha]) {
+			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.lalpha];
+		}
 
 		// 継承関係のない属性の値を直接コピー
 		composedCache.attrs[AttrId.cv]    = cache.attrs[AttrId.cv];
