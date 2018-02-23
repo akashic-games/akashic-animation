@@ -541,7 +541,7 @@ class Skeleton {
 			}
 		}
 
-		// ローカルXVスケールの反映
+		// ローカルXYスケールの反映
 		composedCache.m._matrix[0] *= cache.attrs[AttrId.lsx];
 		composedCache.m._matrix[1] *= cache.attrs[AttrId.lsx];
 		composedCache.m._matrix[2] *= cache.attrs[AttrId.lsy];

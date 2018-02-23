@@ -337,6 +337,6 @@ describe("Actor", function() {
 
 				beforeMatrixs = getTargetMatrixs();
 			}
-		})
+		});
 	});
 });

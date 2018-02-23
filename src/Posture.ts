@@ -42,7 +42,7 @@ class Posture {
 		attrs[AttrId.tx]    = attrs[AttrId.ty]   = 0;
 		attrs[AttrId.rz]    = 0;
 		attrs[AttrId.sx]    = attrs[AttrId.sy]   = 1;
-		attrs[AttrId.lsx]    = attrs[AttrId.lsy]   = 1;
+		attrs[AttrId.lsx]   = attrs[AttrId.lsy]  = 1;
 		attrs[AttrId.alpha] = 1;
 		attrs[AttrId.tu]    = attrs[AttrId.tv]   = 0;
 		attrs[AttrId.pvtx]  = attrs[AttrId.pvty] = 0;

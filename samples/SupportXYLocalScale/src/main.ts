@@ -1,8 +1,42 @@
 import Resource = require("../../../src/Resource");
 import Actor = require("../../../src/Actor");
 import AttrId = require("../../../src/AttrId");
+import Volume = require("../../../src/Volume");
+import Collider = require("../../../src/Collider");
 
 const ASA_PJ_NAME = "pj_stop_motion";
+
+class HeartItem {
+	private collisions: {[name: string]: Volume} = {};
+	constructor(public sprite: g.Sprite, public localXScale: number, public localYScale: number) {
+	}
+
+	addCollisions(colliders: Collider[]) {
+		this.collisions = {};
+		colliders.forEach((collider) => {
+			const volume = collider.getVolume();
+			if (! volume) return;
+			const aabb = volume.aabb();
+			const isCollided = g.Collision.intersect(
+				aabb.origin.x,
+				aabb.origin.y,
+				aabb.extent.width,
+				aabb.extent.height,
+				this.sprite.x,
+				this.sprite.y,
+				this.sprite.width,
+				this.sprite.height
+			);
+			if (isCollided) {
+				this.collisions[collider.name] = volume;
+			}
+		});
+	}
+
+	isCollided(name: string) {
+		return name in this.collisions;
+	}
+}
 
 class DemoScene extends g.Scene {
 	private actor: Actor;
@@ -25,7 +59,7 @@ class DemoScene extends g.Scene {
 			width: 320,
 			height: 320,
 			x: 160,
-			y: 160,
+			y: 180,
 			playSpeed: 1.0
 		});
 		this.append(this.actor);
@@ -48,6 +82,7 @@ class DemoScene extends g.Scene {
 					heartItem.sprite.x = nextX;
 					heartItem.sprite.y = nextY;
 					heartItem.sprite.modified();
+					heartItem.addCollisions(this.actor.colliders);
 				}
 			});
 			this.append(heartItem.sprite);
@@ -69,29 +104,16 @@ class DemoScene extends g.Scene {
 
 		this.update.add(() => {
 			this.actor.colliders.forEach((c) => {
-				const volume = c.getVolume();
-				if (! volume) return;
-				const aabb = volume.aabb();
-				const collisions = Object.keys(this.heartItems).filter((key: string) => {
-					const item = this.heartItems[key];
-					return g.Collision.intersect(
-						aabb.origin.x,
-						aabb.origin.y,
-						aabb.extent.width,
-						aabb.extent.height,
-						item.sprite.x,
-						item.sprite.y,
-						item.sprite.width,
-						item.sprite.height
-					);
+				let isCollided = false;
+				Object.keys(this.heartItems).forEach((key: string) => {
+					const heartItem = this.heartItems[key];
+					if (heartItem.isCollided(c.name)) {
+						this.generateLocalScaleEvent(c.name, heartItem.localXScale, heartItem.localYScale);
+						isCollided = true;
+					}
 				});
-				if (collisions.length === 0) {
+				if (false === isCollided) {
 					this.removeLocalScaleEvent(c.name);
-				} else {
-					collisions.forEach((key: string) => {
-						const item = this.heartItems[key];
-						this.generateLocalScaleEvent(c.name, item.localXScale, item.localYScale);
-					});
 				}
 			});
 			this.actor.modified();
@@ -130,18 +152,8 @@ class DemoScene extends g.Scene {
 			opacity: 0.6,
 			touchable: true
 		});
-		return {
-			sprite,
-			localXScale,
-			localYScale
-		};
+		return new HeartItem(sprite, localXScale, localYScale);
 	}
-}
-
-interface HeartItem {
-	sprite: g.Sprite;
-	localXScale: number;
-	localYScale: number;
 }
 
 export = (param: g.GameMainParameterObject): void => {

@@ -1,6 +1,6 @@
 # ChangeLog
 
-## 3.1.0
+## Unrelased changes
 
 * SpriteStudio6の新機能サポート
   * X/Yローカルスケールサポート
