@@ -96,7 +96,7 @@ class DemoScene extends g.Scene {
 		});
 	}
 
-	private generateLocalAlphaEvent(partsName: string): void {
+	private generateLocalAlphaEvent(partsName: string) {
 		this.actor.calculated(partsName, true).addOnce((param) => {
 			if (param.posture) {
 				const t = param.currentFrame / param.frameCount;
@@ -114,7 +114,7 @@ class DemoScene extends g.Scene {
 	}
 }
 
-export = (param: g.GameMainParameterObject): void => {
+export = (param: g.GameMainParameterObject) => {
 	const scene = new DemoScene({
 		game: g.game,
 		assetIds: [

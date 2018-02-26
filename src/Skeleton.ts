@@ -549,7 +549,8 @@ class Skeleton {
 		composedCache.m._matrix[3] *= cache.attrs[AttrId.lsy];
 
 		// ローカル不透明度の反映
-		if (cache.attrs[AttrId.lalpha]) {
+		if (cache.attrs[AttrId.lalpha] != null) {
+			// 不透明度に関してはローカル不透明度が設定されていた場合、乗算ではなくローカル不透明度の方が優先して適用されます
 			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.lalpha];
 		}
 
