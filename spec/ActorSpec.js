@@ -5,7 +5,7 @@ var Actor = require("../lib/Actor.js");
 var Resource = require("../lib/Resource.js");
 var CellAttachment = require("../lib/CellAttachment.js");
 var CircleCollider = require("../lib/CircleCollider.js");
-
+var AttrId = require("../lib/AttrId.js");
 
 describe("Actor", function() {
 	var scene;
@@ -271,5 +271,122 @@ describe("Actor", function() {
 			actor.calc();
 			expect(function() { actor.renderSelf(renderer, undefined); }).not.toThrow();
 		}
+	});
+
+	describe("animation to change attributes", function() {
+		var game;
+		var scene;
+		var resource;
+		var param;
+
+		beforeEach(function() {
+			game = new g.Game({width: 320, height: 320, fps: 30});
+			scene = new g.Scene({game: game});
+
+			utils.createImageAsset("change_attributes.png", scene);
+			utils.createTextAsset("an_change_local_alpha.asaan", scene);
+			utils.createTextAsset("an_change_local_scale.asaan", scene);
+			utils.createTextAsset("an_flip_daggers.asaan", scene);
+			utils.createTextAsset("bn_change_attributes.asabn", scene);
+			utils.createTextAsset("bn_flip_animation.asabn", scene);
+			utils.createTextAsset("pj_change_attributes.asapj", scene);
+			utils.createTextAsset("sk_change_attributes.asask", scene);
+
+			resource = new Resource();
+			resource.loadProject("pj_change_attributes", scene.assets);
+
+			param = {
+				scene: scene,
+				resource: resource,
+				animationName: "",
+				skinNames: ["change_attributes"],
+				boneSetName: "change_attributes",
+				width: 320,
+				height: 320
+			};
+		});
+
+		it("should change local scale", function() {
+			param.animationName = "change_local_scale";
+			var actor = new Actor(param);
+			var getTargetMatrixs = function() {
+				return actor.skeleton.composedCaches.map(function(cache) {
+					return cache.m._matrix.slice();
+				});
+			};
+			actor.calc();
+			var beforeMatrixs = getTargetMatrixs();
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// bodyパーツのマトリクスのm21とm22の値は変わるが、それ以外の値は変わらない
+				expect(actor.skeleton.composedCaches[1].m._matrix[0]).toBe(beforeMatrixs[1][0]);
+				expect(actor.skeleton.composedCaches[1].m._matrix[1]).toBe(beforeMatrixs[1][1]);
+				expect(actor.skeleton.composedCaches[1].m._matrix[2]).not.toBe(beforeMatrixs[1][2]);
+				expect(actor.skeleton.composedCaches[1].m._matrix[3]).not.toBe(beforeMatrixs[1][3]);
+
+				// arm_legパーツのマトリクスのm11とm12の値は変わるが、それ以外の値は変わらない
+				expect(actor.skeleton.composedCaches[2].m._matrix[0]).not.toBe(beforeMatrixs[2][0]);
+				expect(actor.skeleton.composedCaches[2].m._matrix[1]).not.toBe(beforeMatrixs[2][1]);
+				expect(actor.skeleton.composedCaches[2].m._matrix[2]).toBe(beforeMatrixs[2][2]);
+				expect(actor.skeleton.composedCaches[2].m._matrix[3]).toBe(beforeMatrixs[2][3]);
+
+				// arm_leg_1パーツのマトリクスの値は変わらない
+				expect(actor.skeleton.composedCaches[3].m._matrix[0]).toBe(beforeMatrixs[3][0]);
+				expect(actor.skeleton.composedCaches[3].m._matrix[1]).toBe(beforeMatrixs[3][1]);
+				expect(actor.skeleton.composedCaches[3].m._matrix[2]).toBe(beforeMatrixs[3][2]);
+				expect(actor.skeleton.composedCaches[3].m._matrix[3]).toBe(beforeMatrixs[3][3]);
+
+				beforeMatrixs = getTargetMatrixs();
+			}
+		});
+
+		it("should reflect local alpha", function() {
+			param.animationName = "change_local_alpha";
+			var actor = new Actor(param);
+			var getAlphaValues = function() {
+				return actor.skeleton.composedCaches.map(function(cache) {
+					return cache.attrs[AttrId.alpha];
+				});
+			};
+			actor.calc();
+			var beforeAlphaValues = getAlphaValues();
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// bodyパーツのローカルα値が固定値となっているためbodyパーツのα値は変わらないが、rootパーツでα値が設定されているため他パーツのα値は変わる
+				expect(actor.skeleton.composedCaches[0].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[0]);
+				expect(actor.skeleton.composedCaches[1].attrs[AttrId.alpha]).toBe(beforeAlphaValues[1]);
+				expect(actor.skeleton.composedCaches[2].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[2]);
+				expect(actor.skeleton.composedCaches[3].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[3]);
+
+				beforeAlphaValues = getAlphaValues();
+			}
+		});
+
+		it("should reflect iflh and iflv", function() {
+			param.boneSetName = "flip_animation";
+			param.animationName = "flip_daggers";
+			var actor = new Actor(param);
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// 左右反転のみなので、x軸のマトリクスの値が反転しているだけでそれ以外のマトリクスの値は同じ
+				expect(actor.skeleton.composedCaches[5].m._matrix[0]).toBe(-1 * actor.skeleton.composedCaches[6].m._matrix[0]);
+				expect(actor.skeleton.composedCaches[5].m._matrix[1]).toBe(-1 * actor.skeleton.composedCaches[6].m._matrix[1]);
+				expect(actor.skeleton.composedCaches[5].m._matrix[2]).toBe(actor.skeleton.composedCaches[6].m._matrix[2]);
+				expect(actor.skeleton.composedCaches[5].m._matrix[3]).toBe(actor.skeleton.composedCaches[6].m._matrix[3]);
+				expect(actor.skeleton.composedCaches[5].m._matrix[4]).toBe(actor.skeleton.composedCaches[6].m._matrix[4]);
+				expect(actor.skeleton.composedCaches[5].m._matrix[5]).toBe(actor.skeleton.composedCaches[6].m._matrix[5]);
+
+				// 上下反転のみなので、y軸のマトリクスの値が反転しているだけでそれ以外のマトリクスの値は同じ
+				expect(actor.skeleton.composedCaches[7].m._matrix[0]).toBe(actor.skeleton.composedCaches[8].m._matrix[0]);
+				expect(actor.skeleton.composedCaches[7].m._matrix[1]).toBe(actor.skeleton.composedCaches[8].m._matrix[1]);
+				expect(actor.skeleton.composedCaches[7].m._matrix[2]).toBe(-1 * actor.skeleton.composedCaches[8].m._matrix[2]);
+				expect(actor.skeleton.composedCaches[7].m._matrix[3]).toBe(-1 * actor.skeleton.composedCaches[8].m._matrix[3]);
+				expect(actor.skeleton.composedCaches[7].m._matrix[4]).toBe(actor.skeleton.composedCaches[8].m._matrix[4]);
+				expect(actor.skeleton.composedCaches[7].m._matrix[5]).toBe(actor.skeleton.composedCaches[8].m._matrix[5]);
+			}
+		});
 	});
 });
