@@ -27,6 +27,8 @@ const attributeInitialValues: any = {
 	tu: 1.0,
 	tv: 1.0,
 	prio: 0,
+	iflh: 0,
+	iflv: 0,
 	visibility: true,
 	ccr: 0.0,
 	flipH: false,
@@ -149,10 +151,10 @@ function calcBackParameter(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numbe
 		const s2 = s * s;
 		const t2 = t * t;
 		const interpolated =
-			     s  * s2 * p1 +
+			s  * s2 * p1 +
 			3  * t  * s2 * p2 +
 			3  * s  * t2 * p3 +
-			     t  * t2 * p4;
+			t  * t2 * p4;
 		if (interpolated > time) {
 			t -= stride;
 		} else {
@@ -171,10 +173,10 @@ function interpolateBezier(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numbe
 	const s2 = s * s;
 	const t2 = t * t;
 	return (
-		    s * s2 *  kFrom.value +
+		s * s2 *  kFrom.value +
 		3 * t * s2 * (kFrom.value + values[1]) +
 		3 * s * t2 * (kTo.value   + values[3]) +
-		    t * t2 *  kTo.value
+		t * t2 *  kTo.value
 	);
 }
 
@@ -565,6 +567,20 @@ class Skeleton {
 		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
 		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
 		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
+
+		// イメージの左右反転
+		if (cache.attrs[AttrId.iflh]) {
+			composedCache.m._matrix[0] *= -1;
+			composedCache.m._matrix[1] *= -1;
+			composedCache.attrs[AttrId.pvtx]  *= -1;
+		}
+
+		// イメージの上下反転
+		if (cache.attrs[AttrId.iflv]) {
+			composedCache.m._matrix[2] *= -1;
+			composedCache.m._matrix[3] *= -1;
+			composedCache.attrs[AttrId.pvty]  *= -1;
+		}
 	}
 }
 
