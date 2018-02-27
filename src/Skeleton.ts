@@ -17,7 +17,10 @@ const attributeInitialValues: any = {
 	rz: 0,
 	sx: 1.0,
 	sy: 1.0,
+	lsx: 1.0,
+	lsy: 1.0,
 	alpha: 1.0,
+	lalpha: undefined,
 	cv: undefined,
 	pvtx: 1.0,
 	pvty: 1.0,
@@ -529,23 +532,8 @@ class Skeleton {
 			}
 			composedCache.m.multiply(cache.m);
 
-			composedCache.attrs[AttrId.alpha] = 1.0;
+			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.alpha];
 		}
-
-		// copy
-		const src = cache.attrs;
-		const dst = composedCache.attrs;
-		dst[AttrId.cv]    = src[AttrId.cv];
-		dst[AttrId.pvtx]  = src[AttrId.pvtx];
-		dst[AttrId.pvty]  = src[AttrId.pvty];
-		dst[AttrId.tu]    = src[AttrId.tu];
-		dst[AttrId.tv]    = src[AttrId.tv];
-		dst[AttrId.prio]  = src[AttrId.prio];
-		dst[AttrId.visibility] = src[AttrId.visibility];
-		composedCache.attachments = cache.attachments;
-		dst[AttrId.ccr]   = src[AttrId.ccr];
-		dst[AttrId.flipH] = src[AttrId.flipH];
-		dst[AttrId.flipV] = src[AttrId.flipV];
 
 		// go down well.
 		if (bone.children) {
@@ -553,6 +541,31 @@ class Skeleton {
 				this.traverse(bone.children[i]);
 			}
 		}
+
+		// ローカルXYスケールの反映
+		composedCache.m._matrix[0] *= cache.attrs[AttrId.lsx];
+		composedCache.m._matrix[1] *= cache.attrs[AttrId.lsx];
+		composedCache.m._matrix[2] *= cache.attrs[AttrId.lsy];
+		composedCache.m._matrix[3] *= cache.attrs[AttrId.lsy];
+
+		// ローカル不透明度の反映
+		if (cache.attrs[AttrId.lalpha] != null) {
+			// 不透明度に関してはローカル不透明度が設定されていた場合、乗算ではなくローカル不透明度の方が優先して適用されます
+			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.lalpha];
+		}
+
+		// 継承関係のない属性の値を直接コピー
+		composedCache.attrs[AttrId.cv]    = cache.attrs[AttrId.cv];
+		composedCache.attrs[AttrId.pvtx]  = cache.attrs[AttrId.pvtx];
+		composedCache.attrs[AttrId.pvty]  = cache.attrs[AttrId.pvty];
+		composedCache.attrs[AttrId.tu]    = cache.attrs[AttrId.tu];
+		composedCache.attrs[AttrId.tv]    = cache.attrs[AttrId.tv];
+		composedCache.attrs[AttrId.prio]  = cache.attrs[AttrId.prio];
+		composedCache.attrs[AttrId.visibility] = cache.attrs[AttrId.visibility];
+		composedCache.attachments = cache.attachments;
+		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
+		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
+		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
 	}
 }
 
