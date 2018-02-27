@@ -614,13 +614,11 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 		return undefined;
 	}
 
-	// セル中心位置
-	let pvtx = cell.pivot.x;
-	let pvty = cell.pivot.y;
-
-	// アニメーションを反映
-	pvtx += attrs[AttrId.pvtx];
-	pvty += attrs[AttrId.pvty];
+	// セル中心位置にアニメーションを反映
+	const sgnX = attrs[AttrId.iflh] ? -1 : 1;
+	const sgnY = attrs[AttrId.iflv] ? -1 : 1;
+	let pvtx = sgnX * (cell.pivot.x + attrs[AttrId.pvtx]);
+	let pvty = sgnY * (cell.pivot.y + attrs[AttrId.pvty]);
 
 	// 正規化された値からピクセル座標系へ
 	pvtx = cell.size.width * pvtx;
@@ -661,10 +659,11 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 		m.multiply(cell.m);
 	}
 
-	if (attrs[AttrId.flipH]) {
+	// セルの水平(垂直)フリップとセル画像の左右(上下)反転の両方が指定されていると二重に反転して元に戻るので、どちらか片方が指定されている時のみ反転させる
+	if (attrs[AttrId.flipH] !== attrs[AttrId.iflh]) {
 		m = g_flipHMatrix.multiplyNew(m);
 	}
-	if (attrs[AttrId.flipV]) {
+	if (attrs[AttrId.flipV] !== attrs[AttrId.iflv]) {
 		m = g_flipVMatrix.multiplyNew(m);
 	}
 
