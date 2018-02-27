@@ -12,7 +12,7 @@ class DemoScene extends g.Scene {
 		this.loaded.add(this.onLoaded, this);
 	}
 
-	private onLoaded() {
+	private onLoaded(): void {
 		const resource = new Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
 		this.actor = new Actor({
@@ -86,9 +86,9 @@ class DemoScene extends g.Scene {
 					sprite.width,
 					sprite.height
 				)) {
-					this.generateLocalAlphaEvent(c.name);
+					this.registerLocalAlphaHandler(c.name);
 				} else {
-					this.removeLocalAlphaEvent(c.name);
+					this.unregisterLocalAlphaHandler(c.name);
 				}
 			});
 			this.actor.modified();
@@ -96,7 +96,8 @@ class DemoScene extends g.Scene {
 		});
 	}
 
-	private generateLocalAlphaEvent(partsName: string) {
+	private registerLocalAlphaHandler(partsName: string): void {
+		// 指定したパーツにハンドラが存在しない場合のみ、ハンドラの登録を行う
 		this.actor.calculated(partsName, true).addOnce((param) => {
 			if (param.posture) {
 				const t = param.currentFrame / param.frameCount;
@@ -106,7 +107,8 @@ class DemoScene extends g.Scene {
 		});
 	}
 
-	private removeLocalAlphaEvent(partsName: string) {
+	private unregisterLocalAlphaHandler(partsName: string): void {
+		// 指定したパーツにハンドラが登録されている場合、登録されているハンドラの登録解除を行う
 		const trigger = this.actor.calculated(partsName, false);
 		if (trigger) {
 			trigger.removeAll();
@@ -114,7 +116,7 @@ class DemoScene extends g.Scene {
 	}
 }
 
-export = (param: g.GameMainParameterObject) => {
+export = (param: g.GameMainParameterObject): void => {
 	const scene = new DemoScene({
 		game: g.game,
 		assetIds: [

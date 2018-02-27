@@ -1,5 +1,5 @@
 # akashic-animationサンプル
-SpriteStudio6の新機能であるローカル不透明度を、`akashic-animation` で活用した例です
+ローカル不透明度機能の活用例です
 
 ## 実行方法
 [akashic-sandbox](https://github.com/akashic-games/akashic-sandbox) をインストールして、
