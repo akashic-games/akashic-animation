@@ -10,6 +10,7 @@ class Bone {
 	name: string;
 	arrayIndex: number;
 	colliderInfos: ColliderInfo[];
+	alphaBlendType: string = undefined;
 
 	constructor() {
 		this.children = [];

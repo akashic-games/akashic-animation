@@ -7,6 +7,7 @@ class FinalizedCell {
 	u: number;
 	v: number;
 	matrix: g.Matrix;
+	alphaBlendType: string;
 }
 
 export = FinalizedCell;

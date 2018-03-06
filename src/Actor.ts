@@ -582,6 +582,10 @@ class Actor extends g.E {
 		// |
 		// v
 		if (finalizedCell) {
+			// ミックスはデフォルト値なので、αブレンドがミックスの場合はcomposite-operation指定処理を省略する
+			if (finalizedCell.alphaBlendType != null && finalizedCell.alphaBlendType !== "mix") {
+				renderer.setCompositeOperation(this.getCompositeOperation(finalizedCell.alphaBlendType));
+			}
 			renderer.drawImage(
 				finalizedCell.surface,
 				finalizedCell.cell.pos.x + (finalizedCell.u * finalizedCell.surface.width),
@@ -592,6 +596,15 @@ class Actor extends g.E {
 			);
 		} else if (this.nullVisible) {
 			renderer.fillRect(0, 0, 16, 16, "#ff00ff");
+		}
+	}
+
+	private getCompositeOperation(alphaBlendType: string): g.CompositeOperation {
+		switch (alphaBlendType) {
+			case "add":
+				return g.CompositeOperation.Lighter;
+			default:
+				return g.CompositeOperation.SourceOver;
 		}
 	}
 }
@@ -673,6 +686,7 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 	finalizedCell.u = attrs[AttrId.tu];
 	finalizedCell.v = attrs[AttrId.tv];
 	finalizedCell.matrix = m;
+	finalizedCell.alphaBlendType = posture.alphaBlendType;
 
 	return finalizedCell;
 }

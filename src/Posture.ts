@@ -16,6 +16,8 @@ class Posture {
 
 	m: g.Matrix;
 
+	alphaBlendType: string = undefined;
+
 	// 以下、アニメーション結果から直接決まらないが、実行時にボーンに与えたい情報
 	attachments: Attachment[];
 	finalizedCell: FinalizedCell;
@@ -57,6 +59,8 @@ class Posture {
 		attrs[AttrId.flipV] = false;
 
 		this.m.reset();
+
+		this.alphaBlendType = undefined;
 		// アニメーション以外の処理で与えられた値はクリアしない
 	}
 
