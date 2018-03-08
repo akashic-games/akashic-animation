@@ -8,6 +8,6 @@ describe("Bone", function() {
 		expect(bone.children.length).toBe(0);
 		expect(bone.arrayIndex).toBe(-1);
 		expect(bone.parentIndex).toBe(-1);
-		expect(bone.alphaBlendType).toBeUndefined();
+		expect(bone.AlphaBlendMode).toBeUndefined();
 	});
 });

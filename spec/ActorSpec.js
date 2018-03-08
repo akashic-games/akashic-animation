@@ -511,8 +511,8 @@ describe("Actor", function() {
 				actor.calc();
 
 				// αブレンドの値がfinalizedCellから文字列で取得できる
-				expect(actor.skeleton.composedCaches[1].finalizedCell.alphaBlendType).toBe("mix");
-				expect(actor.skeleton.composedCaches[2].finalizedCell.alphaBlendType).toBe("add");
+				expect(actor.skeleton.composedCaches[1].finalizedCell.alphaBlendMode).toBe("normal");
+				expect(actor.skeleton.composedCaches[2].finalizedCell.alphaBlendMode).toBe("add");
 			}
 		});
 	});

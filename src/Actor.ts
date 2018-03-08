@@ -16,6 +16,7 @@ import CircleVolume = require("./CircleVolume");
 import AttrId = require("./AttrId");
 import {Animation} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
+import AlphaBlendMode = require("./AlphaBlendMode");
 
 const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0);
 const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0);
@@ -583,8 +584,8 @@ class Actor extends g.E {
 		// v
 		if (finalizedCell) {
 			// ミックスはデフォルト値なので、αブレンドがミックスの場合はcomposite-operation指定処理を省略する
-			if (finalizedCell.alphaBlendType != null && finalizedCell.alphaBlendType !== "mix") {
-				renderer.setCompositeOperation(this.getCompositeOperation(finalizedCell.alphaBlendType));
+			if (finalizedCell.alphaBlendMode !== undefined && finalizedCell.alphaBlendMode !== "normal") {
+				renderer.setCompositeOperation(getCompositeOperation(finalizedCell.alphaBlendMode));
 			}
 			renderer.drawImage(
 				finalizedCell.surface,
@@ -596,15 +597,6 @@ class Actor extends g.E {
 			);
 		} else if (this.nullVisible) {
 			renderer.fillRect(0, 0, 16, 16, "#ff00ff");
-		}
-	}
-
-	private getCompositeOperation(alphaBlendType: string): g.CompositeOperation {
-		switch (alphaBlendType) {
-			case "add":
-				return g.CompositeOperation.Lighter;
-			default:
-				return g.CompositeOperation.SourceOver;
 		}
 	}
 }
@@ -686,9 +678,18 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 	finalizedCell.u = attrs[AttrId.tu];
 	finalizedCell.v = attrs[AttrId.tv];
 	finalizedCell.matrix = m;
-	finalizedCell.alphaBlendType = posture.alphaBlendType;
+	finalizedCell.alphaBlendMode = posture.alphaBlendMode;
 
 	return finalizedCell;
+}
+
+function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOperation {
+	switch (alphaBlendMode) {
+		case "add":
+			return g.CompositeOperation.Lighter;
+		default:
+			return g.CompositeOperation.SourceOver;
+	}
 }
 
 export = Actor;

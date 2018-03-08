@@ -1,4 +1,5 @@
 import ColliderInfo = require("./ColliderInfo");
+import AlphaBlendMode = require("./AlphaBlendMode");
 
 /**
  * ボーンクラス。
@@ -10,7 +11,7 @@ class Bone {
 	name: string;
 	arrayIndex: number;
 	colliderInfos: ColliderInfo[];
-	alphaBlendType: string = undefined;
+	alphaBlendMode: AlphaBlendMode = undefined;
 
 	constructor() {
 		this.children = [];

@@ -3,6 +3,7 @@ import FinalizedCell = require("./FinalizedCell");
 import AttrId = require("./AttrId");
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import {CellValue} from "./AnimeParams";
+import AlphaBlendMode = require("./AlphaBlendMode");
 
 // 動的ボーン
 // Boneが静的で様々なシステムから参照されるのに対し、
@@ -16,7 +17,7 @@ class Posture {
 
 	m: g.Matrix;
 
-	alphaBlendType: string = undefined;
+	alphaBlendMode: AlphaBlendMode = undefined;
 
 	// 以下、アニメーション結果から直接決まらないが、実行時にボーンに与えたい情報
 	attachments: Attachment[];
@@ -60,7 +61,7 @@ class Posture {
 
 		this.m.reset();
 
-		this.alphaBlendType = undefined;
+		this.alphaBlendMode = undefined;
 		// アニメーション以外の処理で与えられた値はクリアしない
 	}
 
