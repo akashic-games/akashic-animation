@@ -27,6 +27,8 @@ const attributeInitialValues: any = {
 	tu: 1.0,
 	tv: 1.0,
 	prio: 0,
+	iflh: false,
+	iflv: false,
 	visibility: true,
 	ccr: 0.0,
 	flipH: false,
@@ -149,10 +151,10 @@ function calcBackParameter(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numbe
 		const s2 = s * s;
 		const t2 = t * t;
 		const interpolated =
-			     s  * s2 * p1 +
+			s  * s2 * p1 +
 			3  * t  * s2 * p2 +
 			3  * s  * t2 * p3 +
-			     t  * t2 * p4;
+			t  * t2 * p4;
 		if (interpolated > time) {
 			t -= stride;
 		} else {
@@ -171,10 +173,10 @@ function interpolateBezier(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numbe
 	const s2 = s * s;
 	const t2 = t * t;
 	return (
-		    s * s2 *  kFrom.value +
+		s * s2 *  kFrom.value +
 		3 * t * s2 * (kFrom.value + values[1]) +
 		3 * s * t2 * (kTo.value   + values[3]) +
-		    t * t2 *  kTo.value
+		t * t2 *  kTo.value
 	);
 }
 
@@ -561,6 +563,8 @@ class Skeleton {
 		composedCache.attrs[AttrId.tu]    = cache.attrs[AttrId.tu];
 		composedCache.attrs[AttrId.tv]    = cache.attrs[AttrId.tv];
 		composedCache.attrs[AttrId.prio]  = cache.attrs[AttrId.prio];
+		composedCache.attrs[AttrId.iflh]  = cache.attrs[AttrId.iflh];
+		composedCache.attrs[AttrId.iflv]  = cache.attrs[AttrId.iflv];
 		composedCache.attrs[AttrId.visibility] = cache.attrs[AttrId.visibility];
 		composedCache.attachments = cache.attachments;
 		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];

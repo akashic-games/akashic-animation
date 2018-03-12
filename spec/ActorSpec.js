@@ -286,7 +286,9 @@ describe("Actor", function() {
 			utils.createImageAsset("change_attributes.png", scene);
 			utils.createTextAsset("an_change_local_alpha.asaan", scene);
 			utils.createTextAsset("an_change_local_scale.asaan", scene);
+			utils.createTextAsset("an_flip_daggers.asaan", scene);
 			utils.createTextAsset("bn_change_attributes.asabn", scene);
+			utils.createTextAsset("bn_flip_animation.asabn", scene);
 			utils.createTextAsset("pj_change_attributes.asapj", scene);
 			utils.createTextAsset("sk_change_attributes.asask", scene);
 
@@ -359,6 +361,115 @@ describe("Actor", function() {
 				expect(actor.skeleton.composedCaches[3].attrs[AttrId.alpha]).not.toBe(beforeAlphaValues[3]);
 
 				beforeAlphaValues = getAlphaValues();
+			}
+		});
+
+		it("should reflect iflh and iflv", function() {
+			param.boneSetName = "flip_animation";
+			param.animationName = "flip_daggers";
+			var actor = new Actor(param);
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// 左右反転しているので、x軸のマトリクスの値が反転している且つ原点のx座標が異なっている
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[0])
+					.toBe(-1 * actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[0]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[1])
+					.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[1]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[2])
+					.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[2]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[3])
+					.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[3]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[4])
+					.not.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[4]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[5])
+					.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[5]);
+
+				// 上下反転しているので、y軸のマトリクスの値が反転している且つ原点のy座標が異なっている
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[0])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[0]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[1])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[1]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[2])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[2]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[3])
+					.toBe(-1 * actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[3]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[4])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[4]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[5])
+					.not.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[5]);
+			}
+		});
+	});
+	describe("flip animation", function() {
+		var game;
+		var scene;
+		var resource;
+		var param;
+		var actor;
+
+		beforeEach(function() {
+			game = new g.Game({width: 320, height: 320, fps: 30});
+			scene = new g.Scene({game: game});
+
+			utils.createImageAsset("support_flip.png", scene);
+			utils.createTextAsset("an_flip_anime.asaan", scene);
+			utils.createTextAsset("bn_support_flip.asabn", scene);
+			utils.createTextAsset("pj_support_flip.asapj", scene);
+			utils.createTextAsset("sk_support_flip.asask", scene);
+
+			resource = new Resource();
+			resource.loadProject("pj_support_flip", scene.assets);
+
+			param = {
+				scene: scene,
+				resource: resource,
+				animationName: "flip_anime",
+				skinNames: ["support_flip"],
+				boneSetName: "support_flip",
+				width: 320,
+				height: 320
+			};
+			actor = new Actor(param);
+		});
+
+		it("should reflect flipH and flipV", function() {
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// 水平フリップと垂直フリップなので、x・y軸のマトリクスと原点の値が反転する
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[0])
+					.toBe(-1 * actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[0]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[1])
+					.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[1]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[2])
+					.toBe(actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[2]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[3])
+					.toBe(-1 * actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[3]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[4])
+					.toBe(-1 * actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[4]);
+				expect(actor.skeleton.composedCaches[1].finalizedCell.matrix._matrix[5])
+					.toBe(-1 * actor.skeleton.composedCaches[2].finalizedCell.matrix._matrix[5]);
+			}
+		});
+
+		it("should reflect flipH and flipV when reflect iflh and iflv", function() {
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// フリップと反転が同時に起こるので、反転は打ち消されて原点のみが移動する
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[0])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[0]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[1])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[1]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[2])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[2]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[3])
+					.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[3]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[4])
+					.not.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[4]);
+				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[5])
+					.not.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[5]);
 			}
 		});
 	});

@@ -48,6 +48,8 @@ class Posture {
 		attrs[AttrId.tu]    = attrs[AttrId.tv]   = 0;
 		attrs[AttrId.pvtx]  = attrs[AttrId.pvty] = 0;
 		attrs[AttrId.prio]  = 0;
+		attrs[AttrId.iflh] = false;
+		attrs[AttrId.iflv] = false;
 		attrs[AttrId.visibility] = true;
 		attrs[AttrId.cv]    = undefined;
 		attrs[AttrId.ccr]   = 0;
@@ -61,9 +63,9 @@ class Posture {
 	quickcos(rz_in: number): number {
 		let rz = (rz_in * 65536 / 360) | 0; // JSにrzが整数であると伝える。僅かに性能が良くなる気がする、程度だが
 		if (rz >= 0) {
-			 rz =             rz & 0xFFFF;
+			rz =             rz & 0xFFFF;
 		} else {
-			 rz = 0x10000 - (-rz & 0xFFFF);
+			rz = 0x10000 - (-rz & 0xFFFF);
 		}
 		if (rz < 0x4000) {
 			return Posture._costbl[rz];
