@@ -17,13 +17,18 @@ const attributeInitialValues: any = {
 	rz: 0,
 	sx: 1.0,
 	sy: 1.0,
+	lsx: 1.0,
+	lsy: 1.0,
 	alpha: 1.0,
+	lalpha: undefined,
 	cv: undefined,
 	pvtx: 1.0,
 	pvty: 1.0,
 	tu: 1.0,
 	tv: 1.0,
 	prio: 0,
+	iflh: false,
+	iflv: false,
 	visibility: true,
 	ccr: 0.0,
 	flipH: false,
@@ -146,10 +151,10 @@ function calcBackParameter(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numbe
 		const s2 = s * s;
 		const t2 = t * t;
 		const interpolated =
-			     s  * s2 * p1 +
+			s  * s2 * p1 +
 			3  * t  * s2 * p2 +
 			3  * s  * t2 * p3 +
-			     t  * t2 * p4;
+			t  * t2 * p4;
 		if (interpolated > time) {
 			t -= stride;
 		} else {
@@ -168,10 +173,10 @@ function interpolateBezier(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numbe
 	const s2 = s * s;
 	const t2 = t * t;
 	return (
-		    s * s2 *  kFrom.value +
+		s * s2 *  kFrom.value +
 		3 * t * s2 * (kFrom.value + values[1]) +
 		3 * s * t2 * (kTo.value   + values[3]) +
-		    t * t2 *  kTo.value
+		t * t2 *  kTo.value
 	);
 }
 
@@ -529,23 +534,8 @@ class Skeleton {
 			}
 			composedCache.m.multiply(cache.m);
 
-			composedCache.attrs[AttrId.alpha] = 1.0;
+			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.alpha];
 		}
-
-		// copy
-		const src = cache.attrs;
-		const dst = composedCache.attrs;
-		dst[AttrId.cv]    = src[AttrId.cv];
-		dst[AttrId.pvtx]  = src[AttrId.pvtx];
-		dst[AttrId.pvty]  = src[AttrId.pvty];
-		dst[AttrId.tu]    = src[AttrId.tu];
-		dst[AttrId.tv]    = src[AttrId.tv];
-		dst[AttrId.prio]  = src[AttrId.prio];
-		dst[AttrId.visibility] = src[AttrId.visibility];
-		composedCache.attachments = cache.attachments;
-		dst[AttrId.ccr]   = src[AttrId.ccr];
-		dst[AttrId.flipH] = src[AttrId.flipH];
-		dst[AttrId.flipV] = src[AttrId.flipV];
 
 		// go down well.
 		if (bone.children) {
@@ -553,6 +543,33 @@ class Skeleton {
 				this.traverse(bone.children[i]);
 			}
 		}
+
+		// ローカルXYスケールの反映
+		composedCache.m._matrix[0] *= cache.attrs[AttrId.lsx];
+		composedCache.m._matrix[1] *= cache.attrs[AttrId.lsx];
+		composedCache.m._matrix[2] *= cache.attrs[AttrId.lsy];
+		composedCache.m._matrix[3] *= cache.attrs[AttrId.lsy];
+
+		// ローカル不透明度の反映
+		if (cache.attrs[AttrId.lalpha] != null) {
+			// akashic-animation のローカル不透明度の仕様として、ローカル不透明度が設定されていた場合、不透明度に乗算せずローカル不透明度の値を上書きする
+			composedCache.attrs[AttrId.alpha] = cache.attrs[AttrId.lalpha];
+		}
+
+		// 継承関係のない属性の値を直接コピー
+		composedCache.attrs[AttrId.cv]    = cache.attrs[AttrId.cv];
+		composedCache.attrs[AttrId.pvtx]  = cache.attrs[AttrId.pvtx];
+		composedCache.attrs[AttrId.pvty]  = cache.attrs[AttrId.pvty];
+		composedCache.attrs[AttrId.tu]    = cache.attrs[AttrId.tu];
+		composedCache.attrs[AttrId.tv]    = cache.attrs[AttrId.tv];
+		composedCache.attrs[AttrId.prio]  = cache.attrs[AttrId.prio];
+		composedCache.attrs[AttrId.iflh]  = cache.attrs[AttrId.iflh];
+		composedCache.attrs[AttrId.iflv]  = cache.attrs[AttrId.iflv];
+		composedCache.attrs[AttrId.visibility] = cache.attrs[AttrId.visibility];
+		composedCache.attachments = cache.attachments;
+		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
+		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
+		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
 	}
 }
 
