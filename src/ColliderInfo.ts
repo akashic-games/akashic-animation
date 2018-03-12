@@ -3,7 +3,7 @@ interface ColliderInfo {
 	// Volumeを生成する元になる形状
 	geometryType: string;
 
- 	// コライダー境界形状 (aabb, box, circle)
+	// コライダー境界形状 (aabb, box, circle)
 	// どのようなVolumeを生成するか
 	boundType: string;
 
