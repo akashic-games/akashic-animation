@@ -5,11 +5,6 @@ import AlphaBlendMode = require("../../../src/AlphaBlendMode");
 
 const ASA_PJ_NAME = "pj_practice_swing";
 const CSS_COLORS = [
-	"white",
-	"gray",
-	"blue",
-	"navy",
-	"teal",
 	"green",
 	"lime",
 	"aqua",
@@ -17,7 +12,12 @@ const CSS_COLORS = [
 	"fuchsia",
 	"olive",
 	"purple",
-	"maroon"
+	"maroon",
+	"white",
+	"gray",
+	"blue",
+	"navy",
+	"teal"
 ];
 const ALPHA_BLEND_TYPES: AlphaBlendMode[] = ["normal", "add"];
 
@@ -62,9 +62,9 @@ class DemoScene extends g.Scene {
 			boneSetName: "stickman",
 			width: 320,
 			height: 320,
-			x: 200,
+			x: 180,
 			y: 180,
-			playSpeed: 1.0
+			playSpeed: 0.3
 		});
 		this.append(this.actor);
 
@@ -152,11 +152,10 @@ class DemoScene extends g.Scene {
 		const buttonText = "α-blend：";
 		switch (alphaBlendMode) {
 			case "add":
-				return buttonText + "加算";
 			case "normal":
-				return buttonText + "通常";
+				return buttonText + alphaBlendMode;
 			default:
-				return buttonText + "不明";
+				return buttonText + "unknown";
 		}
 	}
 
