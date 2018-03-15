@@ -257,7 +257,8 @@ describe("Actor", function() {
 			opacity: function(o) { },
 			transform: function(m) { },
 			fillRect: function(x, y, w, h, c) { },
-			drawImage: function(s, x, y, w, h, tx, ty) { }
+			drawImage: function(s, x, y, w, h, tx, ty) { },
+			setCompositeOperation: function(co) {}
 		};
 
 		actor.nullVisible = true;
@@ -470,6 +471,48 @@ describe("Actor", function() {
 					.not.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[4]);
 				expect(actor.skeleton.composedCaches[3].finalizedCell.matrix._matrix[5])
 					.not.toBe(actor.skeleton.composedCaches[4].finalizedCell.matrix._matrix[5]);
+			}
+		});
+	});
+	describe("change alpha-blend-type", function() {
+		var game;
+		var scene;
+		var resource;
+		var param;
+		var actor;
+
+		beforeEach(function() {
+			game = new g.Game({width: 320, height: 320, fps: 30});
+			scene = new g.Scene({game: game});
+
+			utils.createImageAsset("SupportAlphaBlend.png", scene);
+			utils.createTextAsset("an_support_alpha_blend.asaan", scene);
+			utils.createTextAsset("bn_SupportAlphaBlend.asabn", scene);
+			utils.createTextAsset("pj_SupportAlphaBlend.asapj", scene);
+			utils.createTextAsset("sk_SupportAlphaBlend.asask", scene);
+
+			resource = new Resource();
+			resource.loadProject("pj_SupportAlphaBlend", scene.assets);
+
+			param = {
+				scene: scene,
+				resource: resource,
+				animationName: "support_alpha_blend",
+				skinNames: ["SupportAlphaBlend"],
+				boneSetName: "SupportAlphaBlend",
+				width: 320,
+				height: 320
+			};
+			actor = new Actor(param);
+		});
+
+		it("should reflect alpha-blend-type", function() {
+			for (var i = 0; i < resource.getAnimationByName(param.animationName).frameCount; i++) {
+				actor.calc();
+
+				// αブレンドの値がfinalizedCellから文字列で取得できる
+				expect(actor.skeleton.composedCaches[1].finalizedCell.alphaBlendMode).toBe("normal");
+				expect(actor.skeleton.composedCaches[2].finalizedCell.alphaBlendMode).toBe("add");
 			}
 		});
 	});

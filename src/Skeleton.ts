@@ -487,6 +487,8 @@ class Skeleton {
 			} else {
 				cache.updateMatrix();
 			}
+
+			cache.alphaBlendMode = bone.alphaBlendMode;
 		}
 	}
 
@@ -570,6 +572,7 @@ class Skeleton {
 		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
 		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
 		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
+		composedCache.alphaBlendMode = cache.alphaBlendMode;
 	}
 }
 
