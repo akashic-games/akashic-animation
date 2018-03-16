@@ -17,6 +17,7 @@
     "./src/AABB.ts",
     "./src/Actor.ts",
     "./src/ActorParameterObject.ts",
+    "./src/AlphaBlendMode.ts",
     "./src/AnimationHandlerParams.ts",
     "./src/AnimeParams.ts",
     "./src/Attachment.ts",
