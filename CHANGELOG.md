@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased changes
+## 3.0.1
 
 * X/Yローカルスケール機能の追加
 * ローカル不透明度機能の追加
