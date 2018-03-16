@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 3.0.2
+
+* AlphaBlendModeを `@akashic-extension/akashic-animation` から読み込めるように修正
+
 ## 3.0.1
 
 * X/Yローカルスケール機能の追加

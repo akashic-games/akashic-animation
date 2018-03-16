@@ -25,3 +25,4 @@ export import BoxVolume = require("./BoxVolume");
 export import CircleVolume = require("./CircleVolume");
 export import AttrId = require("./AttrId");
 export import AnimationHandlerParams = require("./AnimationHandlerParams");
+export import AlphaBlendMode = require("./AlphaBlendMode");
