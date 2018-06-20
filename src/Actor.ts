@@ -582,7 +582,7 @@ class Actor extends g.E {
 		// | /    \
 		// |
 		// v
-		if (finalizedCell) {
+		if (finalizedCell && finalizedCell.surface && finalizedCell.cell) {
 			// ミックスはデフォルト値なので、αブレンドがミックスの場合はcomposite-operation指定処理を省略する
 			if (finalizedCell.alphaBlendMode !== undefined && finalizedCell.alphaBlendMode !== "normal") {
 				renderer.setCompositeOperation(getCompositeOperation(finalizedCell.alphaBlendMode));
@@ -602,11 +602,23 @@ class Actor extends g.E {
 }
 
 function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): FinalizedCell {
-	if (posture === undefined || posture.attrs[AttrId.cv] === undefined) {
+	if (posture === undefined) {
 		return undefined;
 	}
 
 	const attrs = posture.attrs;
+
+	if (! attrs[AttrId.cv]) {
+		// skin, cell が存在しないが、当たり判定のために計算する
+		const finalizedCell = new FinalizedCell();
+		finalizedCell.surface = undefined;
+		finalizedCell.cell = undefined;
+		finalizedCell.u = 0;
+		finalizedCell.v = 0;
+		finalizedCell.matrix = new g.PlainMatrix();
+		finalizedCell.alphaBlendMode = posture.alphaBlendMode;
+		return finalizedCell;
+	}
 
 	const skinName = attrs[AttrId.cv].skinName;
 	const skin = skins[skinName];
