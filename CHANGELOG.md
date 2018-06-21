@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 3.0.3
+
+* セルの無いパーツについても `CircleCollider` が動作するように修正
+* セルの無いパーツについても `BoneCellCollider` が動作するように修正
+  * セルがない時、サイズが `(width, height) = (1.0, 1.0)` のセルと同等の判定になる
+
 ## 3.0.2
 
 * AlphaBlendModeを `@akashic-extension/akashic-animation` から読み込めるように修正
