@@ -609,15 +609,7 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 	const attrs = posture.attrs;
 
 	if (! attrs[AttrId.cv]) {
-		// skin, cell が存在しないが、当たり判定のために計算する
-		const finalizedCell = new FinalizedCell();
-		finalizedCell.surface = undefined;
-		finalizedCell.cell = undefined;
-		finalizedCell.u = 0;
-		finalizedCell.v = 0;
-		finalizedCell.matrix = new g.PlainMatrix();
-		finalizedCell.alphaBlendMode = posture.alphaBlendMode;
-		return finalizedCell;
+		return undefined;
 	}
 
 	const skinName = attrs[AttrId.cv].skinName;

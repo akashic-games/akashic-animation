@@ -15,10 +15,19 @@ class BoneCellCollider extends Collider {
 	private _posture: Posture;
 	private _volume: BoxVolume;
 
+	private static _centeringMatrix: g.Matrix;
+
 	constructor(name: string, aabbFirst: boolean) {
 		super(aabbFirst);
 		this.dirty = true;
 		this.name = name;
+
+		if (! BoneCellCollider._centeringMatrix) {
+			const m = new g.PlainMatrix();
+			m._matrix[4] = -0.5;
+			m._matrix[5] = -0.5;
+			BoneCellCollider._centeringMatrix = m;
+		}
 	}
 
 	onAttached(actor: Actor): void {
@@ -32,24 +41,29 @@ class BoneCellCollider extends Collider {
 	}
 
 	getVolume(): BoxVolume {
-		// TODO: 以下の処理の流れを定式化し、必要なoverrideのみ実装させるようにするべきか
-		if (! this.enabled || ! this._posture.finalizedCell || ! this._posture.attrs[AttrId.visibility]) {
+		if (! this.enabled || ! this._posture.attrs[AttrId.visibility]) {
 			return undefined;
 		}
-		if (this.dirty) {
-			this.dirty = false;
-			if (! this._volume) {
-				this._volume = new BoxVolume();
-			}
-			var fCell = this._posture.finalizedCell;
-			this._volume.aabbFirst = this.aabbFirst;
-			this._volume.origin.x = 0;
-			this._volume.origin.y = 0;
-			this._volume.size.width = fCell.cell.size.width;
-			this._volume.size.height = fCell.cell.size.height;
-			this._volume.matrix = this._posture.m.multiplyNew(fCell.matrix);
-			this._volume.dirty = true; // trigger to update aabb
+
+		if (! this.dirty) {
+			return this._volume;
 		}
+
+		this.dirty = false;
+		if (! this._volume) {
+			this._volume = new BoxVolume();
+		}
+
+		// 2018/06/21: cellを持たないpostureでの当たり判定をサポート
+		var fCell = this._posture.finalizedCell;
+		this._volume.aabbFirst = this.aabbFirst;
+		this._volume.origin.x = 0;
+		this._volume.origin.y = 0;
+		this._volume.size.width = fCell ? fCell.cell.size.width : 1.0;
+		this._volume.size.height = fCell ? fCell.cell.size.height : 1.0;
+		this._volume.matrix = this._posture.m.multiplyNew(fCell ? fCell.matrix : BoneCellCollider._centeringMatrix);
+		this._volume.dirty = true; // trigger to update aabb
+
 		return this._volume;
 	}
 }

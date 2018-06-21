@@ -34,33 +34,35 @@ class CellAttachmentCollider extends Collider {
 			return undefined;
 		}
 
-		if (this.dirty) {
-			this.dirty = false;
-			if (! this._volume) {
-				// 以下は静的な値であるとみなす
-				this._volume = new BoxVolume();
-				this._volume.matrix = new g.PlainMatrix();
-				this._volume.origin.x = 0;
-				this._volume.origin.y = 0;
-				this._volume.size.width = this.cellAttachment.cell.size.width;
-				this._volume.size.height = this.cellAttachment.cell.size.height;
-			}
-
-			this._volume.aabbFirst = this.aabbFirst;
-
-			const m: number[] = [].concat(this.cellAttachment.posture.m._matrix);
-			if (this.cellAttachment.matrix) {
-				multiply(m, this.cellAttachment.matrix._matrix);
-			}
-			if (this.cellAttachment.pivotTransform) {
-				multiply(m, this.cellAttachment.pivotTransform);
-			}
-			// 矩形の位置を変えない鏡像のマトリクスなので無用
-			// multiply(m, this.cellAttachment.mirrorTransform);
-
-			this._volume.matrix._matrix = <[number, number, number, number, number, number]>m;
-			this._volume.dirty = true; // trigger to update aabb
+		if (! this.dirty) {
+			return this._volume;
 		}
+
+		this.dirty = false;
+		if (! this._volume) {
+			// 以下は静的な値であるとみなす
+			this._volume = new BoxVolume();
+			this._volume.matrix = new g.PlainMatrix();
+			this._volume.origin.x = 0;
+			this._volume.origin.y = 0;
+			this._volume.size.width = this.cellAttachment.cell.size.width;
+			this._volume.size.height = this.cellAttachment.cell.size.height;
+		}
+
+		this._volume.aabbFirst = this.aabbFirst;
+
+		const m: number[] = [].concat(this.cellAttachment.posture.m._matrix);
+		if (this.cellAttachment.matrix) {
+			multiply(m, this.cellAttachment.matrix._matrix);
+		}
+		if (this.cellAttachment.pivotTransform) {
+			multiply(m, this.cellAttachment.pivotTransform);
+		}
+		// 矩形の位置を変えない鏡像のマトリクスなので無用
+		// multiply(m, this.cellAttachment.mirrorTransform);
+
+		this._volume.matrix._matrix = <[number, number, number, number, number, number]>m;
+		this._volume.dirty = true; // trigger to update aabb
 
 		return this._volume;
 	}
