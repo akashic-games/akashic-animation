@@ -582,7 +582,7 @@ class Actor extends g.E {
 		// | /    \
 		// |
 		// v
-		if (finalizedCell && finalizedCell.surface && finalizedCell.cell) {
+		if (finalizedCell) {
 			// ミックスはデフォルト値なので、αブレンドがミックスの場合はcomposite-operation指定処理を省略する
 			if (finalizedCell.alphaBlendMode !== undefined && finalizedCell.alphaBlendMode !== "normal") {
 				renderer.setCompositeOperation(getCompositeOperation(finalizedCell.alphaBlendMode));
