@@ -26,3 +26,4 @@ export import CircleVolume = require("./CircleVolume");
 export import AttrId = require("./AttrId");
 export import AnimationHandlerParams = require("./AnimationHandlerParams");
 export import AlphaBlendMode = require("./AlphaBlendMode");
+export import vfx = require("./vfx");

@@ -311,12 +311,15 @@ class Skeleton {
 	 *
 	 * @param time 現在のフレーム
 	 * @param anim 計算に用いるアニメーション
+	 * @param dt 前回のupdate()呼び出しからの経過時間。単位は秒。エフェクトの更新に用いられる。
 	 */
-	update(time: number, anim: Animation): void {
+	update(time: number, anim: Animation, dt: number): void {
 		// アニメーションを計算。結果をcacheに収める
 		this.updateCache(time, anim);
 		// キャッシュの中身を接続
 		this.traverse(this.bones[0]); // 0 番目にrootがあること
+		// エフェクトの更新
+		this.updateEffect(dt);
 	}
 
 	_getBoneByName(boneName: string): Bone {
@@ -573,6 +576,16 @@ class Skeleton {
 		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
 		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
 		composedCache.alphaBlendMode = cache.alphaBlendMode;
+		composedCache.effects = cache.effects;
+	}
+
+	private updateEffect(dt: number): void {
+		for (let i = 0; i < this.composedCaches.length; i++) {
+			const effects = this.composedCaches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.update(dt);
+			}
+		}
 	}
 }
 

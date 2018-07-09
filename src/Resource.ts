@@ -4,6 +4,7 @@ import BoneSet = require("./BoneSet");
 import Container = require("./Container");
 import AttrId = require("./AttrId");
 import {Animation, Curve} from "./AnimeParams";
+import * as vfx from "./vfx";
 
 function checkVersion(version: string, fname: string): void {
 	const r = version.match(/(\d+)\.\d+.\d+/);
@@ -91,6 +92,7 @@ class Resource {
 	skins: Skin[] = [];
 	boneSets: BoneSet[] = [];
 	animations: Animation[] = [];
+	effectParameters: vfx.EffectParameterObject[] = [];
 
 	constructor() {
 		// ...
@@ -122,6 +124,9 @@ class Resource {
 		this.animations.forEach((animation: Animation) => {
 			assignAttributeID(animation);
 		});
+		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(data.contents.effectFileNames, mergedAssets, undefined);
+
+		console.log(JSON.stringify(this.effectParameters));
 	}
 
 	/**

@@ -1,0 +1,1 @@
+{"version":"2.0.0","contents":{"name":"anim_anime_1","fps":30,"frameCount":180,"curveTies":{"effect_1":{"boneName":"effect_1","curves":[{"attribute":"tx","keyFrames":[{"time":0,"ipType":"linear","value":0},{"time":20,"ipType":"linear","value":-100},{"time":40,"ipType":"linear","value":100},{"time":59,"ipType":"linear","value":0}]}]}}}}
