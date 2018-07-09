@@ -125,8 +125,6 @@ class Resource {
 			assignAttributeID(animation);
 		});
 		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(data.contents.effectFileNames, mergedAssets, undefined);
-
-		console.log(JSON.stringify(this.effectParameters));
 	}
 
 	/**
