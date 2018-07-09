@@ -4,5 +4,3 @@ import {ParticleInitialParameterObject, EmitterParameterObject, Emitter} from ".
 export {ParticleInitialParameterObject, EmitterParameterObject, Emitter};
 import {ParticleSystem} from "./ParticleSystem";
 export {ParticleSystem};
-import {ParticleEffect, ParticleEffectParameterObject} from "./ParticleEffect";
-export {ParticleEffect, ParticleEffectParameterObject};
