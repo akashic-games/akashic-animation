@@ -58,8 +58,10 @@ class CellAttachmentCollider extends Collider {
 		if (this.cellAttachment.pivotTransform) {
 			multiply(m, this.cellAttachment.pivotTransform);
 		}
-		// 矩形の位置を変えない鏡像のマトリクスなので無用
-		// multiply(m, this.cellAttachment.mirrorTransform);
+
+		// this.cellAttachment.mirrorTransform は鏡像の行列であり、
+		// 矩形の位置・形を変えない。当たり判定に際しては影響を持たない
+		// ので `m` に対して乗算しない。
 
 		this._volume.matrix._matrix = <[number, number, number, number, number, number]>m;
 		this._volume.dirty = true; // trigger to update aabb
