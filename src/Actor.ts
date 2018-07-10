@@ -602,18 +602,13 @@ class Actor extends g.E {
 }
 
 function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): FinalizedCell {
-	if (posture === undefined) {
+	if (posture === undefined || posture.attrs[AttrId.cv] === undefined) {
 		return undefined;
 	}
 
 	const attrs = posture.attrs;
 
-	if (! attrs[AttrId.cv]) {
-		return undefined;
-	}
-
-	const skinName = attrs[AttrId.cv].skinName;
-	const skin = skins[skinName];
+	const skin = skins[attrs[AttrId.cv].skinName];
 	if (! skin) {
 		return undefined;
 	}
