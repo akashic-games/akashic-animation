@@ -1,7 +1,5 @@
 import * as aps from "./aps";
 
-export interface ParticleInitialParameterObject extends aps.ParticleInitialParameterObject {}
-
 export interface EmitterParameterObject extends aps.EmitterParameterObject {
 	parentIndex: number;
 	userData: {
