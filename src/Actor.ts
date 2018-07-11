@@ -594,7 +594,6 @@ class Actor extends g.E {
 			renderer.save();
 			{
 				renderer.opacity(this.opacity * cc.attrs[AttrId.alpha]);
-				renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 
 				renderer.save();
 				if (cc.effects.length > 0) {
@@ -602,6 +601,7 @@ class Actor extends g.E {
 						this.renderEffect(cc.effects[j], renderer, camera);
 					}
 				} else {
+					renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 					if (cc.finalizedCell) {
 						renderer.transform(cc.finalizedCell.matrix._matrix);
 					}

@@ -581,9 +581,12 @@ class Skeleton {
 
 	private updateEffect(dt: number): void {
 		for (let i = 0; i < this.composedCaches.length; i++) {
-			const effects = this.composedCaches[i].effects;
+			const cc = this.composedCaches[i];
+			const effects = cc.effects;
 			for (let j = 0; j < effects.length; j++) {
-				effects[j].particleSystem.update(dt);
+				const ps = effects[j].particleSystem;
+				ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
+				ps.update(dt);
 			}
 		}
 	}
