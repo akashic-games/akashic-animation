@@ -23,12 +23,11 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 	const emitters: aps.Emitter[] = [];
 
 	const randomFunc = effParam.randomFunc || (() => g.game.random.get(0, 65535) / 65535);
+	const setValue = <T>(data: any, def: T): T => typeof data === typeof def ? data : def;
 
 	for (let i = 0; i < effParam.emitterParameters.length; i++) {
 		const edata = effParam.emitterParameters[i];
 		const pdata = edata.initParam;
-
-		const setValue = <T>(data: any, def: T): T => typeof data === typeof def ? data : def;
 
 		const param: aps.EmitterParameterObject = {
 			tx: 0,
