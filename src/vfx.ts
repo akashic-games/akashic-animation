@@ -11,6 +11,7 @@ export interface EmitterParameterObject extends aps.EmitterParameterObject {
 export interface EffectParameterObject {
 	name: string;
 	emitterParameters: EmitterParameterObject[];
+	randomFunc?: () => number;
 }
 
 export interface Effect {
@@ -20,6 +21,8 @@ export interface Effect {
 
 export function createEffect(effParam: EffectParameterObject): Effect {
 	const emitters: aps.Emitter[] = [];
+
+	const randomFunc = effParam.randomFunc || (() => g.game.random.get(0, 65535) / 65535);
 
 	for (let i = 0; i < effParam.emitterParameters.length; i++) {
 		const edata = effParam.emitterParameters[i];
@@ -37,7 +40,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			delayEmit: setValue(edata.delayEmit, 0),
 			maxParticles: setValue(edata.maxParticles, 0),
 			subEmitter: null,
-			randomFunc: () => g.game.random.get(0, 65535) / 65535,
+			randomFunc: randomFunc,
 			initParam: {
 				tx: pdata.tx || [0],
 				txMin: pdata.txMin,
