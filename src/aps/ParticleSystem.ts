@@ -16,17 +16,17 @@ export class ParticleSystem {
 	}
 
 	move(dx: number, dy: number): void {
-		this.emitters.forEach((e) => {
-			e.tx += dx;
-			e.ty += dy;
-		});
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].tx += dx;
+			this.emitters[i].ty += dy;
+		}
 	}
 
 	moveTo(x: number, y: number): void {
-		this.emitters.forEach((e) => {
-			e.tx = x;
-			e.ty = y;
-		});
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].tx = x;
+			this.emitters[i].ty = y;
+		}
 	}
 
 	addEmitter(e: Emitter): void {
@@ -41,9 +41,9 @@ export class ParticleSystem {
 	}
 
 	traverse(callback: (e: Emitter) => void): void {
-		this.emitters.forEach((e) => {
-			this._downwell(e, callback);
-		});
+		for (let i = 0; i < this.emitters.length; i++) {
+			this._downwell(this.emitters[i], callback);
+		}
 	}
 
 	update(dt: number): void {

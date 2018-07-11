@@ -256,7 +256,9 @@ export class Emitter {
 
 		p.lifespan = lifespan;
 
-		this.onInitParticleHandlers.forEach((handler) => handler(p, this));
+		for (let i = 0; i < this.onInitParticleHandlers.length; i++) {
+			this.onInitParticleHandlers[i](p, this);
+		}
 
 		this.particles.push(p);
 	}
@@ -273,13 +275,17 @@ export class Emitter {
 	update(dt: number): void {
 		const subEmitter = this.subEmitter;
 
-		this.particles.forEach((p) => {
+		this.particles = this.particles.filter(p => {
 			p.elapse += dt;
-			if (p.elapse > p.lifespan) { // will die
-				return;
-			}
+			return p.elapse <= p.lifespan;
+		});
 
-			this.onPreUpdateParticleHandlers.forEach((handler) => handler(p, this, dt));
+		for (let i = 0, len = this.particles.length; i < len; i++) {
+			const p = this.particles[i];
+
+			for (let j = 0; j < this.onPreUpdateParticleHandlers.length; j++) {
+				this.onPreUpdateParticleHandlers[j](p, this, dt);
+			}
 
 			p.vx += (this.gx + p.ax) * dt;
 			p.vy += (this.gy + p.ay) * dt;
@@ -307,13 +313,11 @@ export class Emitter {
 				subEmitter.ty = p.ty;
 				subEmitter.emitTimer(p.elapse, dt);
 			}
-		});
+		}
 
 		if (subEmitter) {
 			subEmitter.update(dt);
 		}
-
-		this.particles = this.particles.filter((p) => p.elapse <= p.lifespan);
 	}
 
 	private pickParam(p: number[], defaultValue: number): number {
