@@ -161,8 +161,8 @@ export class Emitter {
 		p.elapse = 0;
 
 		const tx = this.pickParam(this.initParam.tx, 0);
-		const txMin = this.pickParam(this.initParam.txMin, undefined)
-		const txMax = this.pickParam(this.initParam.txMax, undefined)
+		const txMin = this.pickParam(this.initParam.txMin, undefined);
+		const txMax = this.pickParam(this.initParam.txMax, undefined);
 
 		const ty = this.pickParam(this.initParam.ty, 0);
 		const tyMin = this.pickParam(this.initParam.tyMin, undefined);
