@@ -58,7 +58,7 @@ export interface EmitterParameterObject {
 	activePeriod: number; // emitterの活動期間。負の時、無制限
 	delayEmit: number; // 射出開始遅延時間
 	maxParticles: number; // emitter の保持する最大パーティクル数
-	subEmitter: Emitter; // パーティクルが利用するエミッタ
+	children: Emitter[]; // 各パーティクルがさらにパーティクルを放出するためのエミッタ
 	randomFunc: () => number;
 	initParam: ParticleInitialParameterObject;
 	userData: any;
@@ -74,7 +74,7 @@ export class Emitter {
 
 	activePeriod: number;
 	maxParticles: number;
-	subEmitter: Emitter;
+	children: Emitter[];
 	delayEmit: number;
 
 	initParam: ParticleInitialParameterObject;
@@ -94,7 +94,7 @@ export class Emitter {
 		this.activePeriod = param.activePeriod;
 		this.delayEmit = param.delayEmit;
 		this.maxParticles = param.maxParticles;
-		this.subEmitter = param.subEmitter;
+		this.children = param.children || [];
 		this.randomFunc = param.randomFunc;
 		this.onInitParticleHandlers = [];
 		this.onPreUpdateParticleHandlers = [];
@@ -273,8 +273,6 @@ export class Emitter {
 	}
 
 	update(dt: number): void {
-		const subEmitter = this.subEmitter;
-
 		this.particles = this.particles.filter(p => {
 			p.elapse += dt;
 			return p.elapse <= p.lifespan;
@@ -308,15 +306,16 @@ export class Emitter {
 			p.vrz += p.arz * dt; p.vrz = limit(p.vrz, p.vrzMin, p.vrzMax);
 			p.rz += p.vrz * dt;  p.rz = limit(p.rz, p.rzMin, p.rzMax);
 
-			if (subEmitter) {
-				subEmitter.tx = p.tx;
-				subEmitter.ty = p.ty;
-				subEmitter.emitTimer(p.elapse, dt);
+			for (let j = 0; j < this.children.length; j++) {
+				const e = this.children[j];
+				e.tx = p.tx;
+				e.ty = p.ty;
+				e.emitTimer(p.elapse, dt);
 			}
 		}
 
-		if (subEmitter) {
-			subEmitter.update(dt);
+		for (let j = 0; j < this.children.length; j++) {
+			this.children[j].update(dt);
 		}
 	}
 

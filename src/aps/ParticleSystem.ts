@@ -1,5 +1,15 @@
 import {Emitter} from "./Emitter";
 
+function traverse(e: Emitter, callback: (e: Emitter) => void): void {
+	if (! e) return;
+
+	callback(e);
+
+	for (let i = 0; i < e.children.length; i++) {
+		traverse(e.children[i], callback);
+	}
+}
+
 /**
  * パーティクルシステム。
  *
@@ -33,16 +43,9 @@ export class ParticleSystem {
 		this.emitters.push(e);
 	}
 
-	_downwell(e: Emitter, callback: (e: Emitter) => void): void {
-		while (e) {
-			callback(e);
-			e = e.subEmitter;
-		}
-	}
-
 	traverse(callback: (e: Emitter) => void): void {
 		for (let i = 0; i < this.emitters.length; i++) {
-			this._downwell(this.emitters[i], callback);
+			traverse(this.emitters[i], callback);
 		}
 	}
 

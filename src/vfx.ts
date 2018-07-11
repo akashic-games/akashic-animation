@@ -38,7 +38,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			activePeriod: setValue(edata.activePeriod, 1),
 			delayEmit: setValue(edata.delayEmit, 0),
 			maxParticles: setValue(edata.maxParticles, 0),
-			subEmitter: null,
+			children: [],
 			randomFunc: randomFunc,
 			initParam: {
 				tx: pdata.tx || [0],
@@ -96,7 +96,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 	for (let i = 0; i < effParam.emitterParameters.length; i++) {
 		const edata = effParam.emitterParameters[i];
 		if (edata.parentIndex >= 0) {
-			emitters[edata.parentIndex].subEmitter = emitters[i];
+			emitters[edata.parentIndex].children.push(emitters[i]);
 		} else {
 			ps.addEmitter(emitters[i]);
 		}
