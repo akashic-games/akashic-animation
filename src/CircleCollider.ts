@@ -49,7 +49,8 @@ class CircleCollider extends Collider {
 	}
 
 	getVolume(): CircleVolume {
-		if (! this.enabled || ! this._posture.finalizedCell || ! this._posture.attrs[AttrId.visibility]) {
+		// 2018/06/21: cellを持たないpostureでの当たり判定をサポート
+		if (! this.enabled || ! this._posture.attrs[AttrId.visibility]) {
 			return undefined;
 		}
 
