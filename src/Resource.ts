@@ -42,18 +42,20 @@ function loadResourceFromTextAsset<T>(
 	resolver: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
 	const resources: T[] = [];
 
-	fileNames.forEach((fname: string): void => {
-		const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
-		const data: Container = JSON.parse((<g.TextAsset>assets[assetName]).data);
+	if (fileNames) {
+		fileNames.forEach((fname: string): void => {
+			const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
+			const data: Container = JSON.parse((<g.TextAsset>assets[assetName]).data);
 
-		checkVersion(data.version, fname);
+			checkVersion(data.version, fname);
 
-		if (resolver) {
-			resolver(data.contents, assets);
-		}
+			if (resolver) {
+				resolver(data.contents, assets);
+			}
 
-		resources.push(data.contents);
-	});
+			resources.push(data.contents);
+		});
+	}
 
 	return resources;
 }
