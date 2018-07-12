@@ -651,8 +651,7 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 
 	const attrs = posture.attrs;
 
-	const skinName = attrs[AttrId.cv].skinName;
-	const skin = skins[skinName];
+	const skin = skins[attrs[AttrId.cv].skinName];
 	if (! skin) {
 		return undefined;
 	}
