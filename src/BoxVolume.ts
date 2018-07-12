@@ -53,12 +53,13 @@ class BoxVolume implements Volume {
 			// AABBの右下隅
 			const rightbottom = new Vector2(-Number.MAX_VALUE, -Number.MAX_VALUE);
 
-			points.forEach((p: Vector2) => {
+			for (let i = 0, len = points.length; i < len; i += 1) {
+				const p = points[i];
 				if (p.x > rightbottom.x) rightbottom.x = p.x;
 				if (p.x < lefttop.x) lefttop.x = p.x;
 				if (p.y > rightbottom.y) rightbottom.y = p.y;
 				if (p.y < lefttop.y) lefttop.y = p.y;
-			});
+			}
 
 			this._aabb = new AABB();
 			this._aabb.origin.x = (lefttop.x + rightbottom.x) / 2;
