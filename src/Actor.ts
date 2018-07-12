@@ -558,27 +558,33 @@ class Actor extends g.E {
 
 	private renderEffect(effect: vfx.Effect, renderer: g.Renderer, camera: g.Camera): void {
 		effect.particleSystem.traverse((e) => {
-			// const skin = this.skins[e.userData.skinName];
 			const skin = this.resource.getSkinByName(e.userData.skinName);
 			const surface = skin.surface;
 			const cell = skin.cells[e.userData.cellName];
-			e.particles.forEach((p) => {
+			const left = cell.pos.x;
+			const top = cell.pos.y;
+			const width = cell.size.width;
+			const height = cell.size.height;
+			const particles = e.particles;
+
+			for (let i = 0, len = particles.length; i < len; i += 1) {
+				const p = particles[i];
+
 				const cos = Math.cos(p.rz);
 				const sin = Math.sin(p.rz);
 				const a = cos * p.sx;
 				const b = sin * p.sx;
 				const c = sin * p.sy;
 				const d = cos * p.sy;
-				const w = surface.width / 2;
-				const h = surface.height / 2;
+				const px = width * (0.5 + cell.pivot.x);
+				const py = height * (0.5 + cell.pivot.y);
 
-				// TODO: cellを用いた位置調整
 				renderer.save();
 				renderer.transform([a, b, -c, d, p.tx, p.ty]);
-				renderer.transform([1, 0, 0, 1, -w, -h]);
-				renderer.drawImage(surface, 0, 0, surface.width, surface.height, 0, 0);
+				renderer.transform([1, 0, 0, 1, -px, -py]);
+				renderer.drawImage(surface, left, top, width, height, 0, 0);
 				renderer.restore();
-			});
+			}
 		});
 	}
 
