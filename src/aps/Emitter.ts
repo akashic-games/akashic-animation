@@ -57,6 +57,7 @@ export interface EmitterParameterObject {
 	interval: number; // 射出間隔
 	activePeriod: number; // emitterの活動期間。負の時、無制限
 	delayEmit: number; // 射出開始遅延時間
+	numParticlesPerEmit: number; // 一度の放出で放出されるパーティクル数
 	maxParticles: number; // emitter の保持する最大パーティクル数
 	children: Emitter[]; // 各パーティクルがさらにパーティクルを放出するためのエミッタ
 	randomFunc: () => number;
@@ -89,6 +90,7 @@ export class Emitter {
 	maxParticles: number;
 	children: Emitter[];
 	delayEmit: number;
+	numParticlesPerEmit: number;
 
 	initParam: ParticleInitialParameterObject;
 	userData: any;
@@ -108,6 +110,7 @@ export class Emitter {
 		this.activePeriod = param.activePeriod;
 		this.delayEmit = param.delayEmit;
 		this.maxParticles = param.maxParticles;
+		this.numParticlesPerEmit = param.numParticlesPerEmit;
 		this.children = param.children || [];
 		this.randomFunc = param.randomFunc;
 		this.onInitParticleHandlers = [];
@@ -306,7 +309,8 @@ export class Emitter {
 		elapse -= this.delayEmit;
 		if (this.activePeriod < 0 || (0 <= elapse && elapse <= this.activePeriod)) {
 			if ((elapse % this.interval) <= dt) {
-				this.emit();
+				for (let i = 0; i < this.numParticlesPerEmit; i++)
+					this.emit();
 			}
 		}
 	}

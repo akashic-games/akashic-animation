@@ -50,6 +50,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			activePeriod: setValue(edata.activePeriod, 1),
 			delayEmit: setValue(edata.delayEmit, 0),
 			maxParticles: setValue(edata.maxParticles, 0),
+			numParticlesPerEmit: setValue(edata.numParticlesPerEmit, 1),
 			children: [],
 			randomFunc: randomFunc,
 			initParam: {
