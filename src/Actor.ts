@@ -574,6 +574,8 @@ class Actor extends g.E {
 			const height = cell.size.height;
 			const particles = e.particles;
 
+			renderer.setCompositeOperation(getCompositeOperation(e.userData.alphaBlendMode));
+
 			for (let i = 0, len = particles.length; i < len; i += 1) {
 				const p = particles[i];
 

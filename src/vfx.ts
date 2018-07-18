@@ -1,10 +1,12 @@
 import * as aps from "./aps";
+import AlphaBlendMode = require("./AlphaBlendMode");
 
 export interface EmitterParameterObject extends aps.EmitterParameterObject {
 	parentIndex: number;
 	userData: {
 		skinName: string;
 		cellName: string;
+		alphaBlendMode: AlphaBlendMode;
 	};
 }
 
@@ -94,7 +96,8 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			},
 			userData: {
 				skinName: edata.userData.skinName,
-				cellName: edata.userData.cellName
+				cellName: edata.userData.cellName,
+				alphaBlendMode: edata.userData.alphaBlendMode
 			}
 		};
 
