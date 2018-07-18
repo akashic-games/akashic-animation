@@ -19,6 +19,16 @@ export interface Effect {
 	particleSystem: aps.ParticleSystem;
 }
 
+export enum EmitterOperation {
+	start = 0,
+	stop = 1,
+	pause = 2
+}
+
+export interface EffectValue {
+	emitterOp: EmitterOperation;
+}
+
 export function createEffect(effParam: EffectParameterObject): Effect {
 	const emitters: aps.Emitter[] = [];
 

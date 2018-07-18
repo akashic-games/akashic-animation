@@ -64,7 +64,20 @@ export interface EmitterParameterObject {
 	userData: any;
 }
 
+export enum EmitterStatus {
+	// 停止。エミットを停止
+	Stop = 0,
+
+	// 動作中。エミットとパーティクルの更新を行う
+	Running,
+
+	// ポーズ。エミットとパーティクルの更新を停止
+	Pause
+}
+
 export class Emitter {
+	status: EmitterStatus;
+
 	tx: number;
 	ty: number;
 	gx: number;
@@ -86,6 +99,7 @@ export class Emitter {
 	onPreUpdateParticleHandlers: Array<(p: Particle, emitter: Emitter, dt: number) => void>;
 
 	constructor(param: EmitterParameterObject) {
+		this.status = EmitterStatus.Stop;
 		this.tx = param.tx;
 		this.ty = param.ty;
 		this.gx = param.gx;
@@ -145,6 +159,27 @@ export class Emitter {
 		this.userData = param.userData;
 
 		this.particles = [];
+	}
+
+	start(): void {
+		this.status = EmitterStatus.Running;
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].start();
+		}
+	}
+
+	stop(): void {
+		this.status = EmitterStatus.Stop;
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].stop();
+		}
+	}
+
+	pause(): void {
+		this.status = EmitterStatus.Pause;
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].pause();
+		}
 	}
 
 	emit(): void {
@@ -264,6 +299,10 @@ export class Emitter {
 	}
 
 	emitTimer(elapse: number, dt: number): void {
+		if (this.status !== EmitterStatus.Running) {
+			return;
+		}
+
 		elapse -= this.delayEmit;
 		if (this.activePeriod < 0 || (0 <= elapse && elapse <= this.activePeriod)) {
 			if ((elapse % this.interval) <= dt) {
@@ -273,6 +312,10 @@ export class Emitter {
 	}
 
 	update(dt: number): void {
+		if (this.status === EmitterStatus.Pause) {
+			return;
+		}
+
 		this.particles = this.particles.filter(p => {
 			p.elapse += dt;
 			return p.elapse <= p.lifespan;

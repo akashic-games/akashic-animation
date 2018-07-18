@@ -221,13 +221,14 @@ class Actor extends g.E {
 		for (let i = 0, len = this.skeleton.bones.length; i < len; i++) {
 			const bone = this.skeleton.bones[i];
 			if (! bone.effectName) continue;
-			for (let j = 0; j < this.resource.effectParameters.length; j++) {
-				const effectParam = this.resource.effectParameters[j];
-				if (effectParam.name !== bone.effectName) continue;
-				const effect = vfx.createEffect(effectParam);
-				this.skeleton.getPostureByName(bone.name).effects.push(effect);
-			}
+			const param = this.resource.getEffectParameterByName(bone.effectName);
+			if (! param) continue;
+			const effect = vfx.createEffect(param);
+			this.skeleton.getPostureByName(bone.name).effects.push(effect);
 		}
+
+		// debug
+		// this.skeleton._startEffect();
 
 		// TODO: アニメーションリソースから大きさを導き出す方法を考える
 		this.width = param.width;
@@ -328,7 +329,13 @@ class Actor extends g.E {
 
 		this._elapse = (anime.fps / this.scene.game.fps) * this.playSpeed;
 		const nextCntr = this._cntr + this._elapse;
+		if (this.loop && (nextCntr >= anime.frameCount || nextCntr < 0)) {
+			// 再生がループして先頭に戻った時点でエフェクトをリセットにする
+			// リセットの詳細は実装を確認すること
+			this.skeleton.resetEffect();
+		}
 		this._nextCntr = adjustCounter(nextCntr, anime.frameCount, this.loop);
+
 	}
 
 	/**
@@ -602,12 +609,11 @@ class Actor extends g.E {
 				renderer.opacity(this.opacity * cc.attrs[AttrId.alpha]);
 
 				renderer.save();
-				if (cc.effects.length > 0) {
+				{
+					renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 					for (let j = 0; j < cc.effects.length; j++) {
 						this.renderEffect(cc.effects[j], renderer, camera);
 					}
-				} else {
-					renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 					if (cc.finalizedCell) {
 						renderer.transform(cc.finalizedCell.matrix._matrix);
 					}
