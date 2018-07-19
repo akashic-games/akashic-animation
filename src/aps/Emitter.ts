@@ -300,11 +300,11 @@ export class Emitter {
 				}
 			}
 
-			p.tx += p.vx * dt;   p.tx = limit(p.tx, p.txMin, p.txMax);
-			p.ty += p.vy * dt;   p.ty = limit(p.ty, p.tyMin, p.tyMax);
+			p.tx = limit(p.tx + p.vx * dt, p.txMin, p.txMax);
+			p.ty = limit(p.ty + p.vy * dt, p.tyMin, p.tyMax);
 
-			p.vrz += p.arz * dt; p.vrz = limit(p.vrz, p.vrzMin, p.vrzMax);
-			p.rz += p.vrz * dt;  p.rz = limit(p.rz, p.rzMin, p.rzMax);
+			p.vrz = limit(p.vrz + p.arz * dt, p.vrzMin, p.vrzMax);
+			p.rz = limit(p.rz + p.vrz * dt, p.rzMin, p.rzMax);
 
 			for (let j = 0; j < this.children.length; j++) {
 				const e = this.children[j];
