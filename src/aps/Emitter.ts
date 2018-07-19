@@ -224,6 +224,8 @@ export class Emitter {
 			else vrzMin = trvz;
 		}
 
+		p.elapse = 0;
+
 		p.tx = x + tx;
 		p.txMin = txMin;
 		p.txMax = txMax;
@@ -253,6 +255,10 @@ export class Emitter {
 		p.arz = arz;
 		p.arzMin = arzMin;
 		p.arzMax = arzMax;
+
+		p.sx = 1.0;
+		p.sy = 1.0;
+		p.alpha = 1.0;
 
 		p.lifespan = lifespan;
 

@@ -36,25 +36,4 @@ export class Particle {
 	sy: number;
 
 	alpha: number;
-
-	constructor() {
-		this.lifespan = 1;
-		this.elapse = 0;
-
-		this.tx = 0;
-		this.ty = 0;
-		this.vx = 0;
-		this.vy = 0;
-		this.ax = 0;
-		this.ay = 0;
-
-		this.rz = 0;
-		this.vrz = 0;
-		this.arz = 0;
-
-		this.sx = 1;
-		this.sy = 1;
-
-		this.alpha = 1.0;
-	}
 }
