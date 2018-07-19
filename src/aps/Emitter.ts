@@ -270,10 +270,14 @@ export class Emitter {
 	}
 
 	emitTimer(elapse: number, dt: number): void {
+		this.emitTimerAt(elapse, dt, this.tx, this.ty);
+	}
+
+	emitTimerAt(elapse: number, dt: number, x: number, y: number): void {
 		elapse -= this.delayEmit;
 		if (this.activePeriod < 0 || (0 <= elapse && elapse <= this.activePeriod)) {
 			if ((elapse % this.interval) <= dt) {
-				this.emit();
+				this.emitAt(x, y);
 			}
 		}
 	}
@@ -313,10 +317,7 @@ export class Emitter {
 			p.rz = limit(p.rz + p.vrz * dt, p.rzMin, p.rzMax);
 
 			for (let j = 0; j < this.children.length; j++) {
-				const e = this.children[j];
-				e.tx = p.tx;
-				e.ty = p.ty;
-				e.emitTimer(p.elapse, dt);
+				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
 			}
 		}
 
