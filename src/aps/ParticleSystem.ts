@@ -1,10 +1,7 @@
 import {Emitter} from "./Emitter";
 
 function traverse(e: Emitter, callback: (e: Emitter) => void): void {
-	if (! e) return;
-
 	callback(e);
-
 	for (let i = 0; i < e.children.length; i++) {
 		traverse(e.children[i], callback);
 	}
