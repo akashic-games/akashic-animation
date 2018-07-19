@@ -35,7 +35,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 	const emitters: aps.Emitter[] = [];
 
 	const randomFunc = effParam.randomFunc || (() => g.game.random.get(0, 65535) / 65535);
-	const setValue = <T>(data: any, def: T): T => typeof data === typeof def ? data : def;
+	const getValue = <T>(data: any, def: T): T => typeof data === typeof def ? data : def;
 
 	for (let i = 0; i < effParam.emitterParameters.length; i++) {
 		const edata = effParam.emitterParameters[i];
@@ -44,13 +44,13 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 		const param: aps.EmitterParameterObject = {
 			tx: 0,
 			ty: 0,
-			gx: setValue(edata.gx, 0),
-			gy: setValue(edata.gy, 0),
-			interval: setValue(edata.interval, 1),
-			activePeriod: setValue(edata.activePeriod, 1),
-			delayEmit: setValue(edata.delayEmit, 0),
-			maxParticles: setValue(edata.maxParticles, 0),
-			numParticlesPerEmit: setValue(edata.numParticlesPerEmit, 1),
+			gx: getValue(edata.gx, 0),
+			gy: getValue(edata.gy, 0),
+			interval: getValue(edata.interval, 1),
+			activePeriod: getValue(edata.activePeriod, 1),
+			delayEmit: getValue(edata.delayEmit, 0),
+			maxParticles: getValue(edata.maxParticles, 0),
+			numParticlesPerEmit: getValue(edata.numParticlesPerEmit, 1),
 			children: [],
 			randomFunc: randomFunc,
 			initParam: {
