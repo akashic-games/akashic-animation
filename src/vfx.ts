@@ -1,5 +1,16 @@
 import * as aps from "./aps";
 
+let randomGenerator: g.RandomGenerator;
+let defaultRandomFunc: () => number;
+
+function initDefaultRandomFunc(): () => number {
+	if (! defaultRandomFunc) {
+		randomGenerator = new g.XorshiftRandomGenerator(Date.now());
+		defaultRandomFunc = () => randomGenerator.get(0, 65535) / 65535;
+	}
+	return defaultRandomFunc;
+}
+
 export interface EmitterParameterObject extends aps.EmitterParameterObject {
 	parentIndex: number;
 	userData: {
@@ -11,6 +22,14 @@ export interface EmitterParameterObject extends aps.EmitterParameterObject {
 export interface EffectParameterObject {
 	name: string;
 	emitterParameters: EmitterParameterObject[];
+
+	/**
+	 * 0 ~ 1 の値を返すランダム関数。
+	 *
+	 * パーティクル放出時などに用いられる。
+	 * 省略された時、akashic-animationの抱え持つランダム関数が用いられる。
+	 * またリプレイやマルチプレイにおいてパーティクルの状態は一致しなくなる。
+	 */
 	randomFunc?: () => number;
 }
 
@@ -22,7 +41,7 @@ export interface Effect {
 export function createEffect(effParam: EffectParameterObject): Effect {
 	const emitters: aps.Emitter[] = [];
 
-	const randomFunc = effParam.randomFunc || (() => g.game.random.get(0, 65535) / 65535);
+	const randomFunc = effParam.randomFunc || initDefaultRandomFunc();
 	const getValue = <T>(data: any, def: T): T => typeof data === typeof def ? data : def;
 
 	for (let i = 0; i < effParam.emitterParameters.length; i++) {
