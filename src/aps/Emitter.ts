@@ -178,8 +178,10 @@ export class Emitter {
 		let   vrzMin = this.pickParam(this.initParam.vrzMin, undefined);
 		let   vrzMax = this.pickParam(this.initParam.vrzMax, undefined);
 
-		const tvrz = this.pickParam(this.initParam.tvrz, undefined);
-		const tvrzRelIVRZ = this.pickParam(this.initParam.tvrzRelIVRZ, undefined);
+		// 現時点では参照されていない。これらのパラメータのよう不要は後ほどよく考えるとして、
+		// 一旦 lint エラーに対応するためコメントアウトする
+		// const tvrz = this.pickParam(this.initParam.tvrz, undefined);
+		// const tvrzRelIVRZ = this.pickParam(this.initParam.tvrzRelIVRZ, undefined);
 		const tvrzNTOA = this.pickParam(this.initParam.tvrzNTOA, undefined);
 		const tvrzC = this.pickParam(this.initParam.tvrzC, undefined);
 
