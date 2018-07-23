@@ -267,7 +267,7 @@ export class Emitter {
 	emitTimerAt(time: number, dt: number, x: number, y: number): void {
 		time -= this.delayEmit;
 		if (this.activePeriod < 0 || time - dt < this.activePeriod) {
-			const prevEmitTime = time === 0 ?	-this.interval : (((time - dt) / this.interval) | 0) * this.interval;
+			const prevEmitTime = time === 0 ? -this.interval : (((time - dt) / this.interval) | 0) * this.interval;
 			const limitTime = this.activePeriod < 0 ? time : Math.min(time,  this.activePeriod);
 			for (let t = prevEmitTime + this.interval; t <= limitTime; t += this.interval) {
 				this.emitAt(x, y);
