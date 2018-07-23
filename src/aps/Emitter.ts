@@ -148,8 +148,6 @@ export class Emitter {
 
 		const p = new Particle();
 
-		p.elapse = 0;
-
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const txMin = this.pickParam(this.initParam.txMin, undefined);
 		const txMax = this.pickParam(this.initParam.txMax, undefined);
@@ -261,8 +259,12 @@ export class Emitter {
 
 	emitTimerAt(elapse: number, dt: number, x: number, y: number): void {
 		elapse -= this.delayEmit;
-		if (this.activePeriod < 0 || (0 <= elapse && elapse <= this.activePeriod)) {
-			if ((elapse % this.interval) <= dt) {
+		if (this.activePeriod < 0 || elapse - dt < this.activePeriod) {
+			const prevEmitTime = elapse === 0 && dt === 0 ?
+				-this.interval :
+				(((elapse - dt) / this.interval) | 0) * this.interval;
+			const limitTime = this.activePeriod < 0 ? elapse : Math.min(elapse,  this.activePeriod);
+			for (let t = prevEmitTime + this.interval; t <= limitTime; t += this.interval) {
 				this.emitAt(x, y);
 			}
 		}
