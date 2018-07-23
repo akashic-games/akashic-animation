@@ -257,13 +257,18 @@ export class Emitter {
 		this.particles.push(p);
 	}
 
-	emitTimerAt(elapse: number, dt: number, x: number, y: number): void {
-		elapse -= this.delayEmit;
-		if (this.activePeriod < 0 || elapse - dt < this.activePeriod) {
-			const prevEmitTime = elapse === 0 && dt === 0 ?
-				-this.interval :
-				(((elapse - dt) / this.interval) | 0) * this.interval;
-			const limitTime = this.activePeriod < 0 ? elapse : Math.min(elapse,  this.activePeriod);
+	/**
+	 * Emitter.interval間隔でエミットする
+	 * @param time Emitterの現在時刻
+	 * @param dt 前回のエミットからの経過時間
+	 * @param x エミットするX座標
+	 * @param y エミットするY座標
+	 */
+	emitTimerAt(time: number, dt: number, x: number, y: number): void {
+		time -= this.delayEmit;
+		if (this.activePeriod < 0 || time - dt < this.activePeriod) {
+			const prevEmitTime = time === 0 ?	-this.interval : (((time - dt) / this.interval) | 0) * this.interval;
+			const limitTime = this.activePeriod < 0 ? time : Math.min(time,  this.activePeriod);
 			for (let t = prevEmitTime + this.interval; t <= limitTime; t += this.interval) {
 				this.emitAt(x, y);
 			}
