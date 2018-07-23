@@ -4,6 +4,7 @@ import Attachment = require("./Attachment");
 import AttrId = require("./AttrId");
 import {Animation, CurveTie, Curve, KeyFrame} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
+import * as aps from "./aps";
 import * as vfx from "./vfx";
 
 // 属性初期値テーブル
@@ -611,17 +612,22 @@ class Skeleton {
 			const cc = this.composedCaches[i];
 			const effects = cc.effects;
 			const effectValue: vfx.EffectValue = cc.attrs[AttrId.effect];
+			if (! effectValue) continue;
 			for (let j = 0; j < effects.length; j++) {
 				const ps = effects[j].particleSystem;
-				if (effectValue) {
-					switch (effectValue.emitterOp) {
-						case vfx.EmitterOperation.start: ps.start(); break;
-						case vfx.EmitterOperation.stop: ps.stop(); break;
-						case vfx.EmitterOperation.pause: ps.pause(); break;
-					}
+				const prevStatus = ps.emitterStatus;
+				switch (effectValue.emitterOp) {
+					case vfx.EmitterOperation.start: ps.start(); break;
+					case vfx.EmitterOperation.stop: ps.stop(); break;
+					case vfx.EmitterOperation.pause: ps.pause(); break;
 				}
 				// ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
-				ps.update(dt);
+				if (prevStatus === aps.EmitterStatus.Stop && ps.emitterStatus === aps.EmitterStatus.Running) {
+					ps.emitterTime = 0;
+					ps.update(0);
+				} else {
+					ps.update(dt);
+				}
 			}
 		}
 	}

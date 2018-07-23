@@ -1,5 +1,7 @@
 import {Particle} from "./Particle";
 
+const EPSILON = (Number as any).EPSILON || 2.2204460492503130808472633361816E-16;
+
 function limit(val: number, min: number, max: number): number {
 	if (min != null && val < min) return min;
 	else if (max != null && val > max) return max;
@@ -50,8 +52,6 @@ export interface ParticleInitialParameterObject {
 }
 
 export interface EmitterParameterObject {
-	tx: number; // emitterの位置
-	ty: number;
 	gx: number; // 重力加速度
 	gy: number;
 	interval: number; // 射出間隔
@@ -79,8 +79,6 @@ export enum EmitterStatus {
 export class Emitter {
 	status: EmitterStatus;
 
-	tx: number;
-	ty: number;
 	gx: number;
 	gy: number;
 	interval: number;
@@ -102,8 +100,6 @@ export class Emitter {
 
 	constructor(param: EmitterParameterObject) {
 		this.status = EmitterStatus.Stop;
-		this.tx = param.tx;
-		this.ty = param.ty;
 		this.gx = param.gx;
 		this.gy = param.gy;
 		this.interval = param.interval;
@@ -185,18 +181,16 @@ export class Emitter {
 		}
 	}
 
-	emit(): void {
-		this.emitAt(this.tx, this.ty);
+	reset(): void {
+		this.status = EmitterStatus.Stop;
+		this.particles = [];
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].reset();
+		}
 	}
 
-	emitAt(x: number, y: number): void {
-		if (this.particles.length > this.maxParticles) {
-			return;
-		}
-
+	emitOneAt(x: number, y: number): void {
 		const p = new Particle();
-
-		p.elapse = 0;
 
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const txMin = this.pickParam(this.initParam.txMin, undefined);
@@ -262,6 +256,8 @@ export class Emitter {
 			else vrzMin = trvz;
 		}
 
+		p.elapse = 0;
+
 		p.tx = x + tx;
 		p.txMin = txMin;
 		p.txMax = txMax;
@@ -292,6 +288,10 @@ export class Emitter {
 		p.arzMin = arzMin;
 		p.arzMax = arzMax;
 
+		p.sx = 1.0;
+		p.sy = 1.0;
+		p.alpha = 1.0;
+
 		p.lifespan = lifespan;
 
 		for (let i = 0; i < this.onInitParticleHandlers.length; i++) {
@@ -301,16 +301,34 @@ export class Emitter {
 		this.particles.push(p);
 	}
 
-	emitTimer(elapse: number, dt: number): void {
+	emitAt(x: number, y: number): void {
+		if (this.particles.length > this.maxParticles) {
+			return;
+		}
+
+		for (let i = 0; i < this.numParticlesPerEmit; i++) {
+			this.emitOneAt(x, y);
+		}
+	}
+
+	/**
+	 * Emitter.interval間隔でエミットする
+	 * @param time Emitterの現在時刻
+	 * @param dt 前回のエミットからの経過時間
+	 * @param x エミットするX座標
+	 * @param y エミットするY座標
+	 */
+	emitTimerAt(time: number, dt: number, x: number, y: number): void {
 		if (this.status !== EmitterStatus.Running) {
 			return;
 		}
 
-		elapse -= this.delayEmit;
-		if (this.activePeriod < 0 || (0 <= elapse && elapse <= this.activePeriod)) {
-			if ((elapse % this.interval) <= dt) {
-				for (let i = 0; i < this.numParticlesPerEmit; i++)
-					this.emit();
+		time -= this.delayEmit;
+		if (this.activePeriod < 0 || time - dt < this.activePeriod - EPSILON) {
+			const prevEmitTime = time === 0 ? -this.interval : (((time - dt) / this.interval) | 0) * this.interval;
+			const limitTime = this.activePeriod < 0 ? time : Math.min(time,  this.activePeriod);
+			for (let t = prevEmitTime + this.interval; t <= limitTime; t += this.interval) {
+				this.emitAt(x, y);
 			}
 		}
 	}
@@ -336,28 +354,25 @@ export class Emitter {
 			p.vy += (this.gy + p.ay) * dt;
 			if (p.vMin != null || p.vMax != null) {
 				const v2 = p.vx * p.vx + p.vy * p.vy;
-				if (v2 > p.vMax * p.vMax) {
+				if (p.vMax != null && v2 > p.vMax * p.vMax) {
 					const v = Math.sqrt(v2);
 					p.vx = p.vx / v * p.vMax;
 					p.vy = p.vy / v * p.vMax;
-				} else if (v2 < p.vMin * p.vMin) {
+				} else if (p.vMin != null && v2 < p.vMin * p.vMin) {
 					const v = Math.sqrt(v2);
 					p.vx = p.vx / v * p.vMin;
 					p.vy = p.vy / v * p.vMin;
 				}
 			}
 
-			p.tx += p.vx * dt;   p.tx = limit(p.tx, p.txMin, p.txMax);
-			p.ty += p.vy * dt;   p.ty = limit(p.ty, p.tyMin, p.tyMax);
+			p.tx = limit(p.tx + p.vx * dt, p.txMin, p.txMax);
+			p.ty = limit(p.ty + p.vy * dt, p.tyMin, p.tyMax);
 
-			p.vrz += p.arz * dt; p.vrz = limit(p.vrz, p.vrzMin, p.vrzMax);
-			p.rz += p.vrz * dt;  p.rz = limit(p.rz, p.rzMin, p.rzMax);
+			p.vrz = limit(p.vrz + p.arz * dt, p.vrzMin, p.vrzMax);
+			p.rz = limit(p.rz + p.vrz * dt, p.rzMin, p.rzMax);
 
 			for (let j = 0; j < this.children.length; j++) {
-				const e = this.children[j];
-				e.tx = p.tx;
-				e.ty = p.ty;
-				e.emitTimer(p.elapse, dt);
+				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
 			}
 		}
 

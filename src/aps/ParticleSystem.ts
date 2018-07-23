@@ -1,10 +1,7 @@
 import {Emitter, EmitterStatus} from "./Emitter";
 
 function traverse(e: Emitter, callback: (e: Emitter) => void): void {
-	if (! e) return;
-
 	callback(e);
-
 	for (let i = 0; i < e.children.length; i++) {
 		traverse(e.children[i], callback);
 	}
@@ -16,16 +13,19 @@ function traverse(e: Emitter, callback: (e: Emitter) => void): void {
  * 複数の Emitter の位置や時間をまとめて操作します。
  */
 export class ParticleSystem {
-	elapse: number;
+	tx: number;
+	ty: number;
+	emitterTime: number;
 
 	emitters: Emitter[];
 
-	private emitterStatus: EmitterStatus;
+	emitterStatus: EmitterStatus;
 
 	constructor() {
-		this.elapse = 0;
+		this.tx = 0;
+		this.ty = 0;
 		this.emitters = [];
-		this.emitterStatus = EmitterStatus.Stop;
+		this.reset();
 	}
 
 	start(): void {
@@ -50,27 +50,21 @@ export class ParticleSystem {
 	}
 
 	reset(): void {
-		// リセットによって次の状態になる
-		// * Stop(=放出しない状態)にする
-		//    * ∴ 放出済みのパーティクルは運動を続ける
-		//    * ∴ emitTimer用の時間変数が増加しない
-		// * elapseをゼロにする
-		this.stop();
-		this.elapse = 0;
+		this.emitterTime = 0;
+		this.emitterStatus = EmitterStatus.Stop;
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].reset();
+		}
 	}
 
 	move(dx: number, dy: number): void {
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].tx += dx;
-			this.emitters[i].ty += dy;
-		}
+		this.tx += dx;
+		this.ty += dy;
 	}
 
-	moveTo(x: number, y: number): void {
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].tx = x;
-			this.emitters[i].ty = y;
-		}
+	moveTo(tx: number, ty: number): void {
+		this.tx = tx;
+		this.ty = ty;
 	}
 
 	addEmitter(e: Emitter): void {
@@ -85,13 +79,11 @@ export class ParticleSystem {
 
 	update(dt: number): void {
 		if (this.emitterStatus === EmitterStatus.Pause) {
-			return;
-		}
-
-		if (this.emitterStatus === EmitterStatus.Running) {
-			this.elapse += dt;
+			// nothing to do.
+		} else if (this.emitterStatus === EmitterStatus.Running) {
+			this.emitterTime += dt;
 			for (let i = 0; i < this.emitters.length; i++) {
-				this.emitters[i].emitTimer(this.elapse, dt);
+				this.emitters[i].emitTimerAt(this.emitterTime, dt, this.tx, this.ty);
 				this.emitters[i].update(dt);
 			}
 		} else if (this.emitterStatus === EmitterStatus.Stop) {

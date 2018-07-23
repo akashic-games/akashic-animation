@@ -225,6 +225,9 @@ class Actor extends g.E {
 			if (! param) continue;
 			const effect = vfx.createEffect(param);
 			this.skeleton.getPostureByName(bone.name).effects.push(effect);
+
+			// DEBUG
+			(effect as any)._name = bone.name;
 		}
 
 		// debug
