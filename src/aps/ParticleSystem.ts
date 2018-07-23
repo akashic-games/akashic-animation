@@ -13,6 +13,8 @@ function traverse(e: Emitter, callback: (e: Emitter) => void): void {
  * 複数の Emitter の位置や時間をまとめて操作します。
  */
 export class ParticleSystem {
+	tx: number;
+	ty: number;
 	elapse: number;
 
 	emitters: Emitter[];
@@ -23,17 +25,13 @@ export class ParticleSystem {
 	}
 
 	move(dx: number, dy: number): void {
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].tx += dx;
-			this.emitters[i].ty += dy;
-		}
+		this.tx += dx;
+		this.ty += dy;
 	}
 
-	moveTo(x: number, y: number): void {
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].tx = x;
-			this.emitters[i].ty = y;
-		}
+	moveTo(tx: number, ty: number): void {
+		this.tx = tx;
+		this.ty = ty;
 	}
 
 	addEmitter(e: Emitter): void {
@@ -49,7 +47,7 @@ export class ParticleSystem {
 	update(dt: number): void {
 		this.elapse += dt;
 		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].emitTimer(this.elapse, dt);
+			this.emitters[i].emitTimerAt(this.elapse, dt, this.tx, this.ty);
 			this.emitters[i].update(dt);
 		}
 	}

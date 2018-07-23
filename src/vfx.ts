@@ -49,8 +49,6 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 		const pdata = edata.initParam;
 
 		const param: aps.EmitterParameterObject = {
-			tx: 0,
-			ty: 0,
 			gx: getValue(edata.gx, 0),
 			gy: getValue(edata.gy, 0),
 			interval: getValue(edata.interval, 1),

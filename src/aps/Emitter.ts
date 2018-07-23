@@ -50,8 +50,6 @@ export interface ParticleInitialParameterObject {
 }
 
 export interface EmitterParameterObject {
-	tx: number; // emitterの位置
-	ty: number;
 	gx: number; // 重力加速度
 	gy: number;
 	interval: number; // 射出間隔
@@ -65,8 +63,6 @@ export interface EmitterParameterObject {
 }
 
 export class Emitter {
-	tx: number;
-	ty: number;
 	gx: number;
 	gy: number;
 	interval: number;
@@ -86,8 +82,6 @@ export class Emitter {
 	onPreUpdateParticleHandlers: Array<(p: Particle, emitter: Emitter, dt: number) => void>;
 
 	constructor(param: EmitterParameterObject) {
-		this.tx = param.tx;
-		this.ty = param.ty;
 		this.gx = param.gx;
 		this.gy = param.gy;
 		this.interval = param.interval;
@@ -145,10 +139,6 @@ export class Emitter {
 		this.userData = param.userData;
 
 		this.particles = [];
-	}
-
-	emit(): void {
-		this.emitAt(this.tx, this.ty);
 	}
 
 	emitAt(x: number, y: number): void {
@@ -267,10 +257,6 @@ export class Emitter {
 		}
 
 		this.particles.push(p);
-	}
-
-	emitTimer(elapse: number, dt: number): void {
-		this.emitTimerAt(elapse, dt, this.tx, this.ty);
 	}
 
 	emitTimerAt(elapse: number, dt: number, x: number, y: number): void {
