@@ -1,4 +1,5 @@
 import * as aps from "./aps";
+import AlphaBlendMode = require("./AlphaBlendMode");
 
 let randomGenerator: g.RandomGenerator;
 let defaultRandomFunc: () => number;
@@ -16,6 +17,7 @@ export interface EmitterParameterObject extends aps.EmitterParameterObject {
 	userData: {
 		skinName: string;
 		cellName: string;
+		alphaBlendMode: AlphaBlendMode;
 	};
 }
 
@@ -38,6 +40,16 @@ export interface Effect {
 	particleSystem: aps.ParticleSystem;
 }
 
+export enum EmitterOperation {
+	start = 0,
+	stop = 1,
+	pause = 2
+}
+
+export interface EffectValue {
+	emitterOp: EmitterOperation;
+}
+
 export function createEffect(effParam: EffectParameterObject): Effect {
 	const emitters: aps.Emitter[] = [];
 
@@ -55,6 +67,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			activePeriod: getValue(edata.activePeriod, 1),
 			delayEmit: getValue(edata.delayEmit, 0),
 			maxParticles: getValue(edata.maxParticles, 0),
+			numParticlesPerEmit: getValue(edata.numParticlesPerEmit, 1),
 			children: [],
 			randomFunc: randomFunc,
 			initParam: {
@@ -101,7 +114,8 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			},
 			userData: {
 				skinName: edata.userData.skinName,
-				cellName: edata.userData.cellName
+				cellName: edata.userData.cellName,
+				alphaBlendMode: edata.userData.alphaBlendMode
 			}
 		};
 

@@ -1,5 +1,7 @@
 import {Particle} from "./Particle";
 
+const EPSILON = (Number as any).EPSILON || 2.2204460492503130808472633361816E-16;
+
 function limit(val: number, min: number, max: number): number {
 	if (min != null && val < min) return min;
 	else if (max != null && val > max) return max;
@@ -55,6 +57,7 @@ export interface EmitterParameterObject {
 	interval: number; // 射出間隔
 	activePeriod: number; // emitterの活動期間。負の時、無制限
 	delayEmit: number; // 射出開始遅延時間
+	numParticlesPerEmit: number; // 一度の放出で放出されるパーティクル数
 	maxParticles: number; // emitter の保持する最大パーティクル数
 	children: Emitter[]; // 各パーティクルがさらにパーティクルを放出するためのエミッタ
 	randomFunc: () => number;
@@ -62,7 +65,20 @@ export interface EmitterParameterObject {
 	userData: any;
 }
 
+export enum EmitterStatus {
+	// 停止。エミットを停止
+	Stop = 0,
+
+	// 動作中。エミットとパーティクルの更新を行う
+	Running,
+
+	// ポーズ。エミットとパーティクルの更新を停止
+	Pause
+}
+
 export class Emitter {
+	status: EmitterStatus;
+
 	gx: number;
 	gy: number;
 	interval: number;
@@ -72,6 +88,7 @@ export class Emitter {
 	maxParticles: number;
 	children: Emitter[];
 	delayEmit: number;
+	numParticlesPerEmit: number;
 
 	initParam: ParticleInitialParameterObject;
 	userData: any;
@@ -82,12 +99,14 @@ export class Emitter {
 	onPreUpdateParticleHandlers: Array<(p: Particle, emitter: Emitter, dt: number) => void>;
 
 	constructor(param: EmitterParameterObject) {
+		this.status = EmitterStatus.Stop;
 		this.gx = param.gx;
 		this.gy = param.gy;
 		this.interval = param.interval;
 		this.activePeriod = param.activePeriod;
 		this.delayEmit = param.delayEmit;
 		this.maxParticles = param.maxParticles;
+		this.numParticlesPerEmit = param.numParticlesPerEmit;
 		this.children = param.children || [];
 		this.randomFunc = param.randomFunc;
 		this.onInitParticleHandlers = [];
@@ -141,11 +160,36 @@ export class Emitter {
 		this.particles = [];
 	}
 
-	emitAt(x: number, y: number): void {
-		if (this.particles.length > this.maxParticles) {
-			return;
+	start(): void {
+		this.status = EmitterStatus.Running;
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].start();
 		}
+	}
 
+	stop(): void {
+		this.status = EmitterStatus.Stop;
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].stop();
+		}
+	}
+
+	pause(): void {
+		this.status = EmitterStatus.Pause;
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].pause();
+		}
+	}
+
+	reset(): void {
+		this.status = EmitterStatus.Stop;
+		this.particles = [];
+		for (let i = 0; i < this.children.length; i++) {
+			this.children[i].reset();
+		}
+	}
+
+	emitOneAt(x: number, y: number): void {
 		const p = new Particle();
 
 		const tx = this.pickParam(this.initParam.tx, 0);
@@ -259,6 +303,16 @@ export class Emitter {
 		this.particles.push(p);
 	}
 
+	emitAt(x: number, y: number): void {
+		if (this.particles.length > this.maxParticles) {
+			return;
+		}
+
+		for (let i = 0; i < this.numParticlesPerEmit; i++) {
+			this.emitOneAt(x, y);
+		}
+	}
+
 	/**
 	 * Emitter.interval間隔でエミットする
 	 * @param time Emitterの現在時刻
@@ -267,8 +321,12 @@ export class Emitter {
 	 * @param y エミットするY座標
 	 */
 	emitTimerAt(time: number, dt: number, x: number, y: number): void {
+		if (this.status !== EmitterStatus.Running) {
+			return;
+		}
+
 		time -= this.delayEmit;
-		if (this.activePeriod < 0 || time - dt < this.activePeriod) {
+		if (this.activePeriod < 0 || time - dt < this.activePeriod - EPSILON) {
 			const prevEmitTime = time === 0 ? -this.interval : (((time - dt) / this.interval) | 0) * this.interval;
 			const limitTime = this.activePeriod < 0 ? time : Math.min(time,  this.activePeriod);
 			for (let t = prevEmitTime + this.interval; t <= limitTime; t += this.interval) {
@@ -278,6 +336,10 @@ export class Emitter {
 	}
 
 	update(dt: number): void {
+		if (this.status === EmitterStatus.Pause) {
+			return;
+		}
+
 		this.particles = this.particles.filter(p => {
 			p.elapse += dt;
 			return p.elapse <= p.lifespan;
@@ -294,11 +356,11 @@ export class Emitter {
 			p.vy += (this.gy + p.ay) * dt;
 			if (p.vMin != null || p.vMax != null) {
 				const v2 = p.vx * p.vx + p.vy * p.vy;
-				if (v2 > p.vMax * p.vMax) {
+				if (p.vMax != null && v2 > p.vMax * p.vMax) {
 					const v = Math.sqrt(v2);
 					p.vx = p.vx / v * p.vMax;
 					p.vy = p.vy / v * p.vMax;
-				} else if (v2 < p.vMin * p.vMin) {
+				} else if (p.vMin != null && v2 < p.vMin * p.vMin) {
 					const v = Math.sqrt(v2);
 					p.vx = p.vx / v * p.vMin;
 					p.vy = p.vy / v * p.vMin;

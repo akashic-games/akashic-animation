@@ -1,4 +1,4 @@
-import {Emitter} from "./Emitter";
+import {Emitter, EmitterStatus} from "./Emitter";
 
 function traverse(e: Emitter, callback: (e: Emitter) => void): void {
 	callback(e);
@@ -15,13 +15,46 @@ function traverse(e: Emitter, callback: (e: Emitter) => void): void {
 export class ParticleSystem {
 	tx: number;
 	ty: number;
-	elapse: number;
+	emitterTime: number;
 
 	emitters: Emitter[];
 
+	emitterStatus: EmitterStatus;
+
 	constructor() {
-		this.elapse = 0;
+		this.tx = 0;
+		this.ty = 0;
 		this.emitters = [];
+		this.reset();
+	}
+
+	start(): void {
+		this.emitterStatus = EmitterStatus.Running;
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].start();
+		}
+	}
+
+	stop(): void {
+		this.emitterStatus = EmitterStatus.Stop;
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].stop();
+		}
+	}
+
+	pause(): void {
+		this.emitterStatus = EmitterStatus.Pause;
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].pause();
+		}
+	}
+
+	reset(): void {
+		this.emitterTime = 0;
+		this.emitterStatus = EmitterStatus.Stop;
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].reset();
+		}
 	}
 
 	move(dx: number, dy: number): void {
@@ -45,10 +78,18 @@ export class ParticleSystem {
 	}
 
 	update(dt: number): void {
-		this.elapse += dt;
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].emitTimerAt(this.elapse, dt, this.tx, this.ty);
-			this.emitters[i].update(dt);
+		if (this.emitterStatus === EmitterStatus.Pause) {
+			// nothing to do.
+		} else if (this.emitterStatus === EmitterStatus.Running) {
+			this.emitterTime += dt;
+			for (let i = 0; i < this.emitters.length; i++) {
+				this.emitters[i].emitTimerAt(this.emitterTime, dt, this.tx, this.ty);
+				this.emitters[i].update(dt);
+			}
+		} else if (this.emitterStatus === EmitterStatus.Stop) {
+			for (let i = 0; i < this.emitters.length; i++) {
+				this.emitters[i].update(dt);
+			}
 		}
 	}
 }

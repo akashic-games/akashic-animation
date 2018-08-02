@@ -174,6 +174,20 @@ class Resource {
 		}
 		return undefined;
 	}
+
+	/**
+	 * エフェクトパラメタを取得する。
+	 *
+	 * @param name エフェクパラメタ名
+	 */
+	getEffectParameterByName(name: string): vfx.EffectParameterObject {
+		for (let i = 0, len = this.effectParameters.length; i < len; i++) {
+			if (this.effectParameters[i].name === name) {
+				return this.effectParameters[i];
+			}
+		}
+		return undefined;
+	}
 }
 
 export = Resource;

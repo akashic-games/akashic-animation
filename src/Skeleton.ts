@@ -4,6 +4,8 @@ import Attachment = require("./Attachment");
 import AttrId = require("./AttrId");
 import {Animation, CurveTie, Curve, KeyFrame} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
+import * as aps from "./aps";
+import * as vfx from "./vfx";
 
 // 属性初期値テーブル
 //
@@ -33,7 +35,8 @@ const attributeInitialValues: any = {
 	ccr: 0.0,
 	flipH: false,
 	flipV: false,
-	userData: undefined
+	userData: undefined,
+	effect: undefined
 };
 
 function makeLinearKey(time: number, value: any): KeyFrame<any> {
@@ -302,6 +305,30 @@ class Skeleton {
 			removed[0].posture = undefined;
 			return true;
 		});
+	}
+
+	/**
+	 * エフェクトのリセット
+	 */
+	resetEffect(): void {
+		for (let i = 0; i < this.composedCaches.length; i++) {
+			const effects = this.composedCaches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.reset();
+			}
+		}
+	}
+
+	/**
+	 * デバッグ用
+	 */
+	_startEffect(): void {
+		for (let i = 0; i < this.caches.length; i++) {
+			const effects = this.caches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.start();
+			}
+		}
 	}
 
 	/**
@@ -575,6 +602,7 @@ class Skeleton {
 		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
 		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
 		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
+		composedCache.attrs[AttrId.effect] = cache.attrs[AttrId.effect];
 		composedCache.alphaBlendMode = cache.alphaBlendMode;
 		composedCache.effects = cache.effects;
 	}
@@ -583,10 +611,23 @@ class Skeleton {
 		for (let i = 0; i < this.composedCaches.length; i++) {
 			const cc = this.composedCaches[i];
 			const effects = cc.effects;
+			const effectValue: vfx.EffectValue = cc.attrs[AttrId.effect];
+			if (! effectValue) continue;
 			for (let j = 0; j < effects.length; j++) {
 				const ps = effects[j].particleSystem;
-				ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
-				ps.update(dt);
+				const prevStatus = ps.emitterStatus;
+				switch (effectValue.emitterOp) {
+					case vfx.EmitterOperation.start: ps.start(); break;
+					case vfx.EmitterOperation.stop: ps.stop(); break;
+					case vfx.EmitterOperation.pause: ps.pause(); break;
+				}
+				// ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
+				if (prevStatus === aps.EmitterStatus.Stop && ps.emitterStatus === aps.EmitterStatus.Running) {
+					ps.emitterTime = 0;
+					ps.update(0);
+				} else {
+					ps.update(dt);
+				}
 			}
 		}
 	}

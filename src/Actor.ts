@@ -221,13 +221,17 @@ class Actor extends g.E {
 		for (let i = 0, len = this.skeleton.bones.length; i < len; i++) {
 			const bone = this.skeleton.bones[i];
 			if (! bone.effectName) continue;
-			for (let j = 0; j < this.resource.effectParameters.length; j++) {
-				const effectParam = this.resource.effectParameters[j];
-				if (effectParam.name !== bone.effectName) continue;
-				const effect = vfx.createEffect(effectParam);
-				this.skeleton.getPostureByName(bone.name).effects.push(effect);
-			}
+			const param = this.resource.getEffectParameterByName(bone.effectName);
+			if (! param) continue;
+			const effect = vfx.createEffect(param);
+			this.skeleton.getPostureByName(bone.name).effects.push(effect);
+
+			// DEBUG
+			(effect as any)._name = bone.name;
 		}
+
+		// debug
+		// this.skeleton._startEffect();
 
 		// TODO: アニメーションリソースから大きさを導き出す方法を考える
 		this.width = param.width;
@@ -328,7 +332,13 @@ class Actor extends g.E {
 
 		this._elapse = (anime.fps / this.scene.game.fps) * this.playSpeed;
 		const nextCntr = this._cntr + this._elapse;
+		if (this.loop && (nextCntr >= anime.frameCount || nextCntr < 0)) {
+			// 再生がループして先頭に戻った時点でエフェクトをリセットにする
+			// リセットの詳細は実装を確認すること
+			this.skeleton.resetEffect();
+		}
 		this._nextCntr = adjustCounter(nextCntr, anime.frameCount, this.loop);
+
 	}
 
 	/**
@@ -558,27 +568,35 @@ class Actor extends g.E {
 
 	private renderEffect(effect: vfx.Effect, renderer: g.Renderer, camera: g.Camera): void {
 		effect.particleSystem.traverse((e) => {
-			// const skin = this.skins[e.userData.skinName];
 			const skin = this.resource.getSkinByName(e.userData.skinName);
 			const surface = skin.surface;
 			const cell = skin.cells[e.userData.cellName];
-			e.particles.forEach((p) => {
+			const left = cell.pos.x;
+			const top = cell.pos.y;
+			const width = cell.size.width;
+			const height = cell.size.height;
+			const particles = e.particles;
+
+			renderer.setCompositeOperation(getCompositeOperation(e.userData.alphaBlendMode));
+
+			for (let i = 0, len = particles.length; i < len; i += 1) {
+				const p = particles[i];
+
 				const cos = Math.cos(p.rz);
 				const sin = Math.sin(p.rz);
 				const a = cos * p.sx;
 				const b = sin * p.sx;
 				const c = sin * p.sy;
 				const d = cos * p.sy;
-				const w = surface.width / 2;
-				const h = surface.height / 2;
+				const px = width * (0.5 + cell.pivot.x);
+				const py = height * (0.5 + cell.pivot.y);
 
-				// TODO: cellを用いた位置調整
 				renderer.save();
 				renderer.transform([a, b, -c, d, p.tx, p.ty]);
-				renderer.transform([1, 0, 0, 1, -w, -h]);
-				renderer.drawImage(surface, 0, 0, surface.width, surface.height, 0, 0);
+				renderer.transform([1, 0, 0, 1, -px, -py]);
+				renderer.drawImage(surface, left, top, width, height, 0, 0);
 				renderer.restore();
-			});
+			}
 		});
 	}
 
@@ -596,12 +614,11 @@ class Actor extends g.E {
 				renderer.opacity(this.opacity * cc.attrs[AttrId.alpha]);
 
 				renderer.save();
-				if (cc.effects.length > 0) {
+				{
+					renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 					for (let j = 0; j < cc.effects.length; j++) {
 						this.renderEffect(cc.effects[j], renderer, camera);
 					}
-				} else {
-					renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 					if (cc.finalizedCell) {
 						renderer.transform(cc.finalizedCell.matrix._matrix);
 					}

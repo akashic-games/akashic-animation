@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased changes
+
+* Actorからパーティクルを放出する機能の追加
+
 ## 3.0.3
 
 * セルの無いパーツについても `CircleCollider` が動作するように修正
