@@ -322,7 +322,7 @@ export class Emitter {
 	}
 
 	emitAt(x: number, y: number): void {
-		if (this.particles.length > this.maxParticles) {
+		if (this.particles.length >= this.maxParticles) {
 			return;
 		}
 
