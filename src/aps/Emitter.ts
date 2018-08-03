@@ -66,13 +66,13 @@ export interface EmitterParameterObject {
 }
 
 export enum EmitterStatus {
-	// 停止。エミットを停止
+	/// 停止。エミットを停止
 	Stop = 0,
 
-	// 動作中。エミットとパーティクルの更新を行う
+	/// 動作中。エミットとパーティクルの更新を行う
 	Running,
 
-	// ポーズ。エミットとパーティクルの更新を停止
+	/// ポーズ。エミットとパーティクルの更新を停止
 	Pause
 }
 
@@ -160,6 +160,9 @@ export class Emitter {
 		this.particles = [];
 	}
 
+	/**
+	 * エミッタの動作を開始する。
+	 */
 	start(): void {
 		this.status = EmitterStatus.Running;
 		for (let i = 0; i < this.children.length; i++) {
@@ -167,6 +170,11 @@ export class Emitter {
 		}
 	}
 
+	/**
+	 * エミッタの動作を停止する。
+	 *
+	 * すでにエミットされたパーティクルの更新は行われる。
+	 */
 	stop(): void {
 		this.status = EmitterStatus.Stop;
 		for (let i = 0; i < this.children.length; i++) {
@@ -174,6 +182,11 @@ export class Emitter {
 		}
 	}
 
+	/*
+	 * エミッタの動作を一時停止する。
+	 *
+	 * エミット及びパーティクルの更新を一時停止する。
+	 */
 	pause(): void {
 		this.status = EmitterStatus.Pause;
 		for (let i = 0; i < this.children.length; i++) {
@@ -181,6 +194,11 @@ export class Emitter {
 		}
 	}
 
+	/*
+	 * エミッタをリセットする。
+	 *
+	 * 放出済みのパーティクルは破棄される。
+	 */
 	reset(): void {
 		this.status = EmitterStatus.Stop;
 		this.particles = [];
@@ -314,9 +332,10 @@ export class Emitter {
 	}
 
 	/**
-	 * Emitter.interval間隔でエミットする
-	 * @param time Emitterの現在時刻
-	 * @param dt 前回のエミットからの経過時間
+	 * Emitter.interval間隔でエミットする。
+	 *
+	 * @param time Emitterの現在時刻。０以上の実数
+	 * @param dt 前回のエミットからの経過時間。０より大きい実数
 	 * @param x エミットするX座標
 	 * @param y エミットするY座標
 	 */

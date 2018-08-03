@@ -1,5 +1,5 @@
 import * as aps from "./aps";
-import AlphaBlendMode = require("./AlphaBlendMode");
+import { AlphaBlendMode } from ".";
 
 let randomGenerator: g.RandomGenerator;
 let defaultRandomFunc: () => number;
