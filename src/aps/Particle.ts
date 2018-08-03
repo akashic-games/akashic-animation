@@ -76,8 +76,8 @@ export class Particle {
 
 	alpha: number;
 
-	constructor(param?: ParticleParameterObject) {
-		if (! param) return;
+	constructor(param: ParticleParameterObject) {
+		this.elapse = 0;
 
 		this.lifespan = param.lifespan;
 

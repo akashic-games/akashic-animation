@@ -208,8 +208,6 @@ export class Emitter {
 	}
 
 	emitOneAt(x: number, y: number): void {
-		const p = new Particle();
-
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const txMin = this.pickParam(this.initParam.txMin, undefined);
 		const txMax = this.pickParam(this.initParam.txMax, undefined);
@@ -276,43 +274,44 @@ export class Emitter {
 			else vrzMin = trvz;
 		}
 
-		p.elapse = 0;
+		const p = new Particle({
+			lifespan: lifespan,
 
-		p.tx = x + tx;
-		p.txMin = txMin;
-		p.txMax = txMax;
+			tx: x + tx,
+			txMin: txMin,
+			txMax: txMax,
 
-		p.ty = y + ty;
-		p.tyMin = tyMin;
-		p.tyMax = tyMax;
+			ty: y + ty,
+			tyMin: tyMin,
+			tyMax: tyMax,
 
-		p.vx = cos * v;
-		p.vy = sin * v;
-		p.vMin = vMin;
-		p.vMax = vMax;
+			vx: cos * v,
+			vy: sin * v,
+			vMin: vMin,
+			vMax: vMax,
 
-		p.ax = cos * a;
-		p.ay = sin * a;
-		p.aMin = aMin;
-		p.aMax = aMax;
+			ax: cos * a,
+			ay: sin * a,
+			aMin: aMin,
+			aMax: aMax,
 
-		p.rz = rz;
-		p.rzMin = rzMin;
-		p.rzMax = rzMax;
+			rz: rz,
+			rzMin: rzMin,
+			rzMax: rzMax,
 
-		p.vrz = vrz;
-		p.vrzMin = vrzMin;
-		p.vrzMax = vrzMax;
+			vrz: vrz,
+			vrzMin: vrzMin,
+			vrzMax: vrzMax,
 
-		p.arz = arz;
-		p.arzMin = arzMin;
-		p.arzMax = arzMax;
+			arz: arz,
+			arzMin: arzMin,
+			arzMax: arzMax,
 
-		p.sx = 1.0;
-		p.sy = 1.0;
-		p.alpha = 1.0;
+			sx: 1.0,
+			sy: 1.0,
 
-		p.lifespan = lifespan;
+			alpha: 1.0
+		});
 
 		for (let i = 0; i < this.onInitParticleHandlers.length; i++) {
 			this.onInitParticleHandlers[i](p, this);
