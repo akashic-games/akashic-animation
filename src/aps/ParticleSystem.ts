@@ -21,6 +21,8 @@ export class ParticleSystem {
 
 	emitterStatus: EmitterStatus;
 
+	private skipTick: boolean;
+
 	constructor() {
 		this.tx = 0;
 		this.ty = 0;
@@ -52,6 +54,7 @@ export class ParticleSystem {
 	reset(): void {
 		this.emitterTime = 0;
 		this.emitterStatus = EmitterStatus.Stop;
+		this.skipTick = true;
 		for (let i = 0; i < this.emitters.length; i++) {
 			this.emitters[i].reset();
 		}
@@ -81,15 +84,25 @@ export class ParticleSystem {
 		if (this.emitterStatus === EmitterStatus.Pause) {
 			// nothing to do.
 		} else if (this.emitterStatus === EmitterStatus.Running) {
-			this.emitterTime += dt;
+			for (let i = 0; i < this.emitters.length; i++) {
+				this.emitters[i].update(dt);
+			}
+			this.tick(dt);
 			for (let i = 0; i < this.emitters.length; i++) {
 				this.emitters[i].emitTimerAt(this.emitterTime, dt, this.tx, this.ty);
-				this.emitters[i].update(dt);
 			}
 		} else if (this.emitterStatus === EmitterStatus.Stop) {
 			for (let i = 0; i < this.emitters.length; i++) {
 				this.emitters[i].update(dt);
 			}
+		}
+	}
+
+	private tick(dt: number): void {
+		if (this.skipTick) {
+			this.skipTick = false;
+		} else {
+			this.emitterTime += dt;
 		}
 	}
 }

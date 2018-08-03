@@ -615,19 +615,13 @@ class Skeleton {
 			if (! effectValue) continue;
 			for (let j = 0; j < effects.length; j++) {
 				const ps = effects[j].particleSystem;
-				const prevStatus = ps.emitterStatus;
 				switch (effectValue.emitterOp) {
 					case vfx.EmitterOperation.start: ps.start(); break;
 					case vfx.EmitterOperation.stop: ps.stop(); break;
 					case vfx.EmitterOperation.pause: ps.pause(); break;
 				}
 				// ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
-				if (prevStatus === aps.EmitterStatus.Stop && ps.emitterStatus === aps.EmitterStatus.Running) {
-					ps.emitterTime = 0;
-					ps.update(0);
-				} else {
-					ps.update(dt);
-				}
+				ps.update(dt);
 			}
 		}
 	}
