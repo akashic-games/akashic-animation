@@ -87,5 +87,7 @@ describe("Emitter.emitTimerAt", function() {
         expect(e.particles.length).toBe(1);
         e.emitTimerAt(activePeriod, interval * 2, 0, 0);
         expect(e.particles.length).toBe(2);
+        e.emitTimerAt(activePeriod, interval * 2.5, 0, 0);
+        expect(e.particles.length).toBe(4);
     });
 });
