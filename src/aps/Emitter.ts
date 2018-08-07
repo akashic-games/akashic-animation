@@ -1,6 +1,6 @@
 import {Particle} from "./Particle";
 
-const EPSILON = (Number as any).EPSILON || 2.2204460492503130808472633361816E-16;
+const TOLERANCE = 1e-7;
 
 function limit(val: number, min: number, max: number): number {
 	if (min != null && val < min) return min;
@@ -208,6 +208,10 @@ export class Emitter {
 	}
 
 	emitOneAt(x: number, y: number): void {
+		if (this.particles.length >= this.maxParticles) {
+			return;
+		}
+
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const txMin = this.pickParam(this.initParam.txMin, undefined);
 		const txMax = this.pickParam(this.initParam.txMax, undefined);
@@ -321,10 +325,6 @@ export class Emitter {
 	}
 
 	emitAt(x: number, y: number): void {
-		if (this.particles.length >= this.maxParticles) {
-			return;
-		}
-
 		for (let i = 0; i < this.numParticlesPerEmit; i++) {
 			this.emitOneAt(x, y);
 		}
@@ -339,16 +339,44 @@ export class Emitter {
 	 * @param y エミットするY座標
 	 */
 	emitTimerAt(time: number, dt: number, x: number, y: number): void {
+		if (this.activePeriod === 0) {
+			return;
+		}
+
 		if (this.status !== EmitterStatus.Running) {
 			return;
 		}
 
+		if (this.particles.length >= this.maxParticles) {
+			return;
+		}
+
+		if (time < this.delayEmit - TOLERANCE) {
+			return;
+		}
+
 		time -= this.delayEmit;
-		if (this.activePeriod < 0 || time - dt < this.activePeriod - EPSILON) {
-			const prevEmitTime = time === 0 ? -this.interval : (((time - dt) / this.interval) | 0) * this.interval;
-			const limitTime = this.activePeriod < 0 ? time : Math.min(time,  this.activePeriod);
-			for (let t = prevEmitTime + this.interval; t <= limitTime; t += this.interval) {
+
+		const interval = this.interval;
+		const t1 = time;
+		const t0 = t1 - dt;
+		const ti0 = ((t1 / interval | 0) + 1) * interval;
+		const tiN = Math.max((t0 / interval | 0) * interval, 0);
+
+		const activePeriod = this.activePeriod > 0 ? this.activePeriod : 60 * 60 * 60 * 24 * 7;
+		if (dt === 0) {
+			const isActive = t1 < activePeriod - TOLERANCE;
+			if (isActive && (ti0 - TOLERANCE <= t1 || t1 <= tiN + TOLERANCE)) {
 				this.emitAt(x, y);
+			}
+		} else {
+			for (let ti = ti0; ti >= tiN; ti -= interval) {
+				if (ti >= activePeriod - TOLERANCE) continue;
+				const ts = ti - TOLERANCE;
+				const te = ti + TOLERANCE;
+				if (t0 < ts && (t1 > te || (ts <= t1 && t1 <= te))) {
+					this.emitAt(x, y);
+				}
 			}
 		}
 	}

@@ -15,7 +15,8 @@
             ],
             "env": {
                 "NODE_PATH": "."
-            }
+            },
+            "preLaunchTask": "Build"
         }
     ]
 }
