@@ -90,4 +90,21 @@ describe("Emitter.emitTimerAt", function() {
         e.emitTimerAt(activePeriod, interval * 2.5, 0, 0);
         expect(e.particles.length).toBe(4);
     });
+
+    it("should not emit before delayEmit", function() {
+        e.delayEmit = 1.0;
+        e.start();
+        e.emitTimerAt(0, 0, 0, 0);
+        expect(e.particles.length).toBe(0);
+        e.emitTimerAt(e.delayEmit, 0, 0, 0);
+        expect(e.particles.length).toBe(1);
+        e.emitTimerAt(e.delayEmit, interval, 0, 0);
+        expect(e.particles.length).toBe(2);
+        e.emitTimerAt(e.delayEmit, interval * 100, 0, 0);
+        expect(e.particles.length).toBe(3);
+        e.emitTimerAt(e.delayEmit + interval, interval, 0, 0);
+        expect(e.particles.length).toBe(4);
+        e.emitTimerAt(e.delayEmit + interval, interval * 100, 0, 0);
+        expect(e.particles.length).toBe(6);
+    });
 });
