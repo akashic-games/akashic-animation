@@ -34,7 +34,7 @@ describe("Emitter.emitTimerAt", function() {
         });
     });
 
-	it("should emit once at 0 sec with 0 delta time", function() {
+	it("should emit once at 0 [sec] with 0 delta time", function() {
         e.start();
         e.emitTimerAt(0, 0, 0, 0);
         expect(e.particles.length).toBe(1);
@@ -42,7 +42,7 @@ describe("Emitter.emitTimerAt", function() {
         expect(e.particles.length).toBe(2);
     });
 
-	it("should emit once at interval[sec] with 0 delta time", function() {
+	it("should emit once at interval [sec] with 0 delta time", function() {
         e.start();
         e.emitTimerAt(0, interval, 0, 0);
         expect(e.particles.length).toBe(1);
@@ -81,7 +81,7 @@ describe("Emitter.emitTimerAt", function() {
         expect(e.particles.length).toBe(0);
     });
 
-    it("should emit once when active period is expired but delta time is enough long", function() {
+    it("should emit when active period is expired but delta time is enough long", function() {
         e.start();
         e.emitTimerAt(activePeriod, interval * 1.5, 0, 0);
         expect(e.particles.length).toBe(1);
