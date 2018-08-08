@@ -582,12 +582,14 @@ class Actor extends g.E {
 			for (let i = 0, len = particles.length; i < len; i += 1) {
 				const p = particles[i];
 
+				const sx = p.sx * p.sxy;
+				const sy = p.sy * p.sxy;
 				const cos = Math.cos(p.rz);
 				const sin = Math.sin(p.rz);
-				const a = cos * p.sx;
-				const b = sin * p.sx;
-				const c = sin * p.sy;
-				const d = cos * p.sy;
+				const a = cos * sx;
+				const b = sin * sx;
+				const c = sin * sy;
+				const d = cos * sy;
 				const px = width * (0.5 + cell.pivot.x);
 				const py = height * (0.5 + cell.pivot.y);
 

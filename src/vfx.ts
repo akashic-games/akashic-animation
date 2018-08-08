@@ -110,6 +110,47 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 				arzMin: pdata.arzMin,
 				arzMax: pdata.arzMax,
 
+				// scale
+				sx: pdata.sx || [1],
+				sxMin: pdata.sxMin,
+				sxMax: pdata.sxMax,
+
+				vsx: pdata.vsx || [0],
+				vsxMin: pdata.vsxMin,
+				vsxMax: pdata.vsxMax,
+
+				asx: pdata.asx || [0],
+				asxMin: pdata.asxMin,
+				asxMax: pdata.asxMax,
+
+				sy: pdata.sy || [1],
+				syMin: pdata.syMin,
+				syMax: pdata.syMax,
+
+				vsy: pdata.vsy || [0],
+				vsyMin: pdata.vsyMin,
+				vsyMax: pdata.vsyMax,
+
+				asy: pdata.asy || [0],
+				asyMin: pdata.asyMin,
+				asyMax: pdata.asyMax,
+
+				sxy: pdata.sxy || [1],
+				sxyMin: pdata.sxyMin,
+				sxyMax: pdata.sxyMax,
+
+				vsxy: pdata.vsxy || [0],
+				vsxyMin: pdata.vsxyMin,
+				vsxyMax: pdata.vsxyMax,
+
+				asxy: pdata.asxy || [0],
+				asxyMin: pdata.asxyMin,
+				asxyMax: pdata.asxyMax,
+
+				tsx: pdata.tsx,
+				tsy: pdata.tsy,
+				tsxy: pdata.tsxy,
+
 				lifespan: pdata.lifespan || [0]
 			},
 			userData: {

@@ -1,6 +1,7 @@
 interface ParticleParameterObject {
 	lifespan: number;
 
+	// position
 	tx: number;
 	txMin: number;
 	txMax: number;
@@ -19,6 +20,7 @@ interface ParticleParameterObject {
 	aMin: number;
 	aMax: number;
 
+	// rotation
 	rz: number;
 	rzMin: number;
 	rzMax: number;
@@ -31,15 +33,51 @@ interface ParticleParameterObject {
 	arzMin: number;
 	arzMax: number;
 
+	// scale
 	sx: number;
-	sy: number;
+	sxMin: number;
+	sxMax: number;
 
+	vsx: number;
+	vsxMin: number;
+	vsxMax: number;
+
+	asx: number;
+	asxMin: number;
+	asxMax: number;
+
+	sy: number;
+	syMin: number;
+	syMax: number;
+
+	vsy: number;
+	vsyMin: number;
+	vsyMax: number;
+
+	asy: number;
+	asyMin: number;
+	asyMax: number;
+
+	sxy: number;
+	sxyMin: number;
+	sxyMax: number;
+
+	vsxy: number;
+	vsxyMin: number;
+	vsxyMax: number;
+
+	asxy: number;
+	asxyMin: number;
+	asxyMax: number;
+
+	// transparency
 	alpha: number;
 }
 
 export class Particle {
-	lifespan: number;
 	elapse: number;
+
+	lifespan: number;
 
 	tx: number;
 	txMin: number;
@@ -71,9 +109,44 @@ export class Particle {
 	arzMin: number;
 	arzMax: number;
 
+	// scale
 	sx: number;
-	sy: number;
+	sxMin: number;
+	sxMax: number;
 
+	vsx: number;
+	vsxMin: number;
+	vsxMax: number;
+
+	asx: number;
+	asxMin: number;
+	asxMax: number;
+
+	sy: number;
+	syMin: number;
+	syMax: number;
+
+	vsy: number;
+	vsyMin: number;
+	vsyMax: number;
+
+	asy: number;
+	asyMin: number;
+	asyMax: number;
+
+	sxy: number;
+	sxyMin: number;
+	sxyMax: number;
+
+	vsxy: number;
+	vsxyMin: number;
+	vsxyMax: number;
+
+	asxy: number;
+	asxyMin: number;
+	asxyMax: number;
+
+	// transparency
 	alpha: number;
 
 	constructor(param: ParticleParameterObject) {
@@ -81,6 +154,7 @@ export class Particle {
 
 		this.lifespan = param.lifespan;
 
+		// position
 		this.tx = param.tx;
 		this.txMin = param.txMin;
 		this.txMax = param.txMax;
@@ -99,6 +173,7 @@ export class Particle {
 		this.aMin = param.aMin;
 		this.aMax = param.aMax;
 
+		// rotation
 		this.rz = param.rz;
 		this.rzMin = param.rzMin;
 		this.rzMax = param.rzMax;
@@ -111,8 +186,42 @@ export class Particle {
 		this.arzMin = param.arzMin;
 		this.arzMax = param.arzMax;
 
+		// scale
 		this.sx = param.sx;
+		this.sxMin = param.sxMin;
+		this.sxMax = param.sxMax;
+
+		this.vsx = param.vsx;
+		this.vsxMin = param.vsxMin;
+		this.vsxMax = param.vsxMax;
+
+		this.asx = param.asx;
+		this.asxMin = param.asxMin;
+		this.asxMax = param.asxMax;
+
 		this.sy = param.sy;
+		this.syMin = param.syMin;
+		this.syMax = param.syMax;
+
+		this.vsy = param.vsy;
+		this.vsyMin = param.vsyMin;
+		this.vsyMax = param.vsyMax;
+
+		this.asy = param.asy;
+		this.asyMin = param.asyMin;
+		this.asyMax = param.asyMax;
+
+		this.sxy = param.sxy;
+		this.sxyMin = param.sxyMin;
+		this.sxyMax = param.sxyMax;
+
+		this.vsxy = param.vsxy;
+		this.vsxyMin = param.vsxMin;
+		this.vsxyMax = param.vsxyMax;
+
+		this.asxy = param.asxy;
+		this.asxyMin = param.asxyMin;
+		this.asxyMax = param.asxyMax;
 
 		this.alpha = param.alpha;
 	}

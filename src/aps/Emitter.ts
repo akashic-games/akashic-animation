@@ -9,6 +9,10 @@ function limit(val: number, min: number, max: number): number {
 }
 
 export interface ParticleInitialParameterObject {
+	// 射出方向
+	angle: number[];
+
+	// 位置
 	tx: number[];
 	txMin?: number[];
 	txMax?: number[];
@@ -29,26 +33,67 @@ export interface ParticleInitialParameterObject {
 	aMin?: number[];
 	aMax?: number[];
 
-	angle: number[]; // 射出方向
-
-	rz: number[]; // Z軸角度（描画）
+	// Z軸回転
+	rz: number[]; // Z軸角度
 	rzMin?: number[];
 	rzMax?: number[];
 
-	vrz: number[]; // Z軸角速度（描画）
+	vrz: number[]; // Z軸角速度
 	vrzMin?: number[];
 	vrzMax?: number[];
 
-	tvrz?: number[];
-	tvrzRelIVRZ?: number[];
-	tvrzC?: number[];
-	tvrzNTOA?: number[]; // 正規化最大角速度到達時間
-
-	arz: number[]; // Z軸角加速度（描画）
+	arz: number[]; // Z軸角加速度
 	arzMin?: number[];
 	arzMax?: number[];
 
-	lifespan: number[]; // 寿命
+	tvrz?: number[]; // 目標角速度
+	tvrzRelIVRZ?: number[]; // 目標角速度（初期角速度相対）
+	tvrzC?: number[]; // 目標角速度（初期角速度係数）
+	tvrzNTOA?: number[]; // 正規化最大角速度到達時間
+
+	// スケール
+	sx: number[];
+	sxMin: number[];
+	sxMax: number[];
+
+	vsx: number[];
+	vsxMin: number[];
+	vsxMax: number[];
+
+	asx: number[];
+	asxMin: number[];
+	asxMax: number[];
+
+	sy: number[];
+	syMin: number[];
+	syMax: number[];
+
+	vsy: number[];
+	vsyMin: number[];
+	vsyMax: number[];
+
+	asy: number[];
+	asyMin: number[];
+	asyMax: number[];
+
+	sxy: number[];
+	sxyMin: number[];
+	sxyMax: number[];
+
+	vsxy: number[];
+	vsxyMin: number[];
+	vsxyMax: number[];
+
+	asxy: number[];
+	asxyMin: number[];
+	asxyMax: number[];
+
+	tsx?: number[]; // 目標Xスケール
+	tsy?: number[]; // 目標Yスケール
+	tsxy?: number[]; // 目標XYスケール
+
+	// 寿命
+	lifespan: number[];
 }
 
 export interface EmitterParameterObject {
@@ -152,6 +197,46 @@ export class Emitter {
 			arzMin: param.initParam.arzMin,
 			arzMax: param.initParam.arzMax,
 
+			sx: param.initParam.sx,
+			sxMin: param.initParam.sxMin,
+			sxMax: param.initParam.sxMax,
+
+			vsx: param.initParam.vsx,
+			vsxMin: param.initParam.vsxMin,
+			vsxMax: param.initParam.vsxMax,
+
+			asx: param.initParam.asx,
+			asxMin: param.initParam.asxMin,
+			asxMax: param.initParam.asxMax,
+
+			sy: param.initParam.sy,
+			syMin: param.initParam.syMin,
+			syMax: param.initParam.syMax,
+
+			vsy: param.initParam.vsy,
+			vsyMin: param.initParam.vsyMin,
+			vsyMax: param.initParam.vsyMax,
+
+			asy: param.initParam.asy,
+			asyMin: param.initParam.asyMin,
+			asyMax: param.initParam.asyMax,
+
+			sxy: param.initParam.sxy,
+			sxyMin: param.initParam.sxyMin,
+			sxyMax: param.initParam.sxyMax,
+
+			vsxy: param.initParam.vsxy,
+			vsxyMin: param.initParam.vsxyMin,
+			vsxyMax: param.initParam.vsxyMax,
+
+			asxy: param.initParam.asxy,
+			asxyMin: param.initParam.asxyMin,
+			asxyMax: param.initParam.asxyMax,
+
+			tsx: param.initParam.tsx,
+			tsy: param.initParam.tsy,
+			tsxy: param.initParam.tsxy,
+
 			lifespan: param.initParam.lifespan
 		};
 
@@ -253,6 +338,46 @@ export class Emitter {
 		const arzMax = this.pickParam(this.initParam.arzMin, undefined);
 		const arzMin = this.pickParam(this.initParam.arzMax, undefined);
 
+		const sx = this.pickParam(this.initParam.sx, 1);
+		let sxMin = this.pickParam(this.initParam.sxMin, 1);
+		let sxMax = this.pickParam(this.initParam.sxMax, 1);
+
+		let vsx = this.pickParam(this.initParam.vsx, 0);
+		let vsxMin = this.pickParam(this.initParam.vsxMin, 0);
+		let vsxMax = this.pickParam(this.initParam.vsxMax, 0);
+
+		let asx = this.pickParam(this.initParam.asx, 0);
+		const asxMin = this.pickParam(this.initParam.asxMin, 0);
+		const asxMax = this.pickParam(this.initParam.asxMax, 0);
+
+		const sy = this.pickParam(this.initParam.sy, 1);
+		let syMin = this.pickParam(this.initParam.syMin, 1);
+		let syMax = this.pickParam(this.initParam.syMax, 1);
+
+		let vsy = this.pickParam(this.initParam.vsy, 0);
+		let vsyMin = this.pickParam(this.initParam.vsyMin, 0);
+		let vsyMax = this.pickParam(this.initParam.vsyMax, 0);
+
+		let asy = this.pickParam(this.initParam.asy, 0);
+		const asyMin = this.pickParam(this.initParam.asyMin, 0);
+		const asyMax = this.pickParam(this.initParam.asyMax, 0);
+
+		const sxy = this.pickParam(this.initParam.sxy, 1);
+		let sxyMin = this.pickParam(this.initParam.sxyMin, 1);
+		let sxyMax = this.pickParam(this.initParam.sxyMax, 1);
+
+		let vsxy = this.pickParam(this.initParam.vsxy, 0);
+		const vsxyMin = this.pickParam(this.initParam.vsxyMin, 0);
+		let vsxyMax = this.pickParam(this.initParam.vsxyMax, 0);
+
+		let asxy = this.pickParam(this.initParam.asxy, 0);
+		const asxyMin = this.pickParam(this.initParam.asxyMin, 0);
+		const asxyMax = this.pickParam(this.initParam.asxyMax, 0);
+
+		const tsx = this.pickParam(this.initParam.tsx, undefined);
+		const tsy = this.pickParam(this.initParam.tsy, undefined);
+		const tsxy = this.pickParam(this.initParam.tsxy, undefined);
+
 		const lifespan = this.pickParam(this.initParam.lifespan, 1);
 
 		const cos = Math.cos(angle);
@@ -276,6 +401,30 @@ export class Emitter {
 			arz = (trvz - vrz) / trvzTOA;
 			if (trvz >= vrz) vrzMax = trvz;
 			else vrzMin = trvz;
+		}
+
+		if (tsx) {
+			vsx = (tsx - sx) / lifespan;
+			vsxMin = sx;
+			vsxMax = vsx;
+			asx = 0;
+			sxMin = sx;
+			sxMax = tsx;
+		}
+		if (tsy) {
+			vsy = (tsy - sy) / lifespan;
+			vsyMax = vsy;
+			asy = 0;
+			syMin = sy;
+			syMax = tsy;
+		}
+		if (tsxy) {
+			vsxy = (tsxy - sxy) / lifespan;
+			vsxMin = sxy;
+			vsxyMax = vsxy;
+			asxy = 0;
+			sxyMin = sxy;
+			sxyMax = tsxy;
 		}
 
 		const p = new Particle({
@@ -311,8 +460,41 @@ export class Emitter {
 			arzMin: arzMin,
 			arzMax: arzMax,
 
-			sx: 1.0,
-			sy: 1.0,
+			sx: sx,
+			sxMin: sxMin,
+			sxMax: sxMax,
+
+			vsx: vsx,
+			vsxMin: vsxMin,
+			vsxMax: vsxMax,
+
+			asx: asx,
+			asxMin: asxMin,
+			asxMax: asxMax,
+
+			sy: sy,
+			syMin: syMin,
+			syMax: syMax,
+
+			vsy: vsy,
+			vsyMin: vsyMin,
+			vsyMax: vsyMax,
+
+			asy: asy,
+			asyMin: asyMin,
+			asyMax: asyMax,
+
+			sxy: sxy,
+			sxyMin: sxyMin,
+			sxyMax: sxyMax,
+
+			vsxy: vsxy,
+			vsxyMin: vsxyMin,
+			vsxyMax: vsxyMax,
+
+			asxy: asxy,
+			asxyMin: asxyMin,
+			asxyMax: asxyMax,
 
 			alpha: 1.0
 		});
@@ -418,6 +600,15 @@ export class Emitter {
 
 			p.vrz = limit(p.vrz + p.arz * dt, p.vrzMin, p.vrzMax);
 			p.rz = limit(p.rz + p.vrz * dt, p.rzMin, p.rzMax);
+
+			p.vsx = limit(p.vsx + p.asx * dt, p.vsxMin, p.vsxMax);
+			p.sx = limit(p.sx + p.vsx * dt, p.sxMin, p.sxMax);
+
+			p.vsy = limit(p.vsy + p.asy * dt, p.vsyMin, p.vsyMax);
+			p.sy = limit(p.sy + p.vsy * dt, p.syMin, p.syMax);
+
+			p.vsxy = limit(p.vsxy + p.asxy * dt, p.vsxyMin, p.vsxyMax);
+			p.sxy = limit(p.sxy + p.vsxy * dt, p.sxyMin, p.sxyMax);
 
 			for (let j = 0; j < this.children.length; j++) {
 				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
