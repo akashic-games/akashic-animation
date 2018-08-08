@@ -72,6 +72,8 @@ interface ParticleParameterObject {
 
 	// transparency
 	alpha: number;
+	fadeInNT: number;
+	fadeOutNT: number;
 }
 
 export class Particle {
@@ -148,6 +150,8 @@ export class Particle {
 
 	// transparency
 	alpha: number;
+	fadeInNT: number;
+	fadeOutNT: number;
 
 	constructor(param: ParticleParameterObject) {
 		this.elapse = 0;
@@ -224,5 +228,7 @@ export class Particle {
 		this.asxyMax = param.asxyMax;
 
 		this.alpha = param.alpha;
+		this.fadeInNT = param.fadeInNT;
+		this.fadeOutNT = param.fadeOutNT;
 	}
 }

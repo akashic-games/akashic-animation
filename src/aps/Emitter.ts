@@ -49,7 +49,7 @@ export interface ParticleInitialParameterObject {
 	tvrz?: number[]; // 目標角速度
 	tvrzRelIVRZ?: number[]; // 目標角速度（初期角速度相対）
 	tvrzC?: number[]; // 目標角速度（初期角速度係数）
-	tvrzNTOA?: number[]; // 正規化最大角速度到達時間
+	tvrzNTOA?: number[]; // 正規化目標角速度到達時間
 
 	// スケール
 	sx: number[];
@@ -91,6 +91,10 @@ export interface ParticleInitialParameterObject {
 	tsx?: number[]; // 目標Xスケール
 	tsy?: number[]; // 目標Yスケール
 	tsxy?: number[]; // 目標XYスケール
+
+	alpha: number[]; // alpha初期値
+	fadeInNT?: number[]; // 正規化フェードイン完了時刻
+	fadeOutNT?: number[]; // 正規化フェードアウト開始時刻
 
 	// 寿命
 	lifespan: number[];
@@ -237,6 +241,10 @@ export class Emitter {
 			tsy: param.initParam.tsy,
 			tsxy: param.initParam.tsxy,
 
+			alpha: param.initParam.alpha,
+			fadeInNT: param.initParam.fadeInNT,
+			fadeOutNT: param.initParam.fadeOutNT,
+
 			lifespan: param.initParam.lifespan
 		};
 
@@ -378,6 +386,15 @@ export class Emitter {
 		const tsy = this.pickParam(this.initParam.tsy, undefined);
 		const tsxy = this.pickParam(this.initParam.tsxy, undefined);
 
+		let alpha: number;
+		const fadeInNT = this.pickParam(this.initParam.fadeInNT, 0);
+		const fadeOutNT = this.pickParam(this.initParam.fadeOutNT, 1);
+		if (fadeInNT !== 0 && fadeOutNT !== 1) {
+			alpha = 0;
+		} else {
+			alpha = this.pickParam(this.initParam.alpha, 1);
+		}
+
 		const lifespan = this.pickParam(this.initParam.lifespan, 1);
 
 		const cos = Math.cos(angle);
@@ -496,7 +513,9 @@ export class Emitter {
 			asxyMin: asxyMin,
 			asxyMax: asxyMax,
 
-			alpha: 1.0
+			alpha: alpha,
+			fadeInNT: fadeInNT,
+			fadeOutNT: fadeOutNT
 		});
 
 		for (let i = 0; i < this.onInitParticleHandlers.length; i++) {
@@ -609,6 +628,17 @@ export class Emitter {
 
 			p.vsxy = limit(p.vsxy + p.asxy * dt, p.vsxyMin, p.vsxyMax);
 			p.sxy = limit(p.sxy + p.vsxy * dt, p.sxyMin, p.sxyMax);
+
+			if (p.fadeInNT !== 0 && p.fadeOutNT !== 1) {
+				const t = p.elapse / p.lifespan;
+				if (t < p.fadeInNT) {
+					p.alpha = t / p.fadeInNT;
+				} else if (t > p.fadeOutNT) {
+					p.alpha = 1 - (t - p.fadeOutNT) / (1 - p.fadeOutNT);
+				} else {
+					p.alpha = 1;
+				}
+			}
 
 			for (let j = 0; j < this.children.length; j++) {
 				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);

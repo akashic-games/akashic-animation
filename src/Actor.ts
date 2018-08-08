@@ -594,6 +594,7 @@ class Actor extends g.E {
 				const py = height * (0.5 + cell.pivot.y);
 
 				renderer.save();
+				renderer.opacity(p.alpha);
 				renderer.transform([a, b, -c, d, p.tx, p.ty]);
 				renderer.transform([1, 0, 0, 1, -px, -py]);
 				renderer.drawImage(surface, left, top, width, height, 0, 0);

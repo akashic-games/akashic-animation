@@ -151,6 +151,10 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 				tsy: pdata.tsy,
 				tsxy: pdata.tsxy,
 
+				alpha: pdata.alpha || [1],
+				fadeInNT: pdata.fadeInNT,
+				fadeOutNT: pdata.fadeOutNT,
+
 				lifespan: pdata.lifespan || [0]
 			},
 			userData: {
