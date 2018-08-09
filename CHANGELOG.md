@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased changes
+
+* すでにプロジェクトをロード済みのリソースに対して`Resource#loadProject()`を実行すると以前ロードされた情報は削除されることをコメントに追加。
+
 ## 3.0.3
 
 * セルの無いパーツについても `CircleCollider` が動作するように修正
