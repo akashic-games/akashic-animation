@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased changes
+
+* `Resource#loadProject()` がすでにロード済みのプロジェクトがあるときそれをResourceインスタンスから削除することをコメントに明記。
+
 ## 3.0.3
 
 * セルの無いパーツについても `CircleCollider` が動作するように修正
