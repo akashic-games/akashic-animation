@@ -629,7 +629,7 @@ export class Emitter {
 			p.vsxy = limit(p.vsxy + p.asxy * dt, p.vsxyMin, p.vsxyMax);
 			p.sxy = limit(p.sxy + p.vsxy * dt, p.sxyMin, p.sxyMax);
 
-			if (p.fadeInNT !== 0 && p.fadeOutNT !== 1) {
+			if (p.fadeInNT !== 0 || p.fadeOutNT !== 1) {
 				const t = p.elapse / p.lifespan;
 				if (t < p.fadeInNT) {
 					p.alpha = t / p.fadeInNT;
