@@ -1,10 +1,21 @@
-import {Emitter, EmitterStatus} from "./Emitter";
+import {Emitter} from "./Emitter";
 
 function traverse(e: Emitter, callback: (e: Emitter) => void): void {
 	callback(e);
 	for (let i = 0; i < e.children.length; i++) {
 		traverse(e.children[i], callback);
 	}
+}
+
+export enum ParticleSystemStatus {
+	/// 停止。エミットを停止
+	Stop = 0,
+
+	/// 動作中。エミットとパーティクルの更新を行う
+	Running,
+
+	/// ポーズ。エミットとパーティクルの更新を停止
+	Pause
 }
 
 /**
@@ -19,7 +30,7 @@ export class ParticleSystem {
 
 	emitters: Emitter[];
 
-	emitterStatus: EmitterStatus;
+	status: ParticleSystemStatus;
 
 	private skipTick: boolean;
 
@@ -31,29 +42,20 @@ export class ParticleSystem {
 	}
 
 	start(): void {
-		this.emitterStatus = EmitterStatus.Running;
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].start();
-		}
+		this.status = ParticleSystemStatus.Running;
 	}
 
 	stop(): void {
-		this.emitterStatus = EmitterStatus.Stop;
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].stop();
-		}
+		this.status = ParticleSystemStatus.Stop;
 	}
 
 	pause(): void {
-		this.emitterStatus = EmitterStatus.Pause;
-		for (let i = 0; i < this.emitters.length; i++) {
-			this.emitters[i].pause();
-		}
+		this.status = ParticleSystemStatus.Pause;
 	}
 
 	reset(): void {
 		this.emitterTime = 0;
-		this.emitterStatus = EmitterStatus.Stop;
+		this.status = ParticleSystemStatus.Stop;
 		this.skipTick = true;
 		for (let i = 0; i < this.emitters.length; i++) {
 			this.emitters[i].reset();
@@ -81,9 +83,9 @@ export class ParticleSystem {
 	}
 
 	update(dt: number): void {
-		if (this.emitterStatus === EmitterStatus.Pause) {
+		if (this.status === ParticleSystemStatus.Pause) {
 			// nothing to do.
-		} else if (this.emitterStatus === EmitterStatus.Running) {
+		} else if (this.status === ParticleSystemStatus.Running) {
 			for (let i = 0; i < this.emitters.length; i++) {
 				this.emitters[i].update(dt);
 			}
@@ -91,7 +93,7 @@ export class ParticleSystem {
 			for (let i = 0; i < this.emitters.length; i++) {
 				this.emitters[i].emitTimerAt(this.emitterTime, dt, this.tx, this.ty);
 			}
-		} else if (this.emitterStatus === EmitterStatus.Stop) {
+		} else if (this.status === ParticleSystemStatus.Stop) {
 			for (let i = 0; i < this.emitters.length; i++) {
 				this.emitters[i].update(dt);
 			}

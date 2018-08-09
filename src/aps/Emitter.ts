@@ -114,20 +114,7 @@ export interface EmitterParameterObject {
 	userData: any;
 }
 
-export enum EmitterStatus {
-	/// 停止。エミットを停止
-	Stop = 0,
-
-	/// 動作中。エミットとパーティクルの更新を行う
-	Running,
-
-	/// ポーズ。エミットとパーティクルの更新を停止
-	Pause
-}
-
 export class Emitter {
-	status: EmitterStatus;
-
 	gx: number;
 	gy: number;
 	interval: number;
@@ -148,7 +135,6 @@ export class Emitter {
 	onPreUpdateParticleHandlers: Array<(p: Particle, emitter: Emitter, dt: number) => void>;
 
 	constructor(param: EmitterParameterObject) {
-		this.status = EmitterStatus.Stop;
 		this.gx = param.gx;
 		this.gy = param.gy;
 		this.interval = param.interval;
@@ -253,47 +239,12 @@ export class Emitter {
 		this.particles = [];
 	}
 
-	/**
-	 * エミッタの動作を開始する。
-	 */
-	start(): void {
-		this.status = EmitterStatus.Running;
-		for (let i = 0; i < this.children.length; i++) {
-			this.children[i].start();
-		}
-	}
-
-	/**
-	 * エミッタの動作を停止する。
-	 *
-	 * すでにエミットされたパーティクルの更新は行われる。
-	 */
-	stop(): void {
-		this.status = EmitterStatus.Stop;
-		for (let i = 0; i < this.children.length; i++) {
-			this.children[i].stop();
-		}
-	}
-
-	/*
-	 * エミッタの動作を一時停止する。
-	 *
-	 * エミット及びパーティクルの更新を一時停止する。
-	 */
-	pause(): void {
-		this.status = EmitterStatus.Pause;
-		for (let i = 0; i < this.children.length; i++) {
-			this.children[i].pause();
-		}
-	}
-
 	/*
 	 * エミッタをリセットする。
 	 *
 	 * 放出済みのパーティクルは破棄される。
 	 */
 	reset(): void {
-		this.status = EmitterStatus.Stop;
 		this.particles = [];
 		for (let i = 0; i < this.children.length; i++) {
 			this.children[i].reset();
@@ -544,10 +495,6 @@ export class Emitter {
 			return;
 		}
 
-		if (this.status !== EmitterStatus.Running) {
-			return;
-		}
-
 		if (this.particles.length >= this.maxParticles) {
 			return;
 		}
@@ -583,10 +530,6 @@ export class Emitter {
 	}
 
 	update(dt: number): void {
-		if (this.status === EmitterStatus.Pause) {
-			return;
-		}
-
 		this.particles = this.particles.filter(p => {
 			p.elapse += dt;
 			return p.elapse <= p.lifespan;
