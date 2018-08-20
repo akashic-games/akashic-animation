@@ -535,6 +535,10 @@ export class Emitter {
 			return p.elapse <= p.lifespan;
 		});
 
+		for (let j = 0; j < this.children.length; j++) {
+			this.children[j].update(dt);
+		}
+
 		for (let i = 0, len = this.particles.length; i < len; i++) {
 			const p = this.particles[i];
 
@@ -588,9 +592,6 @@ export class Emitter {
 			}
 		}
 
-		for (let j = 0; j < this.children.length; j++) {
-			this.children[j].update(dt);
-		}
 	}
 
 	private pickParam(p: number[], defaultValue: number): number {
