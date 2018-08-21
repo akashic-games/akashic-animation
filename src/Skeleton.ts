@@ -338,7 +338,7 @@ class Skeleton {
 	 *
 	 * @param time 現在のフレーム
 	 * @param anim 計算に用いるアニメーション
-	 * @param dt 前回のupdate()呼び出しからの経過時間。単位は秒。エフェクトの更新に用いられる。
+	 * @param dt 前回のupdate()呼び出しからの経過時間
 	 */
 	update(time: number, anim: Animation, dt: number): void {
 		// アニメーションを計算。結果をcacheに収める

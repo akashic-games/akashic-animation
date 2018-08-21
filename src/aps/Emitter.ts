@@ -1,6 +1,22 @@
 import {Particle} from "./Particle";
 
-const TOLERANCE = 1e-7;
+// 時刻比較に用いられる許容誤差
+//
+// Emitter.intervalによる定期的なemit処理にて現在時刻と
+// emitタイミングを比較するとき
+//   Math.abs(エミットタイミング - 現在時刻) <= TOLERANCE
+// ならばエミットする
+//
+// apsは時刻を浮動小数で表現してよい。浮動小数同士の比較では
+// 誤差を許容する必要がある。
+//
+// JavaScriptでは数値はIEEE754倍精度浮動小数で表現される。
+// IEEE754倍精度浮動小数の有効桁数は十進数で16桁弱となる。
+export const TOLERANCE = 1e-7;
+
+// エミッタ最大活動期間
+// 初期値は 100000000 である。
+export const MAX_ACTIVEPERIOD = 100000000; // 99999999.9999999 + TOLERANCE;
 
 function limit(val: number, min: number, max: number): number {
 	if (min != null && val < min) return min;
