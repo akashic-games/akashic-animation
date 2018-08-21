@@ -618,7 +618,6 @@ class Skeleton {
 				switch (effectValue.emitterOp) {
 					case vfx.EmitterOperation.start: ps.start(); break;
 					case vfx.EmitterOperation.stop: ps.stop(); break;
-					case vfx.EmitterOperation.pause: ps.pause(); break;
 				}
 				// ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
 				ps.update(dt);

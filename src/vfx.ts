@@ -42,8 +42,7 @@ export interface Effect {
 
 export enum EmitterOperation {
 	start = 0,
-	stop = 1,
-	pause = 2
+	stop = 1
 }
 
 export interface EffectValue {

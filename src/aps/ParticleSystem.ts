@@ -12,10 +12,7 @@ export enum ParticleSystemStatus {
 	Stop = 0,
 
 	/// 動作中。エミットとパーティクルの更新を行う
-	Running,
-
-	/// ポーズ。エミットとパーティクルの更新を停止
-	Pause
+	Running
 }
 
 /**
@@ -26,13 +23,13 @@ export enum ParticleSystemStatus {
 export class ParticleSystem {
 	tx: number;
 	ty: number;
-	emitterTime: number;
 
 	emitters: Emitter[];
 
 	status: ParticleSystemStatus;
 
-	private skipTick: boolean;
+	nextEmitterTime: number;
+	emitterTime: number;
 
 	constructor() {
 		this.tx = 0;
@@ -41,22 +38,20 @@ export class ParticleSystem {
 		this.reset();
 	}
 
+	// エミットを開始する
 	start(): void {
 		this.status = ParticleSystemStatus.Running;
 	}
 
+	// エミットを停止する
 	stop(): void {
 		this.status = ParticleSystemStatus.Stop;
 	}
 
-	pause(): void {
-		this.status = ParticleSystemStatus.Pause;
-	}
-
 	reset(): void {
 		this.emitterTime = 0;
+		this.nextEmitterTime = 0;
 		this.status = ParticleSystemStatus.Stop;
-		this.skipTick = true;
 		for (let i = 0; i < this.emitters.length; i++) {
 			this.emitters[i].reset();
 		}
@@ -83,26 +78,24 @@ export class ParticleSystem {
 	}
 
 	update(dt: number): void {
-		if (this.status === ParticleSystemStatus.Pause) {
-			// nothing to do.
-		} else if (this.status === ParticleSystemStatus.Running) {
-			for (let i = 0; i < this.emitters.length; i++) {
-				this.emitters[i].update(dt);
-			}
+		for (let i = 0; i < this.emitters.length; i++) {
+			this.emitters[i].update(dt);
+		}
+
+		if (this.status === ParticleSystemStatus.Running) {
 			this.tick(dt);
 			for (let i = 0; i < this.emitters.length; i++) {
 				this.emitters[i].emitTimerAt(this.emitterTime, dt, this.tx, this.ty);
 			}
 		} else if (this.status === ParticleSystemStatus.Stop) {
-			for (let i = 0; i < this.emitters.length; i++) {
-				this.emitters[i].update(dt);
-			}
+			// nothing to do.
 		}
 	}
 
-	private tick(dt: number): void {
-		if (this.skipTick) {
-			this.skipTick = false;
+	tick(dt: number): void {
+		if (this.nextEmitterTime != null) {
+			this.emitterTime = this.nextEmitterTime;
+			this.nextEmitterTime = null;
 		} else {
 			this.emitterTime += dt;
 		}
