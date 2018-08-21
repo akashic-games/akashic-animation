@@ -28,8 +28,8 @@ export class ParticleSystem {
 
 	status: ParticleSystemStatus;
 
-	nextEmitterTime: number;
 	emitterTime: number;
+	nextEmitterTime: number;
 
 	constructor() {
 		this.tx = 0;
@@ -48,6 +48,7 @@ export class ParticleSystem {
 		this.status = ParticleSystemStatus.Stop;
 	}
 
+	// 初期状態にする
 	reset(): void {
 		this.emitterTime = 0;
 		this.nextEmitterTime = 0;

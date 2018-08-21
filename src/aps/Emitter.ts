@@ -513,10 +513,10 @@ export class Emitter {
 		time -= this.delayEmit;
 
 		const interval = this.interval;
-		const t1 = time;
-		const t0 = t1 - dt;
-		const ti0 = (Math.floor(t1 / interval) + 1) * interval;
-		const tiN = Math.max(Math.floor(t0 / interval) * interval, 0);
+		const t1 = time; // 現在時刻
+		const t0 = t1 - dt; // 前回のエミット時刻
+		const ti0 = (Math.floor(t1 / interval) + 1) * interval; // 現在時刻直後のエミットタイミング
+		const tiN = Math.max(Math.floor(t0 / interval) * interval, 0); // 前回のエミット時刻直前のエミットタイミング
 
 		const activePeriod = this.activePeriod > 0 ? this.activePeriod : MAX_ACTIVEPERIOD;
 		if (dt === 0) {
@@ -531,6 +531,9 @@ export class Emitter {
 				const te = ti + TOLERANCE;
 				if (t0 < ts && (t1 > te || (ts <= t1 && t1 <= te))) {
 					this.emitAt(x, y);
+					if (this.particles.length >= this.maxParticles) {
+						break;
+					}
 				}
 			}
 		}
