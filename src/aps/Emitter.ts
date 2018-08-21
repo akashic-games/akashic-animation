@@ -515,10 +515,10 @@ export class Emitter {
 		const interval = this.interval;
 		const t1 = time;
 		const t0 = t1 - dt;
-		const ti0 = ((t1 / interval | 0) + 1) * interval;
-		const tiN = Math.max((t0 / interval | 0) * interval, 0);
+		const ti0 = (Math.floor(t1 / interval) + 1) * interval;
+		const tiN = Math.max(Math.floor(t0 / interval) * interval, 0);
 
-		const activePeriod = this.activePeriod > 0 ? this.activePeriod : 60 * 60 * 60 * 24 * 7;
+		const activePeriod = this.activePeriod > 0 ? this.activePeriod : MAX_ACTIVEPERIOD;
 		if (dt === 0) {
 			const isActive = t1 < activePeriod - TOLERANCE;
 			if (isActive && (ti0 - TOLERANCE <= t1 || t1 <= tiN + TOLERANCE)) {
