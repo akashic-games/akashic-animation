@@ -131,9 +131,6 @@ export class Emitter {
 
 	particles: Particle[];
 
-	onInitParticleHandlers: Array<(p: Particle, emitter: Emitter) => void>;
-	onPreUpdateParticleHandlers: Array<(p: Particle, emitter: Emitter, dt: number) => void>;
-
 	constructor(param: EmitterParameterObject) {
 		this.gx = param.gx;
 		this.gy = param.gy;
@@ -144,8 +141,6 @@ export class Emitter {
 		this.numParticlesPerEmit = param.numParticlesPerEmit;
 		this.children = param.children || [];
 		this.randomFunc = param.randomFunc;
-		this.onInitParticleHandlers = [];
-		this.onPreUpdateParticleHandlers = [];
 
 		this.initParam = {
 			tx: param.initParam.tx,
@@ -469,10 +464,6 @@ export class Emitter {
 			fadeOutNT: fadeOutNT
 		});
 
-		for (let i = 0; i < this.onInitParticleHandlers.length; i++) {
-			this.onInitParticleHandlers[i](p, this);
-		}
-
 		this.particles.push(p);
 	}
 
@@ -541,10 +532,6 @@ export class Emitter {
 
 		for (let i = 0, len = this.particles.length; i < len; i++) {
 			const p = this.particles[i];
-
-			for (let j = 0; j < this.onPreUpdateParticleHandlers.length; j++) {
-				this.onPreUpdateParticleHandlers[j](p, this, dt);
-			}
 
 			p.vx += (this.gx + p.ax) * dt;
 			p.vy += (this.gy + p.ay) * dt;
