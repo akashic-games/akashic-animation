@@ -511,12 +511,11 @@ export class Emitter {
 	/**
 	 * Emitter.interval間隔でエミットする。
 	 *
-	 * @param time Emitterの現在時刻。０以上の実数
-	 * @param dt 前回のエミットからの経過時間。０以上の実数
+	 * @param currentTime Emitterの現在時刻。０以上の実数
 	 * @param x エミットするX座標
 	 * @param y エミットするY座標
 	 */
-	emitTimerAt(time: number, dt: number, x: number, y: number): void {
+	emitTimerAt(currentTime: number, x: number, y: number): void {
 		if (this.activePeriod === 0) {
 			return;
 		}
@@ -525,36 +524,22 @@ export class Emitter {
 			return;
 		}
 
-		if (time < this.delayEmit - TOLERANCE) {
+		if (currentTime < this.delayEmit - TOLERANCE) {
 			return;
 		}
 
-		time -= this.delayEmit;
+		currentTime -= this.delayEmit;
 
-		const interval = this.interval;
-		const t1 = time; // 現在時刻
-		const t0 = t1 - dt; // 前回のエミット時刻
-		const ti0 = (Math.floor(t1 / interval) + 1) * interval; // 現在時刻直後のエミットタイミング
-		const tiN = Math.max(Math.floor(t0 / interval) * interval, 0); // 前回のエミット時刻直前のエミットタイミング
+		// エミッタ活動期間と現在時刻との比較でもについても許容誤差を導入する
+		if (this.activePeriod > 0 && currentTime >= this.activePeriod - TOLERANCE) {
+			return;
+		}
 
-		const activePeriod = this.activePeriod > 0 ? this.activePeriod : MAX_ACTIVEPERIOD;
-		if (dt === 0) {
-			const isActive = t1 < activePeriod - TOLERANCE;
-			if (isActive && (ti0 - TOLERANCE <= t1 || t1 <= tiN + TOLERANCE)) {
-				this.emitAt(x, y);
-			}
-		} else {
-			for (let ti = ti0; ti >= tiN; ti -= interval) {
-				if (ti >= activePeriod - TOLERANCE) continue;
-				const ts = ti - TOLERANCE;
-				const te = ti + TOLERANCE;
-				if (t0 < ts && (t1 > te || (ts <= t1 && t1 <= te))) {
-					this.emitAt(x, y);
-					if (this.particles.length >= this.maxParticles) {
-						break;
-					}
-				}
-			}
+		// 最近傍のエミット時刻
+		const emitTime = Math.round(currentTime / this.interval) * this.interval;
+
+		if (emitTime - TOLERANCE <= currentTime && currentTime <= emitTime + TOLERANCE) {
+			this.emitOneAt(x, y);
 		}
 	}
 
@@ -613,7 +598,7 @@ export class Emitter {
 			}
 
 			for (let j = 0; j < this.children.length; j++) {
-				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
+				this.children[j].emitTimerAt(p.elapse, p.tx, p.ty);
 			}
 		}
 	}
