@@ -331,14 +331,8 @@ class Actor extends g.E {
 		}
 
 		this._elapse = (anime.fps / this.scene.game.fps) * this.playSpeed;
-		const nextCntr = this._cntr + this._elapse;
-		if (this.loop && (nextCntr >= anime.frameCount || nextCntr < 0)) {
-			// 再生がループして先頭に戻った時点でエフェクトをリセットにする
-			// リセットの詳細は実装を確認すること
-			this.skeleton.resetEffect();
-		}
-		this._nextCntr = adjustCounter(nextCntr, anime.frameCount, this.loop);
-
+		this._nextCntr = adjustCounter(this._cntr + this._elapse, anime.frameCount, this.loop);
+		this.skeleton.setEffectTime(this._nextCntr / this.scene.game.fps);
 	}
 
 	/**

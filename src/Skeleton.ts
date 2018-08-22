@@ -320,6 +320,17 @@ class Skeleton {
 	}
 
 	/**
+	 * エフェクトの時刻設定
+	 */
+	setEffectTime(time: number): void {
+		for (let i = 0; i < this.composedCaches.length; i++) {
+			const effects = this.composedCaches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.nextEmitterTime = time;
+			}
+		}
+	}
+	/**
 	 * デバッグ用
 	 */
 	_startEffect(): void {
