@@ -117,34 +117,53 @@ export interface ParticleInitialParameterObject {
 }
 
 export interface EmitterParameterObject {
-	gx: number; // 重力加速度
+	gx: number;
 	gy: number;
-	interval: number; // 射出間隔
-	activePeriod: number; // emitterの活動期間。負の時、無制限
-	delayEmit: number; // 射出開始遅延時間
-	numParticlesPerEmit: number; // 一度の放出で放出されるパーティクル数
-	maxParticles: number; // emitter の保持する最大パーティクル数
-	children: Emitter[]; // 各パーティクルがさらにパーティクルを放出するためのエミッタ
+	interval: number;
+	activePeriod: number;
+	delayEmit: number;
+	numParticlesPerEmit: number;
+	maxParticles: number;
+	children: Emitter[];
 	randomFunc: () => number;
 	initParam: ParticleInitialParameterObject;
 	userData: any;
 }
 
 export class Emitter {
+	/// このエミッタのエミットしたパーティクルに作用する重力加速度(X方向)
 	gx: number;
+	/// このエミッタのエミットしたパーティクルに作用する重力加速度(Y方向)
 	gy: number;
-	interval: number;
-	randomFunc: () => number;
 
+	/// 定期エミット時間間隔
+	interval: number;
+
+	/// エミッタ活動期間。満了後 interval に基づいた定期的エミットが停止する。負のとき無制限。
 	activePeriod: number;
+
+	/// 最大パーティクル数
 	maxParticles: number;
+
+	/// 子エミッタ。これがあるとき、パーティクルからさらにエミット(emitTimerAt())する。
 	children: Emitter[];
+
+	/// エミット開始遅延。interval に基づいたエミットの開始を遅延する。
 	delayEmit: number;
+
+	/// 一度のエミット動作で実際に放出されるパーティクル数
 	numParticlesPerEmit: number;
 
+	/// パーティクル初期化パラメタ
 	initParam: ParticleInitialParameterObject;
+
+	/// エミッタの利用するランダム関数
+	randomFunc: () => number;
+
+	/// ユーザデータ。Emitter利用者のためのもので、Emitter自身はこれを利用しない。
 	userData: any;
 
+	/// 生成されたパーティクル
 	particles: Particle[];
 
 	constructor(param: EmitterParameterObject) {
