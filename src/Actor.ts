@@ -305,6 +305,10 @@ class Actor extends g.E {
 			this.skeleton._handleUserEvent(this._cntr, this._elapse, anime);
 		}
 
+		if (this._nextCntr < this._cntr) {
+			this.skeleton.setEffectTime(this._nextCntr);
+		}
+
 		// Set current frame counter
 		this._cntr = this._nextCntr;
 
@@ -332,7 +336,6 @@ class Actor extends g.E {
 
 		this._elapse = (anime.fps / this.scene.game.fps) * this.playSpeed;
 		this._nextCntr = adjustCounter(this._cntr + this._elapse, anime.frameCount, this.loop);
-		this.skeleton.setEffectTime(this._nextCntr / this.scene.game.fps);
 	}
 
 	/**
