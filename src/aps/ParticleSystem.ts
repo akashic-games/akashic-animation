@@ -86,7 +86,7 @@ export class ParticleSystem {
 		if (this.status === ParticleSystemStatus.Running) {
 			this.tick(dt);
 			for (let i = 0; i < this.emitters.length; i++) {
-				this.emitters[i].emitTimerAt(this.emitterTime, this.tx, this.ty);
+				this.emitters[i].emitTimerAt(this.emitterTime, dt, this.tx, this.ty);
 			}
 		} else if (this.status === ParticleSystemStatus.Stop) {
 			// nothing to do.

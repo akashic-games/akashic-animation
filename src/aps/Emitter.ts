@@ -511,11 +511,12 @@ export class Emitter {
 	/**
 	 * Emitter.interval間隔でエミットする。
 	 *
-	 * @param currentTime Emitterの現在時刻。０以上の実数
+	 * @param time Emitterの現在時刻。０以上の実数
+	 * @param dt 前回のエミットからの経過時間。０以上の実数
 	 * @param x エミットするX座標
 	 * @param y エミットするY座標
 	 */
-	emitTimerAt(currentTime: number, x: number, y: number): void {
+	emitTimerAt(currentTime: number, dt: number, x: number, y: number): void {
 		if (this.activePeriod === 0) {
 			return;
 		}
@@ -530,16 +531,22 @@ export class Emitter {
 
 		currentTime -= this.delayEmit;
 
-		// エミッタ活動期間と現在時刻との比較でもについても許容誤差を導入する
 		if (this.activePeriod > 0 && currentTime >= this.activePeriod - TOLERANCE) {
 			return;
 		}
 
-		// 最近傍のエミット時刻
-		const emitTime = Math.round(currentTime / this.interval) * this.interval;
+		const interval = this.interval;
+		let keyTime = Math.ceil(currentTime / interval) * interval;
 
-		if (emitTime - TOLERANCE <= currentTime && currentTime <= emitTime + TOLERANCE) {
-			this.emitOneAt(x, y);
+		if (keyTime - TOLERANCE <= currentTime && currentTime <= keyTime + TOLERANCE) {
+			this.emitAt(x, y);
+			return;
+		}
+
+		keyTime = keyTime - interval;
+
+		if (currentTime < keyTime - TOLERANCE) {
+			this.emitAt(x, y);
 		}
 	}
 
@@ -598,7 +605,7 @@ export class Emitter {
 			}
 
 			for (let j = 0; j < this.children.length; j++) {
-				this.children[j].emitTimerAt(p.elapse, p.tx, p.ty);
+				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
 			}
 		}
 	}
