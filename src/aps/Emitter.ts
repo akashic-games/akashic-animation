@@ -511,7 +511,7 @@ export class Emitter {
 	/**
 	 * Emitter.interval間隔でエミットする。
 	 *
-	 * @param time Emitterの現在時刻。０以上の実数
+	 * @param currentTime Emitterの現在時刻。０以上の実数
 	 * @param dt 前回のエミットからの経過時間。０より大きい実数
 	 * @param x エミットするX座標
 	 * @param y エミットするY座標
