@@ -73,7 +73,7 @@ describe("Emitter.emitTimerAt", function() {
         expect(e.particles.length).toBe(1.0 / e.interval | 0);
     });
 
-    it("should emit each time when time step is larger than interval", function() {
+    it("should emit once each time when time step is larger than interval", function() {
         var dt = e.interval * 2.4;
         var t = 0;
         while (t < 1.0) {
