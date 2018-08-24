@@ -509,11 +509,7 @@ export class Emitter {
 	}
 
 	/**
-	 * Emitter.interval間隔でエミットする。
-	 *
-	 * delayTime を起点として interval 時間経過するごとに1度エミットする。
-	 * ただし dt >= interval * 2 のとき、前回のエミット時刻と現在時刻間に
-	 * 2度以上のエミット機会が訪れるが、エミットは一度しか行わない。
+	 * 前回のエミットした時刻から現在時刻の間に Emitter#interval 間隔で訪れるエミットタイミングが一度以上存在する場合エミットする。
 	 *
 	 * @param currentTime Emitterの現在時刻。０以上の実数
 	 * @param dt 前回のエミットからの経過時間。０より大きい実数
