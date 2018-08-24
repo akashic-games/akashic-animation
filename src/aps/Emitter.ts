@@ -509,10 +509,10 @@ export class Emitter {
 	}
 
 	/**
-	 * Emitter.interval間隔でエミットする。
+	 * 前回のエミットした時刻から現在時刻の間に Emitter#interval 間隔で訪れるエミットタイミングが一度以上存在する場合エミットする。
 	 *
-	 * @param time Emitterの現在時刻。０以上の実数
-	 * @param dt 前回のエミットからの経過時間。０以上の実数
+	 * @param currentTime Emitterの現在時刻。０以上の実数
+	 * @param dt 前回のエミットからの経過時間。０より大きい実数
 	 * @param x エミットするX座標
 	 * @param y エミットするY座標
 	 */
@@ -525,27 +525,21 @@ export class Emitter {
 			return;
 		}
 
-		if (currentTime < this.delayEmit - TOLERANCE) {
+		currentTime += TOLERANCE;
+
+		if (currentTime < this.delayEmit) {
 			return;
 		}
 
 		currentTime -= this.delayEmit;
 
-		if (this.activePeriod > 0 && currentTime >= this.activePeriod - TOLERANCE) {
+		const keyTime = Math.floor(currentTime / this.interval) * this.interval;
+
+		if (this.activePeriod > 0 && keyTime >= this.activePeriod) {
 			return;
 		}
 
-		const interval = this.interval;
-		let keyTime = Math.ceil(currentTime / interval) * interval;
-
-		if (keyTime - TOLERANCE <= currentTime && currentTime <= keyTime + TOLERANCE) {
-			this.emitAt(x, y);
-			return;
-		}
-
-		keyTime = keyTime - interval;
-
-		if (currentTime < keyTime - TOLERANCE) {
+		if (currentTime - dt < keyTime) {
 			this.emitAt(x, y);
 		}
 	}
