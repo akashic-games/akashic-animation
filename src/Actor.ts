@@ -564,7 +564,7 @@ class Actor extends g.E {
 	}
 
 	private renderEffect(effect: vfx.Effect, renderer: g.Renderer, camera: g.Camera): void {
-		effect.particleSystem.traverse((e) => {
+		effect.particleSystem.traverse((e: vfx.Emitter) => {
 			const skin = this.resource.getSkinByName(e.userData.skinName);
 			const surface = skin.surface;
 			const cell = skin.cells[e.userData.cellName];

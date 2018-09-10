@@ -1,5 +1,5 @@
-import * as aps from "./aps";
-import { AlphaBlendMode } from ".";
+import * as aps from "../aps";
+import {Emitter, EmitterParameterObject} from "./Emitter";
 
 let randomGenerator: g.RandomGenerator;
 let defaultRandomFunc: () => number;
@@ -12,18 +12,13 @@ function initDefaultRandomFunc(): () => number {
 	return defaultRandomFunc;
 }
 
-export interface EmitterParameterObject extends aps.EmitterParameterObject {
+export interface EffectEmitterParameterObject extends EmitterParameterObject {
 	parentIndex: number;
-	userData: {
-		skinName: string;
-		cellName: string;
-		alphaBlendMode: AlphaBlendMode;
-	};
 }
 
 export interface EffectParameterObject {
 	name: string;
-	emitterParameters: EmitterParameterObject[];
+	emitterParameters: EffectEmitterParameterObject[];
 
 	/**
 	 * 0 ~ 1 の値を返すランダム関数。
@@ -50,7 +45,7 @@ export interface EffectValue {
 }
 
 export function createEffect(effParam: EffectParameterObject): Effect {
-	const emitters: aps.Emitter[] = [];
+	const emitters: Emitter[] = [];
 
 	const randomFunc = effParam.randomFunc || initDefaultRandomFunc();
 	const getValue = <T>(data: any, def: T): T => typeof data === typeof def ? data : def;
@@ -59,7 +54,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 		const edata = effParam.emitterParameters[i];
 		const pdata = edata.initParam;
 
-		const param: aps.EmitterParameterObject = {
+		const param: EmitterParameterObject = {
 			gx: getValue(edata.gx, 0),
 			gy: getValue(edata.gy, 0),
 			interval: getValue(edata.interval, 1),
@@ -163,7 +158,7 @@ export function createEffect(effParam: EffectParameterObject): Effect {
 			}
 		};
 
-		emitters.push(new aps.Emitter(param));
+		emitters.push(new Emitter(param));
 	}
 
 	const ps = new aps.ParticleSystem();

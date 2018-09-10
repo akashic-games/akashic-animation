@@ -1,6 +1,8 @@
-import {Particle} from "./Particle";
-export {Particle};
-import {ParticleInitialParameterObject, EmitterParameterObject, Emitter} from "./Emitter";
-export {ParticleInitialParameterObject, EmitterParameterObject, Emitter};
-import {ParticleSystem, ParticleSystemStatus} from "./ParticleSystem";
-export {ParticleSystem, ParticleSystemStatus};
+//
+// Akashic Particle System (alpha)
+//
+export {Particle} from "./Particle";
+export {Emitter} from "./Emitter";
+export {BasicEmitter, BasicEmitterParameterObject, BasicParticleInitialParameterObject} from "./BasicEmitter";
+export {BasicParticle, BasicParticleParameterObject} from "./BasicParticle";
+export {ParticleSystem, ParticleSystemStatus} from "./ParticleSystem";
