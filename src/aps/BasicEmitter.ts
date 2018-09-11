@@ -86,6 +86,7 @@ export class BasicEmitter implements Emitter {
 		this.numParticlesPerEmit = param.numParticlesPerEmit;
 		this.children = param.children || [];
 		this.randomFunc = param.randomFunc;
+		this.particles = [];
 	}
 
 	reset(): void {
@@ -99,34 +100,8 @@ export class BasicEmitter implements Emitter {
 		if (this.unusedParticleCount() <= 0) {
 			return;
 		}
-
-		const tx = this.pickParam(this.initParam.tx, 0);
-		const ty = this.pickParam(this.initParam.ty, 0);
-		const v = this.pickParam(this.initParam.v, 0);
-		const a = this.pickParam(this.initParam.a, 0);
-		const angle = this.pickParam(this.initParam.angle, 0);
-		const rz = this.pickParam(this.initParam.rz, 0);
-		const sx = this.pickParam(this.initParam.sx, 1);
-		const sy = this.pickParam(this.initParam.sy, 1);
-		const alpha = this.pickParam(this.initParam.alpha, 1);
-		const lifespan = this.pickParam(this.initParam.lifespan, 1);
-
-		const cos = Math.cos(angle);
-		const sin = Math.sin(angle);
-
-		this.createParticle({
-			lifespan: lifespan,
-			tx: x + tx,
-			ty: y + ty,
-			vx: cos * v,
-			vy: sin * v,
-			ax: cos * a,
-			ay: sin * a,
-			rz: rz,
-			sx: sx,
-			sy: sy,
-			alpha: alpha
-		});
+		const p = this.acquireParticle(x, y);
+		this.particles.push(p);
 	}
 
 	emitAt(x: number, y: number): void {
@@ -172,42 +147,70 @@ export class BasicEmitter implements Emitter {
 	}
 
 	update(dt: number): void {
+		// particleの加齢
 		this.particles = this.particles.filter(p => {
 			p.elapse += dt;
 			return p.elapse <= p.lifespan;
 		});
 
+		// particle更新
+		for (let i = 0, len = this.particles.length; i < len; i++) {
+			this.updateParticle(this.particles[i], dt);
+		}
+
+		// 子エミッタ更新（子エミッタのemitTimerAtに先んじる）
 		for (let i = 0; i < this.children.length; i++) {
 			this.children[i].update(dt);
 		}
 
+		// 子エミッタのemitTimerAt
 		for (let i = 0, len = this.particles.length; i < len; i++) {
 			const p = this.particles[i];
-
-			p.vx += (this.gx + p.ax) * dt;
-			p.vy += (this.gy + p.ay) * dt;
-			p.tx += p.vx * dt;
-			p.tx += p.vy * dt;
-
 			for (let j = 0; j < this.children.length; j++) {
 				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
 			}
 		}
 	}
 
-	protected createParticle(param: BasicParticleParameterObject): BasicParticle {
-		if (this.particles.length >= this.maxParticles) {
-			return null;
-		}
-
-		const p = new BasicParticle(param);
-		this.particles.push(p);
-
-		return p;
+	protected updateParticle(p: BasicParticle, dt: number): void {
+		p.vx += (this.gx + p.ax) * dt;
+		p.vy += (this.gy + p.ay) * dt;
+		p.tx += p.vx * dt;
+		p.tx += p.vy * dt;
 	}
 
-	protected unusedParticleCount(): number {
-		return Math.max(0, this.maxParticles - this.particles.length);
+	protected createParticleParameterObject(x: number, y: number): BasicParticleParameterObject {
+		const tx = this.pickParam(this.initParam.tx, 0);
+		const ty = this.pickParam(this.initParam.ty, 0);
+		const v = this.pickParam(this.initParam.v, 0);
+		const a = this.pickParam(this.initParam.a, 0);
+		const angle = this.pickParam(this.initParam.angle, 0);
+		const rz = this.pickParam(this.initParam.rz, 0);
+		const sx = this.pickParam(this.initParam.sx, 1);
+		const sy = this.pickParam(this.initParam.sy, 1);
+		const alpha = this.pickParam(this.initParam.alpha, 1);
+		const lifespan = this.pickParam(this.initParam.lifespan, 1);
+
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+
+		return {
+			lifespan: lifespan,
+			tx: x + tx,
+			ty: y + ty,
+			vx: cos * v,
+			vy: sin * v,
+			ax: cos * a,
+			ay: sin * a,
+			rz: rz,
+			sx: sx,
+			sy: sy,
+			alpha: alpha
+		};
+	}
+
+	protected createParticle(x: number, y: number): BasicParticle {
+		return new BasicParticle(this.createParticleParameterObject(x, y));
 	}
 
 	protected pickParam(p: number[], defaultValue: number): number {
@@ -219,5 +222,31 @@ export class BasicEmitter implements Emitter {
 			const t = this.randomFunc();
 			return t * p[0] + (1 - t) * p[1];
 		}
+	}
+
+	/**
+	 * 初期化済みのパーティクルインスタンスを獲得する。
+	 *
+	 * @param x
+	 * @param y
+	 */
+	private acquireParticle(x: number, y: number): BasicParticle {
+		if (this.particles.length >= this.maxParticles) {
+			return null;
+		}
+
+		const p = this.createParticle(x, y);
+		// 再利用の仕組みを導入した際は初期化メソッドを利用する
+		// p.init(this.createParticleParameterObject(x, y));
+
+		return p;
+	}
+
+	private releaseParticle(p: BasicParticle): void {
+		// ...
+	}
+
+	private unusedParticleCount(): number {
+		return Math.max(0, this.maxParticles - this.particles.length);
 	}
 }

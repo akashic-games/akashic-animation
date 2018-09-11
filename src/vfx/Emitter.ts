@@ -1,6 +1,6 @@
 import {AlphaBlendMode} from "..";
 import * as aps from "../aps";
-import {Particle} from "./Particle";
+import {Particle, ParticleParameterObject} from "./Particle";
 
 function limit(val: number, min: number, max: number): number {
 	if (min != null && val < min) return min;
@@ -28,45 +28,45 @@ export interface ParticleInitialParameterObject extends aps.BasicParticleInitial
 	rzMin?: number[];
 	rzMax?: number[];
 
-	vrz: number[]; // Z軸角速度
+	vrz?: number[]; // Z軸角速度
 	vrzMin?: number[];
 	vrzMax?: number[];
 
-	arz: number[]; // Z軸角加速度
+	arz?: number[]; // Z軸角加速度
 	arzMin?: number[];
 	arzMax?: number[];
 
 	sxMin?: number[];
 	sxMax?: number[];
 
-	vsx: number[];
+	vsx?: number[];
 	vsxMin?: number[];
 	vsxMax?: number[];
 
-	asx: number[];
+	asx?: number[];
 	asxMin?: number[];
 	asxMax?: number[];
 
 	syMin?: number[];
 	syMax?: number[];
 
-	vsy: number[];
+	vsy?: number[];
 	vsyMin?: number[];
 	vsyMax?: number[];
 
-	asy: number[];
+	asy?: number[];
 	asyMin?: number[];
 	asyMax?: number[];
 
-	sxy: number[];
+	sxy?: number[];
 	sxyMin?: number[];
 	sxyMax?: number[];
 
-	vsxy: number[];
+	vsxy?: number[];
 	vsxyMin?: number[];
 	vsxyMax?: number[];
 
-	asxy: number[];
+	asxy?: number[];
 	asxyMin?: number[];
 	asxyMax?: number[];
 
@@ -74,7 +74,6 @@ export interface ParticleInitialParameterObject extends aps.BasicParticleInitial
 	tsy?: number[]; // 目標Yスケール
 	tsxy?: number[]; // 目標XYスケール
 
-	alpha: number[]; // alpha初期値
 	fadeInNT?: number[]; // 正規化フェードイン完了時刻
 	fadeOutNT?: number[]; // 正規化フェードアウト開始時刻
 
@@ -93,7 +92,6 @@ export class Emitter extends aps.BasicEmitter {
 	particles: Particle[];
 	initParam: ParticleInitialParameterObject;
 
-	/// ユーザデータ。Emitter利用者のためのもので、Emitter自身はこれを利用しない。
 	userData: {
 		skinName: string;
 		cellName: string;
@@ -191,15 +189,52 @@ export class Emitter extends aps.BasicEmitter {
 		};
 
 		this.userData = param.userData;
-
-		this.particles = [];
 	}
 
-	emitOneAt(x: number, y: number): void {
-		if (this.particles.length >= this.maxParticles) {
-			return;
+	protected updateParticle(p: Particle, dt: number): void {
+		p.vx += (this.gx + p.ax) * dt;
+		p.vy += (this.gy + p.ay) * dt;
+		if (p.vMin != null || p.vMax != null) {
+			const v2 = p.vx * p.vx + p.vy * p.vy;
+			if (p.vMax != null && v2 > p.vMax * p.vMax) {
+				const v = Math.sqrt(v2);
+				p.vx = p.vx / v * p.vMax;
+				p.vy = p.vy / v * p.vMax;
+			} else if (p.vMin != null && v2 < p.vMin * p.vMin) {
+				const v = Math.sqrt(v2);
+				p.vx = p.vx / v * p.vMin;
+				p.vy = p.vy / v * p.vMin;
+			}
 		}
 
+		p.tx = limit(p.tx + p.vx * dt, p.txMin, p.txMax);
+		p.ty = limit(p.ty + p.vy * dt, p.tyMin, p.tyMax);
+
+		p.vrz = limit(p.vrz + p.arz * dt, p.vrzMin, p.vrzMax);
+		p.rz = limit(p.rz + p.vrz * dt, p.rzMin, p.rzMax);
+
+		p.vsx = limit(p.vsx + p.asx * dt, p.vsxMin, p.vsxMax);
+		p.sx = limit(p.sx + p.vsx * dt, p.sxMin, p.sxMax);
+
+		p.vsy = limit(p.vsy + p.asy * dt, p.vsyMin, p.vsyMax);
+		p.sy = limit(p.sy + p.vsy * dt, p.syMin, p.syMax);
+
+		p.vsxy = limit(p.vsxy + p.asxy * dt, p.vsxyMin, p.vsxyMax);
+		p.sxy = limit(p.sxy + p.vsxy * dt, p.sxyMin, p.sxyMax);
+
+		if (p.fadeInNT !== 0 || p.fadeOutNT !== 1) {
+			const t = p.elapse / p.lifespan;
+			if (t < p.fadeInNT) {
+				p.alpha = t / p.fadeInNT;
+			} else if (t > p.fadeOutNT) {
+				p.alpha = 1 - (t - p.fadeOutNT) / (1 - p.fadeOutNT);
+			} else {
+				p.alpha = 1;
+			}
+		}
+	}
+
+	protected createParticleParameterObject(x: number, y: number): ParticleParameterObject {
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const txMin = this.pickParam(this.initParam.txMin, undefined);
 		const txMax = this.pickParam(this.initParam.txMax, undefined);
@@ -339,7 +374,7 @@ export class Emitter extends aps.BasicEmitter {
 			sxyMax = tsxy;
 		}
 
-		const p = new Particle({
+		return {
 			lifespan: lifespan,
 
 			tx: x + tx,
@@ -411,68 +446,10 @@ export class Emitter extends aps.BasicEmitter {
 			alpha: alpha,
 			fadeInNT: fadeInNT,
 			fadeOutNT: fadeOutNT
-		});
-
-		this.particles.push(p);
+		};
 	}
 
-	update(dt: number): void {
-		this.particles = this.particles.filter(p => {
-			p.elapse += dt;
-			return p.elapse <= p.lifespan;
-		});
-
-		for (let j = 0; j < this.children.length; j++) {
-			this.children[j].update(dt);
-		}
-
-		for (let i = 0, len = this.particles.length; i < len; i++) {
-			const p = this.particles[i];
-
-			p.vx += (this.gx + p.ax) * dt;
-			p.vy += (this.gy + p.ay) * dt;
-			if (p.vMin != null || p.vMax != null) {
-				const v2 = p.vx * p.vx + p.vy * p.vy;
-				if (p.vMax != null && v2 > p.vMax * p.vMax) {
-					const v = Math.sqrt(v2);
-					p.vx = p.vx / v * p.vMax;
-					p.vy = p.vy / v * p.vMax;
-				} else if (p.vMin != null && v2 < p.vMin * p.vMin) {
-					const v = Math.sqrt(v2);
-					p.vx = p.vx / v * p.vMin;
-					p.vy = p.vy / v * p.vMin;
-				}
-			}
-
-			p.tx = limit(p.tx + p.vx * dt, p.txMin, p.txMax);
-			p.ty = limit(p.ty + p.vy * dt, p.tyMin, p.tyMax);
-
-			p.vrz = limit(p.vrz + p.arz * dt, p.vrzMin, p.vrzMax);
-			p.rz = limit(p.rz + p.vrz * dt, p.rzMin, p.rzMax);
-
-			p.vsx = limit(p.vsx + p.asx * dt, p.vsxMin, p.vsxMax);
-			p.sx = limit(p.sx + p.vsx * dt, p.sxMin, p.sxMax);
-
-			p.vsy = limit(p.vsy + p.asy * dt, p.vsyMin, p.vsyMax);
-			p.sy = limit(p.sy + p.vsy * dt, p.syMin, p.syMax);
-
-			p.vsxy = limit(p.vsxy + p.asxy * dt, p.vsxyMin, p.vsxyMax);
-			p.sxy = limit(p.sxy + p.vsxy * dt, p.sxyMin, p.sxyMax);
-
-			if (p.fadeInNT !== 0 || p.fadeOutNT !== 1) {
-				const t = p.elapse / p.lifespan;
-				if (t < p.fadeInNT) {
-					p.alpha = t / p.fadeInNT;
-				} else if (t > p.fadeOutNT) {
-					p.alpha = 1 - (t - p.fadeOutNT) / (1 - p.fadeOutNT);
-				} else {
-					p.alpha = 1;
-				}
-			}
-
-			for (let j = 0; j < this.children.length; j++) {
-				this.children[j].emitTimerAt(p.elapse, dt, p.tx, p.ty);
-			}
-		}
+	protected createParticle(x: number, y: number): Particle {
+		return new Particle(this.createParticleParameterObject(x, y));
 	}
 }
