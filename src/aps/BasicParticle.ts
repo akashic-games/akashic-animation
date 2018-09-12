@@ -1,5 +1,25 @@
 import {Particle} from "./Particle";
 
+/**
+ * BasicParticle の初期化に用いるパラメータ。
+ */
+export interface BasicParticleParameterObject {
+	lifespan: number;
+	tx: number;
+	ty: number;
+	vx: number;
+	vy: number;
+	ax: number;
+	ay: number;
+	rz: number;
+	sx: number;
+	sy: number;
+	alpha: number;
+}
+
+/**
+ * BasicEmitter がエミットするパーティクル。
+ */
 export class BasicParticle implements Particle {
 	elapse: number;
 	lifespan: number;
@@ -18,6 +38,11 @@ export class BasicParticle implements Particle {
 		this.init(param);
 	}
 
+	/**
+	 * パーティクルを初期化する。
+	 *
+	 * @param param 初期化パラメータ。
+	 */
 	init(param: BasicParticleParameterObject): void {
 		this.elapse = 0;
 		this.lifespan = param.lifespan;
@@ -32,18 +57,4 @@ export class BasicParticle implements Particle {
 		this.sy = param.sy;
 		this.alpha = param.alpha;
 	}
-}
-
-export interface BasicParticleParameterObject {
-	lifespan: number;
-	tx: number;
-	ty: number;
-	vx: number;
-	vy: number;
-	ax: number;
-	ay: number;
-	rz: number;
-	sx: number;
-	sy: number;
-	alpha: number;
 }

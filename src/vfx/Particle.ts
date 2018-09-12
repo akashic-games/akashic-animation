@@ -1,6 +1,9 @@
 
 import {BasicParticle, BasicParticleParameterObject} from "../aps";
 
+/**
+ * Particle の初期化に用いるパラメータ。
+ */
 export interface ParticleParameterObject extends BasicParticleParameterObject {
 	txMin: number;
 	txMax: number;
@@ -63,6 +66,9 @@ export interface ParticleParameterObject extends BasicParticleParameterObject {
 	fadeOutNT: number;
 }
 
+/**
+ * Emitter がエミットするパーティクル。
+ */
 export class Particle extends BasicParticle {
 	txMin: number;
 	txMax: number;

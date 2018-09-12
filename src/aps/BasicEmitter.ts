@@ -1,37 +1,65 @@
 import {Emitter} from "./Emitter";
 import {BasicParticle, BasicParticleParameterObject} from "./BasicParticle";
 
-// 時刻比較に用いられる許容誤差
-//
-// Emitter.intervalによる定期的なemit処理にて現在時刻と
-// emitタイミングを比較するとき
-//   Math.abs(エミットタイミング - 現在時刻) <= TOLERANCE
-// ならばエミットする
-//
-// apsは時刻を浮動小数で表現してよい。浮動小数同士の比較では
-// 誤差を許容する必要がある。
-//
-// JavaScriptでは数値はIEEE754倍精度浮動小数で表現される。
-// IEEE754倍精度浮動小数の有効桁数は十進数で16桁弱となる。
+/**
+ * 時刻比較に用いられる許容誤差
+ *
+ * Emitter#emitTimerAt() で現在時刻とエミットタイミングとの
+ * 比較の際に用いられる。
+ *
+ * 備考:
+ * JavaScriptでは数値はIEEE754倍精度浮動小数で表現される。
+ * IEEE754倍精度浮動小数の有効桁数は十進数で16桁弱となる。
+ */
 export const TOLERANCE = 1e-7;
 
-// エミッタ最大活動期間
-// 初期値は 100000000 である。
-export const MAX_ACTIVEPERIOD = 100000000; // 99999999.9999999 + TOLERANCE;
-
+/**
+ * BasicEmitterがパーティクルを初期化するときに利用するパラメータ。
+ *
+ * すべてのパラメータは配列となっている。配列に２つ以上の要素が
+ * 存在するとき、最初の要素と２つ目の要素を範囲とするランダムな値が
+ * 実際のパーティクルのパラメータとなる。
+ *
+ * パラメータが null または undefined の時、BasicEmitter の持つ
+ * 既定値が用いられる。
+ */
 export interface BasicParticleInitialParameterObject {
+	/// パーティクルの寿命。
 	lifespan: number[];
+
+	/// パーティクルの射出角(rad)。
 	angle: number[];
+
+	/// パーティクル初期X座標。エミッタ相対。
 	tx: number[];
+
+	/// パーティクル初期Y座標。エミッタ相対。
 	ty: number[];
+
+	/// パーティクルの初速。向きはangleに従う。
 	v: number[];
+
+	/// パーティクルの加速度の大きさ。向きはangleに従う。
 	a: number[];
+
+	/// 回転角(rad)
 	rz: number[];
+
+	/// Xスケール。
 	sx: number[];
+
+	/// Yスケール。
 	sy: number[];
+
+	/// 不透明度。
 	alpha: number[];
 }
 
+/**
+ * BasicEmitter のコンストラクタに渡すパラメータ。
+ *
+ * 詳細はBasicEmitterの同名メンバの説明を参照すること。
+ */
 export interface BasicEmitterParameterObject {
 	gx: number;
 	gy: number;
@@ -45,8 +73,14 @@ export interface BasicEmitterParameterObject {
 	initParam: BasicParticleInitialParameterObject;
 }
 
+/**
+ * BasicParticle をエミットする基本的な機能を持ったエミッタ。
+ */
 export class BasicEmitter implements Emitter {
+	/// パーティクル。参照専用。
 	particles: BasicParticle[];
+
+	/// 子エミッタ。
 	children: Emitter[];
 
 	/// このエミッタのエミットしたパーティクルに作用する重力加速度(X方向)
@@ -55,25 +89,25 @@ export class BasicEmitter implements Emitter {
 	/// このエミッタのエミットしたパーティクルに作用する重力加速度(Y方向)
 	gy: number;
 
-	/// 定期エミット時間間隔
+	/// 定期エミットの時間間隔。emitTimerAt() で用いられる。
 	interval: number;
 
-	/// エミッタ活動期間。満了後 interval に基づいた定期的エミットが停止する。負のとき無制限。
+	/// エミッタ活動期間。満了後 emitTimerAt() はエミットを行わない。負のとき無制限。
 	activePeriod: number;
 
-	/// 最大パーティクル数
+	/// 最大パーティクル数。
 	maxParticles: number;
 
-	/// エミット開始遅延。interval に基づいたエミットの開始を遅延する。
+	/// エミット開始遅延。 emitTimerAt() によるエミットが遅延される。
 	delayEmit: number;
 
-	/// 一度のエミット動作で実際に放出されるパーティクル数
+	/// 一度のエミットで放出されるパーティクル数。
 	numParticlesPerEmit: number;
 
-	/// パーティクル初期化パラメタ
+	/// パーティクル初期化パラメタ。
 	initParam: BasicParticleInitialParameterObject;
 
-	/// エミッタの利用するランダム関数
+	/// エミッタの利用するランダム関数。
 	randomFunc: () => number;
 
 	constructor(param: BasicEmitterParameterObject) {
@@ -104,6 +138,12 @@ export class BasicEmitter implements Emitter {
 		this.particles.push(p);
 	}
 
+	/**
+	 * numParticlesPerEmit 個のパーティクルをエミットする。
+	 *
+	 * @param x エミット位置のX座標。
+	 * @param y エミット位置のY座標。
+	 */
 	emitAt(x: number, y: number): void {
 		for (let i = 0; i < this.numParticlesPerEmit; i++) {
 			this.emitOneAt(x, y);
@@ -113,10 +153,10 @@ export class BasicEmitter implements Emitter {
 	/**
 	 * 前回のエミットした時刻から現在時刻の間に Emitter#interval 間隔で訪れるエミットタイミングが一度以上存在する場合エミットする。
 	 *
-	 * @param currentTime Emitterの現在時刻。０以上の実数
-	 * @param dt 前回のエミットからの経過時間。０より大きい実数
-	 * @param x エミットするX座標
-	 * @param y エミットするY座標
+	 * @param currentTime Emitterの現在時刻。０以上の実数。
+	 * @param dt 前回のエミットからの経過時間。０より大きい実数。
+	 * @param x エミット位置のX座標。
+	 * @param y エミット位置のY座標。
 	 */
 	emitTimerAt(currentTime: number, dt: number, x: number, y: number): void {
 		if (this.activePeriod === 0) {
@@ -172,6 +212,12 @@ export class BasicEmitter implements Emitter {
 		}
 	}
 
+	/**
+	 * パーティクルを更新する。
+	 *
+	 * @param p パーティクル。
+	 * @param dt 経過時間。
+	 */
 	protected updateParticle(p: BasicParticle, dt: number): void {
 		p.vx += (this.gx + p.ax) * dt;
 		p.vy += (this.gy + p.ay) * dt;
@@ -179,6 +225,12 @@ export class BasicEmitter implements Emitter {
 		p.tx += p.vy * dt;
 	}
 
+	/**
+	 * パーティクル初期化パラメータを生成する。
+	 *
+	 * @param x パーティクルのX座標。
+	 * @param y パーティクルのY座標。
+	 */
 	protected createParticleParameterObject(x: number, y: number): BasicParticleParameterObject {
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const ty = this.pickParam(this.initParam.ty, 0);
@@ -209,10 +261,24 @@ export class BasicEmitter implements Emitter {
 		};
 	}
 
+	/**
+	 * パーティクルを生成する。
+	 *
+	 * @param x パーティクルのX座標。
+	 * @param y パーティクルのY座標。
+	 */
 	protected createParticle(x: number, y: number): BasicParticle {
 		return new BasicParticle(this.createParticleParameterObject(x, y));
 	}
 
+	/**
+	 * 乱数を返す。
+	 *
+	 * 乱数生成機として randomFunc が用いられる。
+	 *
+	 * @param p 乱数の範囲を定める配列。配列長が1の時、最初の要素が用いられる。配列長が２以上の時、最初の要素が最小値、その次の要素が最大値として用いられるa。
+	 * @param defaultValue p が falsy の時用いられる既定値。
+	 */
 	protected pickParam(p: number[], defaultValue: number): number {
 		if (!p) {
 			return defaultValue;
@@ -224,11 +290,11 @@ export class BasicEmitter implements Emitter {
 		}
 	}
 
-	/**
+	/*
 	 * 初期化済みのパーティクルインスタンスを獲得する。
 	 *
-	 * @param x
-	 * @param y
+	 * @param x パーティクルのX座標。
+	 * @param y パーティクルのY座標。
 	 */
 	private acquireParticle(x: number, y: number): BasicParticle {
 		if (this.particles.length >= this.maxParticles) {
@@ -242,10 +308,18 @@ export class BasicEmitter implements Emitter {
 		return p;
 	}
 
+	/*
+	 * 使用中のパーティクルを開放する。
+	 *
+	 * @param p パーティクル。
+	 */
 	private releaseParticle(p: BasicParticle): void {
 		// ...
 	}
 
+	/*
+	 * 未使用パーティクル数。
+	 */
 	private unusedParticleCount(): number {
 		return Math.max(0, this.maxParticles - this.particles.length);
 	}

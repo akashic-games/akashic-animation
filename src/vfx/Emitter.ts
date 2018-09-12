@@ -8,6 +8,9 @@ function limit(val: number, min: number, max: number): number {
 	else return val;
 }
 
+/**
+ * Emitterがパーティクルを初期化するときに利用するパラメータ。
+ */
 export interface ParticleInitialParameterObject extends aps.BasicParticleInitialParameterObject {
 	txMin?: number[];
 	txMax?: number[];
