@@ -86,20 +86,31 @@ export interface ParticleInitialParameterObject extends aps.BasicParticleInitial
 	tvrzNTOA?: number[]; // 正規化目標角速度到達時間
 }
 
-export interface EmitterParameterObject extends aps.BasicEmitterParameterObject {
-	initParam: ParticleInitialParameterObject;
-	userData: any;
+/**
+ * パーティクルの材質。
+ */
+export interface Material {
+	skinName: string;
+	cellName: string;
+	alphaBlendMode: AlphaBlendMode;
 }
 
+/**
+ * Emitterのコンストラクタに渡すパラメータ。
+ */
+export interface EmitterParameterObject extends aps.BasicEmitterParameterObject {
+	initParam: ParticleInitialParameterObject;
+	userData: Material;
+}
+
+/**
+ * エフェクトで用いるエミッタ。
+ */
 export class Emitter extends aps.BasicEmitter {
 	particles: Particle[];
 	initParam: ParticleInitialParameterObject;
 
-	userData: {
-		skinName: string;
-		cellName: string;
-		alphaBlendMode: AlphaBlendMode;
-	};
+	userData: Material;
 
 	constructor(param: EmitterParameterObject) {
 		super(param);
