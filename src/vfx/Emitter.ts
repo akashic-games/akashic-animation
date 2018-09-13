@@ -330,6 +330,13 @@ export class Emitter extends aps.BasicEmitter {
 		const tsy = this.pickParam(this.initParam.tsy, undefined);
 		const tsxy = this.pickParam(this.initParam.tsxy, undefined);
 
+		const lifespan = this.pickParam(this.initParam.lifespan, 1);
+
+		// `trans_colorfade`
+		//
+		// 透明から始まりフェードイン、フェードアウトする。つまり
+		// [fadeInNT,fadeOutNT] が表示区間である。
+		// コマンド: "フェード"
 		let alpha: number;
 		const fadeInNT = this.pickParam(this.initParam.fadeInNT, 0);
 		const fadeOutNT = this.pickParam(this.initParam.fadeOutNT, 1);
@@ -339,15 +346,15 @@ export class Emitter extends aps.BasicEmitter {
 			alpha = this.pickParam(this.initParam.alpha, 1);
 		}
 
-		const lifespan = this.pickParam(this.initParam.lifespan, 1);
-
-		const cos = Math.cos(angle);
-		const sin = Math.sin(angle);
-
-		// resolve parameters depending on initial values.
+		// `trans_speed_beh`
+		//
+		// 初速と目標速度が与えられ、lifespanで変化する
+		// コマンド "速度：変化"
 		if (tvNTOA != null) {
 			const tvTOA = lifespan * tvNTOA;
-			if (tv) { // target velocity = tv + v
+			if (tv) {
+				// target velocity = tv + v
+				// target=tvの関係にしたい
 				a = tv / tvTOA;
 				if (tv >= 0) vMax = tv + v;
 				else vMin = tv + v;
@@ -356,6 +363,11 @@ export class Emitter extends aps.BasicEmitter {
 			}
 		}
 
+		// `trans_rotation_beh`
+		//
+		// `init_rotation` による rz, vrz (いずれも乱数)をベースに
+		// 目標角度と目標角度到達時間を定める
+		// コマンド: "Z軸回転速度変更"
 		if (tvrzC != null && tvrzNTOA != null) {
 			const trvz = vrz * tvrzC;
 			const trvzTOA = lifespan * tvrzNTOA;
@@ -364,6 +376,11 @@ export class Emitter extends aps.BasicEmitter {
 			else vrzMin = trvz;
 		}
 
+		// `trans_size_beh`
+		//
+		// tsx, tsy, tsz を設定する。
+		// それぞれに目標値（乱数）を与える。
+		// コマンド: "スケール：変化"
 		if (tsx) {
 			vsx = (tsx - sx) / lifespan;
 			vsxMin = sx;
@@ -387,6 +404,9 @@ export class Emitter extends aps.BasicEmitter {
 			sxyMin = sxy;
 			sxyMax = tsxy;
 		}
+
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
 
 		return {
 			lifespan: lifespan,
