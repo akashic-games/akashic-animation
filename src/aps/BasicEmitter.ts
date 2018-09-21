@@ -121,6 +121,18 @@ export class BasicEmitter implements Emitter {
 		this.children = param.children || [];
 		this.randomFunc = param.randomFunc;
 		this.particles = [];
+		this.initParam = {
+			lifespan: param.initParam.lifespan,
+			angle: param.initParam.angle,
+			tx: param.initParam.tx,
+			ty: param.initParam.ty,
+			v: param.initParam.v,
+			a: param.initParam.a,
+			rz: param.initParam.rz,
+			sx: param.initParam.sx,
+			sy: param.initParam.sy,
+			alpha: param.initParam.alpha
+		};
 	}
 
 	reset(): void {
@@ -222,7 +234,7 @@ export class BasicEmitter implements Emitter {
 		p.vx += (this.gx + p.ax) * dt;
 		p.vy += (this.gy + p.ay) * dt;
 		p.tx += p.vx * dt;
-		p.tx += p.vy * dt;
+		p.ty += p.vy * dt;
 	}
 
 	/**
@@ -231,6 +243,8 @@ export class BasicEmitter implements Emitter {
 	 * @param x パーティクルのX座標。
 	 * @param y パーティクルのY座標。
 	 */
+	// TODO: particle pool を用意するとしてもこちらでオブジェクトを
+	// 作っていては片手落ちになる。１つのオブジェクトを再利用する。a
 	protected createParticleParameterObject(x: number, y: number): BasicParticleParameterObject {
 		const tx = this.pickParam(this.initParam.tx, 0);
 		const ty = this.pickParam(this.initParam.ty, 0);
