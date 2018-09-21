@@ -15,7 +15,6 @@
     ],
     "files": [
         "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
-        "src/UI.ts",
         "src/demo.ts"
     ]
 }

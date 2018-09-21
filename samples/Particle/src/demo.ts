@@ -1,5 +1,4 @@
 import * as asa from "@akashic-extension/akashic-animation";
-import * as UI from "./UI";
 import { BasicEmitterParameterObject } from "@akashic-extension/akashic-animation/lib/aps";
 
 interface BasicEmitterEParameterObject extends g.EParameterObject {
@@ -78,7 +77,6 @@ class BouncingEmitter extends asa.aps.BasicEmitter {
 }
 
 class DemoScene extends g.Scene {
-	indicator: UI.Indicator;
 	basicParticleE: BasicEmitterE;
 
 	constructor(param: g.SceneParameterObject) {
@@ -93,9 +91,6 @@ class DemoScene extends g.Scene {
 			height: g.game.height,
 			cssColor: "blue"
 		}));
-
-		this.indicator = new UI.Indicator(this);
-		this.append(this.indicator);
 
 		const planeBasicEmitter = new asa.aps.BasicEmitter({
 			gx: 0,
@@ -156,42 +151,13 @@ class DemoScene extends g.Scene {
 		this.basicParticleE.particleSystem.moveTo(g.game.width / 2, g.game.height / 2);
 		this.append(this.basicParticleE);
 
-		const th = g.game.random.get(0, 2 * Math.PI);
-		const speed = 12;
-		let dx = Math.cos(th) * speed;
-		let dy = Math.sin(th) * speed;
 		let maxParticleCount = 0;
-		let moving = false;
-		this.pointDownCapture.add(() => {
-			moving = !moving;
-		});
 		this.update.add(() => {
-			// if (moving) {
-			// 	const ps = this.basicParticleE.particleSystem;
-			// 	ps.move(dx, dy);
-			// 	if (ps.tx < 0) {
-			// 		ps.tx = 0;
-			// 		dx = Math.abs(dx);
-			// 	} else if (ps.tx >= g.game.width) {
-			// 		ps.tx = g.game.width;
-			// 		dx = -Math.abs(dx);
-			// 	}
-			// 	if (ps.ty < 0) {
-			// 		ps.ty = 0;
-			// 		dy = Math.abs(dy);
-			// 	} else if (ps.ty >= g.game.height) {
-			// 		ps.ty = g.game.height;
-			// 		dy = -Math.abs(dy);
-			// 	}
-			// }
-
+			this.basicParticleE.modified();
 			if (planeBasicEmitter.particles.length > maxParticleCount) {
 				maxParticleCount = planeBasicEmitter.particles.length;
 				console.log(maxParticleCount);
 			}
-
-			// this.indicator.position = this.actor.currentFrame / (this.actor.animation.frameCount - 1);
-			this.indicator.modified();
 		});
 	}
 }
