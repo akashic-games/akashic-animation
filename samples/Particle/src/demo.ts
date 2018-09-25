@@ -15,7 +15,10 @@ class BasicEmitterE extends g.E {
 		this.surface = param.surface;
 		this.particleSystem = param.particleSystem;
 		this.particleSystem.start();
-		this.update.handle(() => this.particleSystem.update(1 / g.game.fps));
+		this.update.handle(() => {
+			this.particleSystem.update(1 / g.game.fps);
+			this.modified();
+		});
 	}
 
 	renderSelf(renderer: g.Renderer, camera?: g.Camera): boolean {
@@ -153,7 +156,6 @@ class DemoScene extends g.Scene {
 
 		let maxParticleCount = 0;
 		this.update.add(() => {
-			this.basicParticleE.modified();
 			if (planeBasicEmitter.particles.length > maxParticleCount) {
 				maxParticleCount = planeBasicEmitter.particles.length;
 				console.log(maxParticleCount);
