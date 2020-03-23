@@ -184,9 +184,14 @@
 			"type": "script",
 			"path": "script/samples/XYLocalScale/src/main.js",
 			"global": true
+		},
+		"AlphaBlendMode": {
+			"type": "script",
+			"path": "script/src/AlphaBlendMode.js",
+			"global": true
 		}
 	},
 	"environment": {
-		"sandbox-runtime": "2"
+		"sandbox-runtime": "3"
 	}
 }
