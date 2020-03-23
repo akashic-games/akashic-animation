@@ -11,7 +11,7 @@ export class Smoke {
 	alphav: number;
 	rotv: number;
 
-	timeInfo: TimeInfo
+	timeInfo: TimeInfo;
 
 	get dead(): boolean {
 		return this._sprite.opacity <= 0;

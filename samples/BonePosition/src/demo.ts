@@ -63,7 +63,7 @@ class DemoScene extends g.Scene {
 			width: game.width,
 			height: game.height - GROUND_TOP,
 			cssColor: "#B16833"
-		}))
+		}));
 
 		//
 		// Setup UI
@@ -72,12 +72,15 @@ class DemoScene extends g.Scene {
 		this.indicator = new UI.Indicator(this);
 		this.append(this.indicator);
 
-		this.emitter = new SmokeEmitter({scene: this, src: this.assets["smoke"]}, this.timeInfo);
+		this.emitter = new SmokeEmitter({
+			scene: this,
+			src: this.assets["smoke"] as g.ImageAssetLike
+		}, this.timeInfo);
 
-		this.update.add(this.onUpdate, this);
+		this.update.add(this.handleUpdate, this);
 	}
 
-	onUpdate(): void {
+	handleUpdate(): void {
 		this.actor.modified();
 		this.actor.calc();
 		this.indicator.position = this.actor.currentFrame / (this.actor.animation.frameCount - 1);
@@ -98,7 +101,14 @@ class DemoScene extends g.Scene {
 	private setupButtons(): void {
 		let btnX = 0;
 
-		const showBoneBtn = new UI.ToggleButton({scene: this, src: this.assets["showbone"], x: btnX, y: 0, touchable: true, onoff: this.actor.nullVisible});
+		const showBoneBtn = new UI.ToggleButton({
+			scene: this,
+			src: this.assets["showbone"] as g.ImageAssetLike,
+			x: btnX,
+			y: 0,
+			touchable: true,
+			onoff: this.actor.nullVisible
+		});
 		showBoneBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.actor.boneCoordsVisible = true;
@@ -109,7 +119,14 @@ class DemoScene extends g.Scene {
 		this.append(showBoneBtn);
 		btnX += showBoneBtn.width;
 
-		const speedCtrlBtn = new UI.ToggleButton({scene: this, src: this.assets["speedctrl"], x: btnX, y: 0, touchable: true, onoff: false});
+		const speedCtrlBtn = new UI.ToggleButton({
+			scene: this,
+			src: this.assets["speedctrl"] as g.ImageAssetLike,
+			x: btnX,
+			y: 0,
+			touchable: true,
+			onoff: false
+		});
 		speedCtrlBtn.toggled.add((onoff: boolean) => {
 			if (onoff) {
 				this.timeInfo.scale = 0.25;
