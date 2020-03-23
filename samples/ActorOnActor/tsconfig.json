@@ -3,18 +3,19 @@
         "module": "commonjs",
         "types": ["node"],
         "lib": ["es5"],
-        "target": "es5",		
+        "target": "es5",
         "noImplicitAny": false,
         "outDir": "script",
         "rootDir": "src",
-        "sourceMap": false
+        "sourceMap": false,
+        "allowUmdGlobalAccess": true
     },
     "exclude": [
         "node_modules",
         "script"
     ],
     "files": [
-        "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
+        "./node_modules/@akashic/akashic-engine/index.runtime.d.ts",
         "src/UI.ts",
         "src/demo.ts"
     ]

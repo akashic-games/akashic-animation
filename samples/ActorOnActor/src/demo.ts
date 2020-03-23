@@ -49,7 +49,7 @@ class ActorAttachment extends asa.Attachment {
 			return;
 		}
 
-		renderer.save()
+		renderer.save();
 		{
 			renderer.transform(mi); // cancel posture matrix
 			renderer.transform([1, 0, 0, 1, this.posture.m._matrix[4], this.posture.m._matrix[5]]);
@@ -118,10 +118,10 @@ class DemoScene extends g.Scene {
 		this.indicator = new UI.Indicator(this);
 		this.append(this.indicator);
 
-		this.update.add(this.onUpdate, this);
+		this.update.add(this.handleUpdate, this);
 	}
 
-	onUpdate(): void {
+	handleUpdate(): void {
 		this.runner.modified();
 		this.runner.calc();
 		this.torch.modified();
@@ -177,7 +177,7 @@ class DemoScene extends g.Scene {
 
 		const showBoneBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["showbone"],
+			src: this.assets["showbone"] as g.ImageAssetLike,
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -195,7 +195,7 @@ class DemoScene extends g.Scene {
 
 		const torchBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["torch"],
+			src: this.assets["torch"] as g.ImageAssetLike,
 			x: btnX,
 			y: 0,
 			touchable: true,
