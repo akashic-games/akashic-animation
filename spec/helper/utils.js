@@ -18,7 +18,27 @@ function createTextAsset(fileName, scene) {
 	scene.assets[name] = asset;
 }
 
+const gameConfiguration = {
+	width: 320,
+	height: 320,
+	fps: 30,
+	main: "",
+	assets: {}
+};
+const handlerSet = {
+	removeAllEventFilters: function () { }
+};
+
+const gameParam = {
+	configuration: gameConfiguration,
+	engineModule: {},
+	handlerSet: handlerSet,
+	resourceFactory: new g.ResourceFactory(),
+	operationPluginViewInfo: null
+};
+
 module.exports = {
 	createImageAsset: createImageAsset,
-	createTextAsset: createTextAsset
+	createTextAsset: createTextAsset,
+	gameParam: gameParam
 };
