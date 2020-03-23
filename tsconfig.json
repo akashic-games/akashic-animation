@@ -6,14 +6,15 @@
     "noImplicitAny": true,
     "outDir": "lib",
     "module": "commonjs",
-    "types": ["node"]
+    "types": ["node"],
+    "allowUmdGlobalAccess": true
   },
   "exclude": [
     "node_modules",
     "lib"
   ],
   "files": [
-    "./node_modules/@akashic/akashic-engine/lib/main.d.ts",
+    "./node_modules/@akashic/akashic-engine/index.runtime.d.ts",
     "./src/AABB.ts",
     "./src/Actor.ts",
     "./src/ActorParameterObject.ts",

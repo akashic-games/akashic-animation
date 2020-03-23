@@ -18,8 +18,8 @@ import {Animation} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import AlphaBlendMode = require("./AlphaBlendMode");
 
-const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0);
-const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0);
+const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, 0, 0);
+const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, 0, 0);
 
 /*
  * アニメーションフレームカウンタを適切な範囲に調整する。
@@ -62,7 +62,7 @@ function setupColliderForCell(info: ColliderInfo, bone: Bone): Collider {
 			collider = new BoneCellCollider(bone.name, info.boundType === "aabb");
 			break;
 		default:
-			g.game.logger.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
+			console.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
 			break;
 	}
 
@@ -78,7 +78,7 @@ function setupColliderForCircle(info: ColliderInfo, bone: Bone): Collider {
 			collider = new CircleCollider(bone.name, info.boundType === "aabb", info.scaleOption);
 			break;
 		default:
-			g.game.logger.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
+			console.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
 			break;
 	}
 
@@ -96,8 +96,8 @@ function setupCollider(bones: Bone[], actor: Actor): void {
 			switch (info.geometryType) {
 				case "cell":   collider = setupColliderForCell(info, bone); break;
 				case "circle": collider = setupColliderForCircle(info, bone); break;
-				case "box":    g.game.logger.warn("Not implemented geometory type " + info.geometryType); break;
-				default:       g.game.logger.warn("Unknown geometory type " + info.geometryType); break;
+				case "box":    console.warn("Not implemented geometory type " + info.geometryType); break;
+				default:       console.warn("Unknown geometory type " + info.geometryType); break;
 			}
 			if (collider) {
 				actor.addCollider(collider);
