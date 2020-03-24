@@ -7,8 +7,8 @@
         "noImplicitAny": false,
         "outDir": "script",
         "rootDir": "src",
-		"sourceMap": false,
-		"allowUmdGlobalAccess": true
+        "sourceMap": false,
+        "allowUmdGlobalAccess": true
     },
     "exclude": [
         "node_modules",
