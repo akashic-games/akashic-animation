@@ -267,7 +267,7 @@ class DemoScene extends g.Scene {
 
 		const showBoneBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["showbone"] as g.ImageAssetLike,
+			src: this.asset.getImageById("showbone"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -291,7 +291,7 @@ class DemoScene extends g.Scene {
 
 		const subWeaponBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["subweapon"] as g.ImageAssetLike,
+			src: this.asset.getImageById("subweapon"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -312,7 +312,7 @@ class DemoScene extends g.Scene {
 
 		const yrotBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["yrot"] as g.ImageAssetLike,
+			src: this.asset.getImageById("yrot"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -332,7 +332,7 @@ class DemoScene extends g.Scene {
 
 		const particleBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["particle"] as g.ImageAssetLike,
+			src: this.asset.getImageById("particle"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -347,7 +347,7 @@ class DemoScene extends g.Scene {
 
 		const loopBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["loop"] as g.ImageAssetLike,
+			src: this.asset.getImageById("loop"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -362,7 +362,7 @@ class DemoScene extends g.Scene {
 
 		const playBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["play"] as g.ImageAssetLike,
+			src: this.asset.getImageById("play"),
 			x: btnX,
 			y: 0,
 			touchable: true,

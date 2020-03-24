@@ -177,7 +177,7 @@ class DemoScene extends g.Scene {
 
 		const showBoneBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["showbone"] as g.ImageAssetLike,
+			src: this.asset.getImageById("showbone"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -195,7 +195,7 @@ class DemoScene extends g.Scene {
 
 		const torchBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["torch"] as g.ImageAssetLike,
+			src: this.asset.getImageById("torch"),
 			x: btnX,
 			y: 0,
 			touchable: true,

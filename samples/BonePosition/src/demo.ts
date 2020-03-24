@@ -74,7 +74,7 @@ class DemoScene extends g.Scene {
 
 		this.emitter = new SmokeEmitter({
 			scene: this,
-			src: this.assets["smoke"] as g.ImageAssetLike
+			src: this.asset.getImageById("smoke")
 		}, this.timeInfo);
 
 		this.update.add(this.handleUpdate, this);
@@ -103,7 +103,7 @@ class DemoScene extends g.Scene {
 
 		const showBoneBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["showbone"] as g.ImageAssetLike,
+			src: this.asset.getImageById("showbone"),
 			x: btnX,
 			y: 0,
 			touchable: true,
@@ -121,7 +121,7 @@ class DemoScene extends g.Scene {
 
 		const speedCtrlBtn = new UI.ToggleButton({
 			scene: this,
-			src: this.assets["speedctrl"] as g.ImageAssetLike,
+			src: this.asset.getImageById("speedctrl"),
 			x: btnX,
 			y: 0,
 			touchable: true,

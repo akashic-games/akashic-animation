@@ -72,9 +72,9 @@ class DemoScene extends g.Scene {
 			textColor: "black",
 			x: g.game.width / 2 | 0,
 			y: g.game.height * 9 / 10 | 0,
+			anchorX: 0.5,
 			scene: this
 		});
-		messageLabel.x -= messageLabel.width / 2;
 		this.append(messageLabel);
 
 		this.update.add(() => {
