@@ -18,6 +18,7 @@ import {Animation} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import AlphaBlendMode = require("./AlphaBlendMode");
 
+// `x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とするため、anchorX, anchorY に null 指定。
 const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, null, null);
 const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, null, null);
 
@@ -193,7 +194,7 @@ class Actor extends g.E {
 	constructor(param: ActorParameterObject) {
 		super(param);
 
-		// 従来の挙動とする(`x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とする)
+		// `x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とするため、anchorX, anchorY に null を指定。
 		this.anchorX = null;
 		this.anchorY = null;
 
