@@ -143,6 +143,7 @@ class DemoScene extends g.Scene {
 			buttonSprite.show();
 			this.alphaBlendIndex = (this.alphaBlendIndex + 1) % ALPHA_BLEND_TYPES.length;
 			buttonLabel.text = this.getButtonText(ALPHA_BLEND_TYPES[this.alphaBlendIndex]);
+			buttonLabel.invalidate();
 			this.getBone("dagger").alphaBlendMode = ALPHA_BLEND_TYPES[this.alphaBlendIndex];
 		});
 		button.append(touchableRect);
@@ -162,9 +163,11 @@ class DemoScene extends g.Scene {
 
 	private getButtonText(alphaBlendMode: AlphaBlendMode): string {
 		const buttonText = "α-blend：";
+		console.log("@@alphaBlendMode", alphaBlendMode);
 		switch (alphaBlendMode) {
 			case "add":
 			case "normal":
+				console.log(buttonText + alphaBlendMode);
 				return buttonText + alphaBlendMode;
 			default:
 				return buttonText + "unknown";
