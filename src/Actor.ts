@@ -18,8 +18,8 @@ import {Animation} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import AlphaBlendMode = require("./AlphaBlendMode");
 
-const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, 0, 0);
-const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, 0, 0);
+const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, null, null);
+const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, null, null);
 
 /*
  * アニメーションフレームカウンタを適切な範囲に調整する。
@@ -192,6 +192,10 @@ class Actor extends g.E {
 	 */
 	constructor(param: ActorParameterObject) {
 		super(param);
+
+		// 従来の挙動とする(`x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とする)
+		this.anchorX = null;
+		this.anchorY = null;
 
 		// resource
 		this.resource = param.resource;

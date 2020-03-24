@@ -53,6 +53,8 @@ class DemoScene extends g.Scene {
 			opacity: 0.25,
 			touchable: true
 		});
+		collisionRect.anchorX = null;
+		collisionRect.anchorY = null;
 		return new Runner(actor, collisionRect, isRightDirection);
 	}
 
@@ -78,18 +80,25 @@ class DemoScene extends g.Scene {
 		const resource = new Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
 
+		const dynamicFont = new g.DynamicFont({
+			game: g.game,
+			fontFamily: g.FontFamily.SansSerif,
+			strokeWidth: 0.25,
+			size: 28
+		});
+
 		// メッセージ生成
-		const message = new g.SystemLabel({
+		const message = new g.Label({
 			text: "顔か☆をクリックしてみよう",
 			fontSize: 28,
 			textAlign: g.TextAlign.Center,
-			textBaseline: g.TextBaseline.Alphabetic,
 			textColor: "black",
-			fontFamily: g.FontFamily.SansSerif,
+			font: dynamicFont,
 			x: g.game.width / 2 | 0,
 			y: g.game.height * 4 / 5 | 0,
 			scene: this
 		});
+		message.x -= message.width / 2;
 		this.append(message);
 
 		// ランナー生成
