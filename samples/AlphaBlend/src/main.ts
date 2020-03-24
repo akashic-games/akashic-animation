@@ -163,11 +163,9 @@ class DemoScene extends g.Scene {
 
 	private getButtonText(alphaBlendMode: AlphaBlendMode): string {
 		const buttonText = "α-blend：";
-		console.log("@@alphaBlendMode", alphaBlendMode);
 		switch (alphaBlendMode) {
 			case "add":
 			case "normal":
-				console.log(buttonText + alphaBlendMode);
 				return buttonText + alphaBlendMode;
 			default:
 				return buttonText + "unknown";

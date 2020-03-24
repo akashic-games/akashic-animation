@@ -30,7 +30,7 @@ const HEIGHT         = 320;
 function equipSecondaryBloodSword(actor: asa.Actor): any {
 	// attach cell "sword" retrieved from actor's skin by name to bone "arm_l2"
 	const m = new g.PlainMatrix();
-	m.update(0, 0, 1, 1, -90, 0, 60, 0, 0);
+	m.update(0, 0, 1, 1, -90, 0, 60, null, null);
 	const attachment = actor.attach("sword", "arm_l2", m);
 
 	// add collider (collision detection object)
