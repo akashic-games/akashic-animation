@@ -51,10 +51,10 @@ class DemoScene extends g.Scene {
 			x: x - actor.width / 3,
 			y: y - actor.height / 3,
 			opacity: 0.25,
-			touchable: true
+			touchable: true,
+			anchorX: null,
+			anchorY: null
 		});
-		collisionRect.anchorX = null;
-		collisionRect.anchorY = null;
 		return new Runner(actor, collisionRect, isRightDirection);
 	}
 

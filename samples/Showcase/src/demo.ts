@@ -80,10 +80,18 @@ function updateParticles(actor: asa.Actor, particles: Particle[]) {
 	}
 }
 
-function attachBoneNameText(actor: asa.Actor, scene: g.Scene): asa.Attachment[] {
+function attachBoneNameText(actor: asa.Actor, font: g.Font, scene: g.Scene): asa.Attachment[] {
 	const attachments: asa.Attachment[] = [];
 	actor.skeleton.bones.forEach((bone: asa.Bone) => {
-		attachments.push(actor.attach(new SystemTextAttachment(bone.name, scene), bone.name));
+		const text = new g.Label({
+			scene: scene,
+			text: bone.name,
+			fontSize: font.size,
+			textAlign: g.TextAlign.Left,
+			font: font,
+			maxWidth: 128
+		});
+		attachments.push(actor.attach(new CancelRotationAttachment(text), bone.name));
 	});
 	return attachments;
 }
@@ -121,27 +129,12 @@ function invertMatrix(m: [number, number, number, number, number, number]): [num
 
 }
 
-class SystemTextAttachment extends asa.Attachment {
-	text: string;
-	scene: g.Scene;
-	dynamicFont: g.DynamicFont;
-	texts: g.Label[];
+class CancelRotationAttachment extends asa.Attachment {
+	e: g.E;
 
-	constructor(text: string, scene: g.Scene) {
+	constructor(e: g.E) {
 		super();
-		this.text = text;
-		this.scene = scene;
-		this.texts = [];
-
-		this.dynamicFont = new g.DynamicFont({
-			game: g.game,
-			fontFamily: g.FontFamily.Monospace,
-			fontColor: "#FF8080",
-			strokeWidth: 4,
-			strokeColor: "#000FF",
-			strokeOnly: false,
-			size: 14
-		});
+		this.e = e;
 	}
 
 	render(renderer: g.Renderer): void {
@@ -150,30 +143,10 @@ class SystemTextAttachment extends asa.Attachment {
 			return;
 		}
 
-		if (this.texts.length) {
-			this.texts.forEach(text => {
-				this.scene.remove(text);
-			});
-			this.texts.length = 0;
-		}
-
-		const text = new g.Label({
-			text: this.text,
-			fontSize: 14,
-			textAlign: g.TextAlign.Left,
-			font: this.dynamicFont,
-			x: this.posture.m._matrix[4],
-			y: this.posture.m._matrix[5],
-			maxWidth: 128,
-			scene: this.scene
-		});
-
-		this.scene.append(text);
-		this.texts.push(text);
 		renderer.save();
-		{
-			renderer.transform(mi); // cancel posture matrix
-		}
+		renderer.transform(mi); // cancel posture matrix
+		renderer.translate(this.posture.m._matrix[4], this.posture.m._matrix[5]);
+		this.e.render(renderer);
 		renderer.restore();
 	}
 }
@@ -185,6 +158,7 @@ class DemoScene extends g.Scene {
 	indicator: UI.Indicator;
 	playBtn: UI.ToggleButton;
 	attachments: asa.Attachment[];
+	font: g.Font;
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
@@ -192,6 +166,16 @@ class DemoScene extends g.Scene {
 	}
 
 	onLoaded() {
+		this.font = new g.DynamicFont({
+			game: g.game,
+			fontFamily: g.FontFamily.Monospace,
+			fontColor: "#FF8080",
+			strokeWidth: 4,
+			strokeColor: "#000FF",
+			strokeOnly: false,
+			size: 14
+		});
+
 		//
 		// Load ASA resource
 		//
@@ -277,7 +261,7 @@ class DemoScene extends g.Scene {
 			if (onoff) {
 				this.actor.nullVisible = true;
 				this.actor.boneCoordsVisible = true;
-				this.attachments = attachBoneNameText(this.actor, this);
+				this.attachments = attachBoneNameText(this.actor, this.font, this);
 				console.info("NULLとボーン座標系の表示");
 			} else {
 				this.actor.nullVisible = false;
