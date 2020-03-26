@@ -37,11 +37,13 @@ class DemoScene extends g.Scene {
 			boneSetName: "support_image_inverted",
 			width: 240,
 			height: 240,
-			scaleX: 0.75,
-			scaleY: 0.75,
+			scaleX: 0.7,
+			scaleY: 0.7,
 			x: x,
 			y: y,
-			playSpeed: 1
+			playSpeed: 1,
+			anchorX: -0.2,
+			anchorY: -0.2
 		});
 		const collisionRect =  new g.FilledRect({
 			scene: this,
@@ -51,9 +53,7 @@ class DemoScene extends g.Scene {
 			x: x - actor.width / 3,
 			y: y - actor.height / 3,
 			opacity: 0.25,
-			touchable: true,
-			anchorX: null,
-			anchorY: null
+			touchable: true
 		});
 		return new Runner(actor, collisionRect, isRightDirection);
 	}
@@ -96,9 +96,9 @@ class DemoScene extends g.Scene {
 			font: dynamicFont,
 			x: g.game.width / 2 | 0,
 			y: g.game.height * 4 / 5 | 0,
-			scene: this
+			scene: this,
+			anchorX: 0.5
 		});
-		message.x -= message.width / 2;
 		this.append(message);
 
 		// ランナー生成

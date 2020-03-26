@@ -109,9 +109,9 @@ class DemoScene extends g.Scene {
 			font: dynamicFont,
 			x: g.game.width / 2,
 			y: g.game.height * 9 / 10 | 0,
-			scene: this
+			scene: this,
+			anchorX: 0.5
 		});
-		messageLabel.x -= messageLabel.width / 2;
 		this.append(messageLabel);
 
 		this.update.add(() => {

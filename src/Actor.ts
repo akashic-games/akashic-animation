@@ -194,10 +194,6 @@ class Actor extends g.E {
 	constructor(param: ActorParameterObject) {
 		super(param);
 
-		// `x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とするため、anchorX, anchorY に null を指定。
-		this.anchorX = null;
-		this.anchorY = null;
-
 		// resource
 		this.resource = param.resource;
 
