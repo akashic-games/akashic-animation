@@ -72,15 +72,19 @@ class DemoScene extends g.Scene {
 		this.colorButton = this.generateColorButton(g.game.width * 3 / 10, g.game.height * 7.5 / 10);
 		this.append(this.colorButton);
 
-		const messageLabel = new g.SystemLabel({
+		const dynamicFont = new g.DynamicFont({
+			game: g.game,
+			fontFamily: g.FontFamily.SansSerif,
+			strokeWidth: 0.25,
+			size: 16
+		});
+		const messageLabel = new g.Label({
 			text: "ボタンを押すと剣、背景を押すと背景の色が変わります",
 			fontSize: 16,
 			textAlign: g.TextAlign.Center,
-			textBaseline: g.TextBaseline.Alphabetic,
 			textColor: "black",
-			fontFamily: g.FontFamily.SansSerif,
-			strokeWidth: 0.25,
-			x: g.game.width / 2 | 0,
+			font: dynamicFont,
+			x: 0,
 			y: g.game.height * 9.5 / 10 | 0,
 			scene: this
 		});
@@ -103,15 +107,23 @@ class DemoScene extends g.Scene {
 		const pushedButtonSprite = this.generateButtonSprite("pushed_button");
 		pushedButtonSprite.hide();
 		button.append(pushedButtonSprite);
-		const buttonLabel = new g.SystemLabel({
+		const dynamicFont = new g.DynamicFont({
+			game: g.game,
+			fontFamily: g.FontFamily.SansSerif,
+			size: 12,
+			fontWeight: g.FontWeight.Bold
+		});
+		const buttonLabel = new g.Label({
 			text: this.getButtonText(ALPHA_BLEND_TYPES[this.alphaBlendIndex]),
 			fontSize: 12,
 			textAlign: g.TextAlign.Center,
 			textColor: "white",
-			fontFamily: g.FontFamily.SansSerif,
+			font: dynamicFont,
 			x: buttonSprite.width / 2,
 			y: buttonSprite.height / 2,
-			scene: this
+			scene: this,
+			anchorX: 0.5,
+			anchorY: 0.5
 		});
 		button.append(buttonLabel);
 		const touchableRect = new g.FilledRect({
@@ -131,6 +143,7 @@ class DemoScene extends g.Scene {
 			buttonSprite.show();
 			this.alphaBlendIndex = (this.alphaBlendIndex + 1) % ALPHA_BLEND_TYPES.length;
 			buttonLabel.text = this.getButtonText(ALPHA_BLEND_TYPES[this.alphaBlendIndex]);
+			buttonLabel.invalidate();
 			this.getBone("dagger").alphaBlendMode = ALPHA_BLEND_TYPES[this.alphaBlendIndex];
 		});
 		button.append(touchableRect);

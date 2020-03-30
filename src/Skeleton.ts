@@ -214,7 +214,7 @@ function interpolate(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: number): an
 			// case "deceleration": // SpriteStuioのサポートする方式。一般的でないかもしれないので対応保留
 			default:
 				// 未知の補間方法は不正なデータである
-				g.game.logger.warn("Unknown interpolation: " + kFrom.ipType);
+				console.warn("Unknown interpolation: " + kFrom.ipType);
 				// 補間できない。最初のキーの値を採用する
 				return kFrom.value;
 		}
@@ -500,7 +500,7 @@ class Skeleton {
 		if (bone.parent) {
 			const parentComposedCache = this.composedCaches[bone.parent.arrayIndex];
 			if (parentComposedCache === undefined) {
-				g.game.logger.warn("Invalid array index for " + bone.parent.name);
+				console.warn("Invalid array index for " + bone.parent.name);
 			} else {
 				const m0 = composedCache.m._matrix;
 				const m1 = parentComposedCache.m._matrix;

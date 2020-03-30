@@ -95,17 +95,22 @@ class DemoScene extends g.Scene {
 			this.append(heartItem.sprite);
 		});
 
-		const messageLabel = new g.SystemLabel({
+		const dynamicFont = new g.DynamicFont({
+			game: g.game,
+			fontFamily: g.FontFamily.SansSerif,
+			strokeWidth: 0.25,
+			size: 16
+		});
+		const messageLabel = new g.Label({
 			text: "ハートを棒人間にくっつけてみよう",
 			fontSize: 18,
 			textAlign: g.TextAlign.Center,
-			textBaseline: g.TextBaseline.Alphabetic,
 			textColor: "black",
-			fontFamily: g.FontFamily.SansSerif,
-			strokeWidth: 0.25,
-			x: g.game.width / 2 | 0,
+			font: dynamicFont,
+			x: g.game.width / 2,
 			y: g.game.height * 9 / 10 | 0,
-			scene: this
+			scene: this,
+			anchorX: 0.5
 		});
 		this.append(messageLabel);
 

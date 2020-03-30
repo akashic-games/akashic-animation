@@ -2,7 +2,7 @@
  * トグルボタンパラメタオブジェクト
  */
 export interface ToggleButtonParameterObject extends g.SpriteParameterObject {
-	onoff: boolean
+	onoff: boolean;
 }
 
 
@@ -18,13 +18,13 @@ export class ToggleButton extends g.Sprite {
 		super(param);
 		this.onoff = param.onoff;
 
-		this.highlight = new g.FilledRect({scene: param.scene, cssColor: "#208020", width: this.width, height: 2})
+		this.highlight = new g.FilledRect({scene: param.scene, cssColor: "#208020", width: this.width, height: 2});
 		this.highlight.y = this.height;
 		this.append(this.highlight);
 
 		this.toggled = new g.Trigger<boolean>();
 
-		this.pointDown.add(this.onPointDown, this);
+		this.pointDown.add(this.handlePointDown, this);
 
 		if (param.onoff) {
 			this.highlight.show();
@@ -33,13 +33,13 @@ export class ToggleButton extends g.Sprite {
 		}
 	}
 
-	onPointDown(e: g.PointDownEvent): void {
+	handlePointDown(e: g.PointDownEvent): void {
 		this.toggle();
 		this.toggled.fire(this.onoff);
 	}
 
 	setState(onoff: boolean): void {
-		if (this.onoff != onoff) {
+		if (this.onoff !== onoff) {
 			this.toggle();
 			this.toggled.fire(this.onoff);
 		}
@@ -65,7 +65,7 @@ export class Indicator extends g.FilledRect {
 	constructor(scene: g.Scene) {
 		super({scene: scene, x: 0, y: scene.game.height - 2, cssColor: "#A0A0A0", width: scene.game.width, height: 2});
 
-		this.progress = new g.FilledRect({scene: scene, x: 0, y: 0, cssColor: "#FF6060", width: 0, height: 2})
+		this.progress = new g.FilledRect({scene: scene, x: 0, y: 0, cssColor: "#FF6060", width: 0, height: 2});
 		this.append(this.progress);
 	}
 

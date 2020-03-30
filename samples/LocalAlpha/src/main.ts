@@ -57,16 +57,22 @@ class DemoScene extends g.Scene {
 		});
 		this.append(sprite);
 
-		const messageLabel = new g.SystemLabel({
+		const dynamicFont = new g.DynamicFont({
+			game: g.game,
+			fontFamily: g.FontFamily.SansSerif,
+			strokeWidth: 0.25,
+			size: 18
+		});
+
+		const messageLabel = new g.Label({
 			text: "太陽を人型物体にくっつけてみよう",
 			fontSize: 18,
 			textAlign: g.TextAlign.Center,
-			textBaseline: g.TextBaseline.Alphabetic,
+			font: dynamicFont,
 			textColor: "black",
-			fontFamily: g.FontFamily.SansSerif,
-			strokeWidth: 0.25,
 			x: g.game.width / 2 | 0,
 			y: g.game.height * 9 / 10 | 0,
+			anchorX: 0.5,
 			scene: this
 		});
 		this.append(messageLabel);

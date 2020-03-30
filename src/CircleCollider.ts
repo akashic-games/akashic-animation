@@ -78,7 +78,7 @@ class CircleCollider extends Collider {
 			} else if (this._scaleOption === "max") {
 				this._volume.r *= scales[0] > scales[1] ? scales[0] : scales[1];
 			} else {
-				g.game.logger.warn("Unknown scale option: " + this._scaleOption);
+				console.warn("Unknown scale option: " + this._scaleOption);
 			}
 		}
 

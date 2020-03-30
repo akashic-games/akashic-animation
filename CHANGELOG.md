@@ -2,6 +2,7 @@
 
 ## Unreleased changes
 
+* akashic-engine@3.0.0 系に追従。
 * すでにプロジェクトをロード済みのリソースに対して`Resource#loadProject()`を実行すると以前ロードされた情報は削除されることをコメントに追加。
 
 ## 3.0.3
