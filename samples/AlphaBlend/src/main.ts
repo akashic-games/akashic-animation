@@ -121,10 +121,10 @@ class DemoScene extends g.Scene {
 			font: dynamicFont,
 			x: buttonSprite.width / 2,
 			y: buttonSprite.height / 2,
-			scene: this
+			scene: this,
+			anchorX: 0.5,
+			anchorY: 0.5
 		});
-		buttonLabel.x -= buttonLabel.width / 2;
-		buttonLabel.y -= buttonLabel.height / 2;
 		button.append(buttonLabel);
 		const touchableRect = new g.FilledRect({
 			scene: this,
