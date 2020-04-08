@@ -4,6 +4,7 @@ import BoneSet = require("./BoneSet");
 import Container = require("./Container");
 import AttrId = require("./AttrId");
 import {Animation, Curve} from "./AnimeParams";
+import * as vfx from "./vfx";
 
 function checkVersion(version: string, fname: string): void {
 	const r = version.match(/(\d+)\.\d+.\d+/);
@@ -41,18 +42,20 @@ function loadResourceFromTextAsset<T>(
 	resolver: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
 	const resources: T[] = [];
 
-	fileNames.forEach((fname: string): void => {
-		const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
-		const data: Container = JSON.parse((<g.TextAsset>assets[assetName]).data);
+	if (fileNames) {
+		fileNames.forEach((fname: string): void => {
+			const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
+			const data: Container = JSON.parse((<g.TextAsset>assets[assetName]).data);
 
-		checkVersion(data.version, fname);
+			checkVersion(data.version, fname);
 
-		if (resolver) {
-			resolver(data.contents, assets);
-		}
+			if (resolver) {
+				resolver(data.contents, assets);
+			}
 
-		resources.push(data.contents);
-	});
+			resources.push(data.contents);
+		});
+	}
 
 	return resources;
 }
@@ -91,6 +94,7 @@ class Resource {
 	skins: Skin[] = [];
 	boneSets: BoneSet[] = [];
 	animations: Animation[] = [];
+	effectParameters: vfx.EffectParameterObject[] = [];
 
 	constructor() {
 		// ...
@@ -124,6 +128,7 @@ class Resource {
 		this.animations.forEach((animation: Animation) => {
 			assignAttributeID(animation);
 		});
+		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(data.contents.effectFileNames, mergedAssets, undefined);
 	}
 
 	/**
@@ -167,6 +172,20 @@ class Resource {
 		for (let i = 0; i < this.animations.length; i++) {
 			if (this.animations[i].name === name) {
 				return this.animations[i];
+			}
+		}
+		return undefined;
+	}
+
+	/**
+	 * エフェクトパラメタを取得する。
+	 *
+	 * @param name エフェクパラメタ名
+	 */
+	getEffectParameterByName(name: string): vfx.EffectParameterObject {
+		for (let i = 0, len = this.effectParameters.length; i < len; i++) {
+			if (this.effectParameters[i].name === name) {
+				return this.effectParameters[i];
 			}
 		}
 		return undefined;

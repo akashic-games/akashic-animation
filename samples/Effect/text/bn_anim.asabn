@@ -1,0 +1,1 @@
+{"version":"2.0.0","contents":{"name":"anim","bones":[{"alphaBlendMode":"normal","arrayIndex":0,"parentIndex":-1,"name":"root","colliderInfos":[]},{"alphaBlendMode":"normal","arrayIndex":1,"parentIndex":0,"name":"effect_1","colliderInfos":[],"effectName":"effect01"}]}}

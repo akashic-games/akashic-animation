@@ -4,6 +4,8 @@ import Attachment = require("./Attachment");
 import AttrId = require("./AttrId");
 import {Animation, CurveTie, Curve, KeyFrame} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
+import * as aps from "./aps";
+import * as vfx from "./vfx";
 
 // 属性初期値テーブル
 //
@@ -33,7 +35,8 @@ const attributeInitialValues: any = {
 	ccr: 0.0,
 	flipH: false,
 	flipV: false,
-	userData: undefined
+	userData: undefined,
+	effect: undefined
 };
 
 function makeLinearKey(time: number, value: any): KeyFrame<any> {
@@ -305,18 +308,57 @@ class Skeleton {
 	}
 
 	/**
+	 * エフェクトのリセット
+	 */
+	resetEffect(): void {
+		for (let i = 0; i < this.composedCaches.length; i++) {
+			const effects = this.composedCaches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.reset();
+			}
+		}
+	}
+
+	/**
+	 * エフェクトの時刻設定
+	 */
+	setEffectTime(time: number): void {
+		for (let i = 0; i < this.composedCaches.length; i++) {
+			const effects = this.composedCaches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.nextEmitterTime = time;
+			}
+		}
+	}
+
+	/**
+	 * デバッグ用
+	 */
+	_startEffect(): void {
+		for (let i = 0; i < this.caches.length; i++) {
+			const effects = this.caches[i].effects;
+			for (let j = 0; j < effects.length; j++) {
+				effects[j].particleSystem.start();
+			}
+		}
+	}
+
+	/**
 	 * アニメーションの計算と描画の準備を行う。
 	 *
 	 * 通常ゲーム開発者はこのメソッドを直接呼び出す必要はない。
 	 *
 	 * @param time 現在のフレーム
 	 * @param anim 計算に用いるアニメーション
+	 * @param dt 前回のupdate()呼び出しからの経過時間
 	 */
-	update(time: number, anim: Animation): void {
+	update(time: number, anim: Animation, dt: number): void {
 		// アニメーションを計算。結果をcacheに収める
 		this.updateCache(time, anim);
 		// キャッシュの中身を接続
 		this.traverse(this.bones[0]); // 0 番目にrootがあること
+		// エフェクトの更新
+		this.updateEffect(dt);
 	}
 
 	_getBoneByName(boneName: string): Bone {
@@ -572,7 +614,27 @@ class Skeleton {
 		composedCache.attrs[AttrId.ccr]   = cache.attrs[AttrId.ccr];
 		composedCache.attrs[AttrId.flipH] = cache.attrs[AttrId.flipH];
 		composedCache.attrs[AttrId.flipV] = cache.attrs[AttrId.flipV];
+		composedCache.attrs[AttrId.effect] = cache.attrs[AttrId.effect];
 		composedCache.alphaBlendMode = cache.alphaBlendMode;
+		composedCache.effects = cache.effects;
+	}
+
+	private updateEffect(dt: number): void {
+		for (let i = 0; i < this.composedCaches.length; i++) {
+			const cc = this.composedCaches[i];
+			const effects = cc.effects;
+			const effectValue: vfx.EffectValue = cc.attrs[AttrId.effect];
+			if (! effectValue) continue;
+			for (let j = 0; j < effects.length; j++) {
+				const ps = effects[j].particleSystem;
+				switch (effectValue.emitterOp) {
+					case vfx.EmitterOperation.start: ps.start(); break;
+					case vfx.EmitterOperation.stop: ps.stop(); break;
+				}
+				// ps.moveTo(cc.m._matrix[4], cc.m._matrix[5]);
+				ps.update(dt);
+			}
+		}
 	}
 }
 
