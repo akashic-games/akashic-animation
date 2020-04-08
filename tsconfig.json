@@ -42,7 +42,11 @@
     "./src/Skeleton.ts",
     "./src/Skin.ts",
     "./src/Vector2.ts",
-    "./src/Volume.ts"
+    "./src/Volume.ts",
+    "./src/aps/Emitter.ts",
+    "./src/aps/Particle.ts",
+    "./src/aps/ParticleSystem.ts",
+    "./src/aps/index.ts"
   ],
   "atom": {
     "rewriteTsconfig": true

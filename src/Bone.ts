@@ -12,6 +12,7 @@ class Bone {
 	arrayIndex: number;
 	colliderInfos: ColliderInfo[];
 	alphaBlendMode: AlphaBlendMode = undefined;
+	effectName: string;
 
 	constructor() {
 		this.children = [];
