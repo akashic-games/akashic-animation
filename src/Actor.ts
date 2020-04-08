@@ -564,23 +564,23 @@ class Actor extends g.E {
 	}
 
 	private renderEffect(effect: vfx.Effect, renderer: g.Renderer, camera: g.Camera): void {
-		effect.particleSystem.traverse((e) => {
-			const skin = this.resource.getSkinByName(e.userData.skinName);
+		effect.particleSystem.traverse((e: vfx.Emitter) => {
+			const skin = this.resource.getSkinByName(e.material.skinName);
 			const surface = skin.surface;
-			const cell = skin.cells[e.userData.cellName];
+			const cell = skin.cells[e.material.cellName];
 			const left = cell.pos.x;
 			const top = cell.pos.y;
 			const width = cell.size.width;
 			const height = cell.size.height;
 			const particles = e.particles;
 
-			renderer.setCompositeOperation(getCompositeOperation(e.userData.alphaBlendMode));
+			renderer.setCompositeOperation(getCompositeOperation(e.material.alphaBlendMode));
 
 			for (let i = 0, len = particles.length; i < len; i += 1) {
 				const p = particles[i];
 
-				const sx = p.sx * p.sxy;
-				const sy = p.sy * p.sxy;
+				const sx = p.sx;
+				const sy = p.sy;
 				const cos = Math.cos(p.rz);
 				const sin = Math.sin(p.rz);
 				const a = cos * sx;
