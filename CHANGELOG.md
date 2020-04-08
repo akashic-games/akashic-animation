@@ -1,7 +1,8 @@
 # ChangeLog
 
-## Unreleased changes
+## 3.1.0
 
+* すでにプロジェクトをロード済みのリソースに対して`Resource#loadProject()`を実行すると以前ロードされた情報は削除されることをコメントに追加。
 * Actorからパーティクルを放出する機能の追加
 
 ## 3.0.3
