@@ -1,14 +1,19 @@
+import Content = require("./Content");
+import ContentType = require("./ContentType");
+
 /**
  * アニメーションデータコンテナ
  *
- * ASAファイル(拡張子がasa...(asapj, asaan and etc))に格納されるデータにバージョン情報を追加する
+ * ASAファイルのデータが格納されている
  */
 class Container {
 	version: string;
-	contents: any;
+	type: ContentType;
+	contents: Content<any>[];
 
-	constructor(version: string, contents: any) {
+	constructor(version: string, type: ContentType, contents: Content<any>[]) {
 		this.version = version;
+		this.type = type;
 		this.contents = contents;
 	}
 }
