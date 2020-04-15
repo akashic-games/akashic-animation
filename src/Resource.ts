@@ -1,8 +1,9 @@
 import Skin = require("./Skin");
 import Bone = require("./Bone");
 import BoneSet = require("./BoneSet");
-import Container = require("./ContainerV3");
+import Container = require("./Container");
 import ContainerV2 = require("./ContainerV2");
+import ContainerV3 = require("./ContainerV3");
 import Content = require("./Content");
 import AttrId = require("./AttrId");
 import {Animation, Curve} from "./AnimeParams";
@@ -141,31 +142,8 @@ class Resource {
 			this.loadProjectV2(data, assets, ...otherAssets);
 			return;
 		}
-		if (data.type !== "bundle") {
-			throw  g.ExceptionFactory.createAssertionError("Invalid file type: " + data.type + ", supported only \"bundle\" type");
-		}
 
-		this.boneSets = loadResourceFromContents<BoneSet>(
-			data.contents.filter(content => content.type === "bone"),
-			mergedAssets,
-			c => constructBoneTree(c.bones)
-		);
-		this.skins = loadResourceFromContents<Skin>(
-			data.contents.filter(content => content.type === "skin"),
-			mergedAssets,
-			bindTextureFromAsset
-		);
-		this.animations = loadResourceFromContents<Animation>(
-			data.contents.filter(content => content.type === "animation"),
-			mergedAssets
-		);
-		this.animations.forEach((animation: Animation) => {
-			assignAttributeID(animation);
-		});
-		this.effectParameters = loadResourceFromContents<vfx.EffectParameterObject>(
-			data.contents.filter(content => content.type === "effect"),
-			mergedAssets
-		);
+		this.loadProjectV3(data as ContainerV3, assets, ...otherAssets);
 	}
 
 	/**
@@ -228,9 +206,6 @@ class Resource {
 		return undefined;
 	}
 
-	/**
-	 * asapjテキストアセットを読み込み、さらに関連するアセットも読み込む。
-	 */
 	protected loadProjectV2(data: ContainerV2, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
 		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
 
@@ -246,6 +221,36 @@ class Resource {
 			assignAttributeID(animation);
 		});
 		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(data.contents.effectFileNames, mergedAssets, undefined);
+	}
+
+	protected loadProjectV3(data: ContainerV3, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
+		if (data.type !== "bundle") {
+			throw  g.ExceptionFactory.createAssertionError("Invalid file type: " + data.type + ", supported only \"bundle\" type");
+		}
+
+		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+
+		this.boneSets = loadResourceFromContents<BoneSet>(
+			data.contents.filter(content => content.type === "bone"),
+			mergedAssets,
+			c => constructBoneTree(c.bones)
+		);
+		this.skins = loadResourceFromContents<Skin>(
+			data.contents.filter(content => content.type === "skin"),
+			mergedAssets,
+			bindTextureFromAsset
+		);
+		this.animations = loadResourceFromContents<Animation>(
+			data.contents.filter(content => content.type === "animation"),
+			mergedAssets
+		);
+		this.animations.forEach((animation: Animation) => {
+			assignAttributeID(animation);
+		});
+		this.effectParameters = loadResourceFromContents<vfx.EffectParameterObject>(
+			data.contents.filter(content => content.type === "effect"),
+			mergedAssets
+		);
 	}
 }
 
