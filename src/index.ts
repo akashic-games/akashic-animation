@@ -11,6 +11,7 @@ export import AnimeParams = require("./AnimeParams");
 export import Resource = require("./Resource");
 export import Container = require("./Container");
 export import ContainerV2 = require("./ContainerV2");
+export import ContainerV3 = require("./ContainerV3");
 export import Content = require("./Content");
 export import ContentType = require("./ContentType");
 export import ColliderInfo = require("./ColliderInfo");

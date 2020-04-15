@@ -35,6 +35,7 @@
     "./src/ColliderInfo.ts",
     "./src/Container.ts",
     "./src/ContainerV2.ts",
+    "./src/ContainerV3.ts",
     "./src/Content.ts",
     "./src/ContentType.ts",
     "./src/FinalizedCell.ts",
