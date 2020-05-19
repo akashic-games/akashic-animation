@@ -1,8 +1,5 @@
 # ChangeLog
 
-## Unreleased changes
-* TypeDocで出力されるリファレンスにGAのトラッキングIDが付与されるように改修
-
 ## 3.2.0
 
 * ファイルバージョン "3.0.0" に対応
