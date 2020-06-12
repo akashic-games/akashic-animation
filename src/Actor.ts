@@ -615,10 +615,10 @@ class Actor extends g.E {
 			renderer.save();
 			{
 				renderer.opacity(this.opacity * cc.attrs[AttrId.alpha]);
+				renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 
 				renderer.save();
 				{
-					renderer.transform(cc.m._matrix); // ボーンのマトリクスを乗算
 					for (let j = 0; j < cc.effects.length; j++) {
 						this.renderEffect(cc.effects[j], renderer, camera);
 					}
