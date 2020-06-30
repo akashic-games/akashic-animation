@@ -35,7 +35,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@akashic/akashic-engine": "~3.0.0-beta.14"
+    "@akashic/akashic-engine": "3.0.0-beta.17"
   },
   "repository": {
     "type": "git",
