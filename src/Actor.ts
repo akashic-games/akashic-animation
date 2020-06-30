@@ -107,29 +107,6 @@ function setupCollider(bones: Bone[], actor: Actor): void {
 	});
 }
 
-function getInverse(width: number, height: number, scaleX: number, scaleY: number, angle: number, x: number, y: number): g.Matrix {
-	const m = new g.PlainMatrix();
-
-	const r = angle * Math.PI / 180;
-	const _cos = Math.cos(r);
-	const _sin = Math.sin(r);
-	const a = _cos / scaleX;
-	const b = _sin / scaleY;
-	const c = _sin / scaleX;
-	const d = _cos / scaleY;
-	const w = width / 2;
-	const h = height / 2;
-
-	m._matrix[0] = a;
-	m._matrix[1] = -b;
-	m._matrix[2] = c;
-	m._matrix[3] = d;
-	m._matrix[4] = -a * (w + x) - c * (h + y) + w;
-	m._matrix[5] =  b * (w + x) - d * (h + y) + h;
-
-	return m;
-}
-
 /**
  * ボーンベースのアニメーションを描画するエンティティ。
  */
@@ -187,6 +164,7 @@ class Actor extends g.E {
 	private _nextCntr: number;
 	private _elapse: number;
 	private _ended: g.Trigger<void>;
+	private _inv: g.Matrix;
 
 	/**
 	 * 各種パラメータを指定して `Actor` のインスタンスを生成する。
@@ -225,6 +203,7 @@ class Actor extends g.E {
 		this._cntr = 0;
 		this._nextCntr = 0;
 		this._elapse = 0;
+		this._inv = new g.PlainMatrix();
 		this.pause = false;
 		this.loop = true;
 		this.playSpeed = param.playSpeed !== undefined && param.playSpeed !== null ? param.playSpeed : 1.0;
@@ -460,8 +439,16 @@ class Actor extends g.E {
 		renderer.save();
 		{
 			// E#render()が乗算したActor#getMatrix()をキャンセルする。Postureはこのマトリクスを含んでいる
-			const inv = getInverse(this.width, this.height, this.scaleX, this.scaleY, this.angle, this.x, this.y);
-			renderer.transform(inv._matrix);
+
+			this._inv.updateByInverse(
+				this.width, this.height,
+				this.scaleX, this.scaleY,
+				this.angle,
+				this.x, this.y,
+				this.anchorX, this.anchorY
+			);
+
+			renderer.transform(this._inv._matrix);
 
 			// render myself
 			this.renderPostures(sortedComposedCaches, renderer, camera);
