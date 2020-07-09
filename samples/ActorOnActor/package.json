@@ -10,7 +10,7 @@
   "author": "DWANGO Co., Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@akashic-extension/akashic-animation": "f~4.0.0-beta.1"
+    "@akashic-extension/akashic-animation": "~4.0.0-beta.1"
   },
   "devDependencies": {
     "@akashic/akashic-engine": "~3.0.0-beta.28",
