@@ -87,7 +87,7 @@ function attachBoneNameText(actor: asa.Actor, font: g.Font, scene: g.Scene): asa
 			scene: scene,
 			text: bone.name,
 			fontSize: font.size,
-			textAlign: g.TextAlign.Left,
+			textAlign: "left",
 			font: font,
 			maxWidth: 128
 		});

@@ -59,7 +59,7 @@ class DemoScene extends g.Scene {
 
 		const dynamicFont = new g.DynamicFont({
 			game: g.game,
-			fontFamily: g.FontFamily.SansSerif,
+			fontFamily: "sans-serif",
 			strokeWidth: 0.25,
 			size: 18
 		});
@@ -67,7 +67,7 @@ class DemoScene extends g.Scene {
 		const messageLabel = new g.Label({
 			text: "太陽を人型物体にくっつけてみよう",
 			fontSize: 18,
-			textAlign: g.TextAlign.Center,
+			textAlign: "center",
 			font: dynamicFont,
 			textColor: "black",
 			x: g.game.width / 2 | 0,
