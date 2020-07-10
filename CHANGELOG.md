@@ -1,10 +1,10 @@
 # ChangeLog
 
-## ## 3.0.0-beta.1
+## ## 4.0.0-beta.1
 
 * akashic-engine@3.0.0-beta.28 に追従
 
-## ## 3.0.0-beta.0
+## ## 4.0.0-beta.0
 
 * akashic-engine@3.0.0-beta.17 系に追従。
 * すでにプロジェクトをロード済みのリソースに対して`Resource#loadProject()`を実行すると以前ロードされた情報は削除されることをコメントに追加。
