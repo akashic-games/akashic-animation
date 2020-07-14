@@ -82,7 +82,7 @@ class DemoScene extends g.Scene {
 
 		const dynamicFont = new g.DynamicFont({
 			game: g.game,
-			fontFamily: g.FontFamily.SansSerif,
+			fontFamily: "sans-serif",
 			strokeWidth: 0.25,
 			size: 28
 		});
@@ -91,7 +91,7 @@ class DemoScene extends g.Scene {
 		const message = new g.Label({
 			text: "顔か☆をクリックしてみよう",
 			fontSize: 28,
-			textAlign: g.TextAlign.Center,
+			textAlign: "center",
 			textColor: "black",
 			font: dynamicFont,
 			x: g.game.width / 2 | 0,

@@ -670,12 +670,12 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 	return finalizedCell;
 }
 
-function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOperation {
+function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOperationString {
 	switch (alphaBlendMode) {
 		case "add":
-			return g.CompositeOperation.Lighter;
+			return "lighter";
 		default:
-			return g.CompositeOperation.SourceOver;
+			return "source-over";
 	}
 }
 

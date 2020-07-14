@@ -1,6 +1,6 @@
 {
   "name": "@akashic-extension/akashic-animation",
-  "version": "4.0.0-beta.0",
+  "version": "4.0.0-beta.1",
   "description": "A skeletal animation library for Akashic Engine",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -23,6 +23,7 @@
     "package.json"
   ],
   "devDependencies": {
+    "@akashic/pdi-common-impl": "~0.0.3",
     "@types/node": "6.0.46",
     "rimraf": "^2.6.1",
     "remark-cli": "~2.0.0",
@@ -35,7 +36,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@akashic/akashic-engine": "3.0.0-beta.17"
+    "@akashic/akashic-engine": "3.0.0-beta.28"
   },
   "repository": {
     "type": "git",

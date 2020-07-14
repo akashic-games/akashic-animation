@@ -10,7 +10,7 @@ class Skin {
 	imageAssetName: string;
 	imageSizeH: number;
 	imageSizeW: number;
-	surface: g.SurfaceLike;
+	surface: g.Surface;
 	cells: {[key: string]: Cell} = {};
 }
 

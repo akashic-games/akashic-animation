@@ -97,14 +97,14 @@ class DemoScene extends g.Scene {
 
 		const dynamicFont = new g.DynamicFont({
 			game: g.game,
-			fontFamily: g.FontFamily.SansSerif,
+			fontFamily: "sans-serif",
 			strokeWidth: 0.25,
 			size: 16
 		});
 		const messageLabel = new g.Label({
 			text: "ハートを棒人間にくっつけてみよう",
 			fontSize: 18,
-			textAlign: g.TextAlign.Center,
+			textAlign: "center",
 			textColor: "black",
 			font: dynamicFont,
 			x: g.game.width / 2,

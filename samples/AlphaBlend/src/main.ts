@@ -74,14 +74,14 @@ class DemoScene extends g.Scene {
 
 		const dynamicFont = new g.DynamicFont({
 			game: g.game,
-			fontFamily: g.FontFamily.SansSerif,
+			fontFamily: "sans-serif",
 			strokeWidth: 0.25,
 			size: 16
 		});
 		const messageLabel = new g.Label({
 			text: "ボタンを押すと剣、背景を押すと背景の色が変わります",
 			fontSize: 16,
-			textAlign: g.TextAlign.Center,
+			textAlign: "center",
 			textColor: "black",
 			font: dynamicFont,
 			x: 0,
@@ -109,14 +109,14 @@ class DemoScene extends g.Scene {
 		button.append(pushedButtonSprite);
 		const dynamicFont = new g.DynamicFont({
 			game: g.game,
-			fontFamily: g.FontFamily.SansSerif,
+			fontFamily: "sans-serif",
 			size: 12,
-			fontWeight: g.FontWeight.Bold
+			fontWeight: "bold"
 		});
 		const buttonLabel = new g.Label({
 			text: this.getButtonText(ALPHA_BLEND_TYPES[this.alphaBlendIndex]),
 			fontSize: 12,
-			textAlign: g.TextAlign.Center,
+			textAlign: "center",
 			textColor: "white",
 			font: dynamicFont,
 			x: buttonSprite.width / 2,
