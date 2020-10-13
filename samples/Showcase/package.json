@@ -13,7 +13,7 @@
     "@akashic-extension/akashic-animation": "~4.0.0-beta.1"
   },
   "devDependencies": {
-    "@akashic/akashic-engine": "~3.0.0-beta.28",
+    "@akashic/akashic-engine": "~3.0.0-beta.33",
     "typescript": "^3.8.3"
   }
 }
