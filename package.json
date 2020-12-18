@@ -1,12 +1,12 @@
 {
   "name": "@akashic-extension/akashic-animation",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0",
   "description": "A skeletal animation library for Akashic Engine",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "doc": "typedoc --out ./doc",
+    "doc": "typedoc --out ./doc --gaID UA-162208211-1",
     "prepublish": "npm run build && npm run doc",
     "clean": "rimraf lib",
     "test": "npm run build && npm run test:jasmine && npm run lint",

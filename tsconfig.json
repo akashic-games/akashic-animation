@@ -35,6 +35,10 @@
     "./src/Collider.ts",
     "./src/ColliderInfo.ts",
     "./src/Container.ts",
+    "./src/ContainerV2.ts",
+    "./src/ContainerV3.ts",
+    "./src/Content.ts",
+    "./src/ContentType.ts",
     "./src/FinalizedCell.ts",
     "./src/index.ts",
     "./src/Posture.ts",
@@ -43,7 +47,11 @@
     "./src/Skeleton.ts",
     "./src/Skin.ts",
     "./src/Vector2.ts",
-    "./src/Volume.ts"
+    "./src/Volume.ts",
+    "./src/aps/Emitter.ts",
+    "./src/aps/Particle.ts",
+    "./src/aps/ParticleSystem.ts",
+    "./src/aps/index.ts"
   ],
   "atom": {
     "rewriteTsconfig": true

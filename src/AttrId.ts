@@ -137,7 +137,12 @@ enum AttrId {
 	/**
 	 * ユーザデータ。
 	 */
-	userData
+	userData,
+
+	/**
+	 * エフェクト。
+	 */
+	effect
 }
 
 export = AttrId;
