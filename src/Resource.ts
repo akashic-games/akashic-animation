@@ -2,14 +2,20 @@ import Skin = require("./Skin");
 import Bone = require("./Bone");
 import BoneSet = require("./BoneSet");
 import Container = require("./Container");
+import ContainerV2 = require("./ContainerV2");
+import ContainerV3 = require("./ContainerV3");
+import Content = require("./Content");
 import AttrId = require("./AttrId");
 import {Animation, Curve} from "./AnimeParams";
+import * as vfx from "./vfx";
 
-function checkVersion(version: string, fname: string): void {
+function checkVersion(version: string, fname: string): string {
 	const r = version.match(/(\d+)\.\d+.\d+/);
-	if (!r || r[1] !== "2") { // v2.x.x であることを確認
+	if (!r || (r[1] !== "2" && r[1] !== "3")) {
+		// v2.x.x または v3.x.x であることを確認
 		throw g.ExceptionFactory.createAssertionError("Invalid fileformat version: " + fname + ", " + version + "<2.0.0");
 	}
+	return r[1];
 }
 
 function bindTextureFromAsset(skin: Skin, assets: {[key: string]: g.Asset}): void {
@@ -35,24 +41,43 @@ function constructBoneTree(bones: Bone[]): void {
 	}
 }
 
+function loadResourceFromContents<T>(
+	contents: Content<T>[],
+	assets: {[key: string]: g.Asset},
+	resolver?: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
+	const resources: T[] = [];
+
+	for (let i = 0; i < contents.length; i++) {
+		const content = contents[i];
+		if (resolver) {
+			resolver(content.data, assets);
+		}
+		resources.push(content.data);
+	}
+
+	return resources;
+}
+
 function loadResourceFromTextAsset<T>(
 	fileNames: string[],
 	assets: {[key: string]: g.Asset},
 	resolver: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
 	const resources: T[] = [];
 
-	fileNames.forEach((fname: string): void => {
-		const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
-		const data: Container = JSON.parse((<g.TextAsset>assets[assetName]).data);
+	if (fileNames) {
+		fileNames.forEach((fname: string): void => {
+			const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
+			const data: ContainerV2 = JSON.parse((<g.TextAsset>assets[assetName]).data);
 
-		checkVersion(data.version, fname);
+			checkVersion(data.version, fname);
 
-		if (resolver) {
-			resolver(data.contents, assets);
-		}
+			if (resolver) {
+				resolver(data.contents, assets);
+			}
 
-		resources.push(data.contents);
-	});
+			resources.push(data.contents);
+		});
+	}
 
 	return resources;
 }
@@ -91,13 +116,14 @@ class Resource {
 	skins: Skin[] = [];
 	boneSets: BoneSet[] = [];
 	animations: Animation[] = [];
+	effectParameters: vfx.EffectParameterObject[] = [];
 
 	constructor() {
 		// ...
 	}
 
 	/**
-	 * asapjテキストアセットを読み込み、さらに関連するアセットも読み込む。
+	 * asapjテキストアセットを読み込む。関連するアセットがある場合、それも読み込む。
 	 *
 	 * すでに読み込んだaapjテキストアセットがあった場合、このResourceインスタンスから削除される。
 	 *
@@ -108,22 +134,16 @@ class Resource {
 	loadProject(assetName: string, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
 		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
 
-		const json: any = (<g.TextAsset>mergedAssets[assetName]).data;
+		const json = (<g.TextAsset>mergedAssets[assetName]).data;
 		const data: Container = JSON.parse(json);
+		const majorVersion = checkVersion(data.version, assetName);
 
-		checkVersion(data.version, assetName);
+		if (majorVersion === "2") {
+			this.loadProjectV2(data, assets, ...otherAssets);
+			return;
+		}
 
-		this.boneSets = loadResourceFromTextAsset<BoneSet>(
-			data.contents.boneSetFileNames,
-			mergedAssets,
-			(c: BoneSet, asseta: {[key: string]: g.Asset}): void => {
-				constructBoneTree(c.bones);
-		});
-		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, mergedAssets, bindTextureFromAsset);
-		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, mergedAssets, undefined);
-		this.animations.forEach((animation: Animation) => {
-			assignAttributeID(animation);
-		});
+		this.loadProjectV3(data as ContainerV3, assets, ...otherAssets);
 	}
 
 	/**
@@ -170,6 +190,67 @@ class Resource {
 			}
 		}
 		return undefined;
+	}
+
+	/**
+	 * エフェクトパラメタを取得する。
+	 *
+	 * @param name エフェクパラメタ名
+	 */
+	getEffectParameterByName(name: string): vfx.EffectParameterObject {
+		for (let i = 0, len = this.effectParameters.length; i < len; i++) {
+			if (this.effectParameters[i].name === name) {
+				return this.effectParameters[i];
+			}
+		}
+		return undefined;
+	}
+
+	protected loadProjectV2(data: ContainerV2, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
+		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+
+		this.boneSets = loadResourceFromTextAsset<BoneSet>(
+			data.contents.boneSetFileNames,
+			mergedAssets,
+			(c: BoneSet, asseta: {[key: string]: g.Asset}): void => {
+				constructBoneTree(c.bones);
+		});
+		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, mergedAssets, bindTextureFromAsset);
+		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, mergedAssets, undefined);
+		this.animations.forEach((animation: Animation) => {
+			assignAttributeID(animation);
+		});
+		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(data.contents.effectFileNames, mergedAssets, undefined);
+	}
+
+	protected loadProjectV3(data: ContainerV3, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
+		if (data.type !== "bundle") {
+			throw  g.ExceptionFactory.createAssertionError("Invalid file type: " + data.type + ", supported only \"bundle\" type");
+		}
+
+		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+
+		this.boneSets = loadResourceFromContents<BoneSet>(
+			data.contents.filter(content => content.type === "bone"),
+			mergedAssets,
+			c => constructBoneTree(c.bones)
+		);
+		this.skins = loadResourceFromContents<Skin>(
+			data.contents.filter(content => content.type === "skin"),
+			mergedAssets,
+			bindTextureFromAsset
+		);
+		this.animations = loadResourceFromContents<Animation>(
+			data.contents.filter(content => content.type === "animation"),
+			mergedAssets
+		);
+		this.animations.forEach((animation: Animation) => {
+			assignAttributeID(animation);
+		});
+		this.effectParameters = loadResourceFromContents<vfx.EffectParameterObject>(
+			data.contents.filter(content => content.type === "effect"),
+			mergedAssets
+		);
 	}
 }
 

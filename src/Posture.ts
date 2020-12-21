@@ -4,6 +4,7 @@ import AttrId = require("./AttrId");
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import {CellValue} from "./AnimeParams";
 import AlphaBlendMode = require("./AlphaBlendMode");
+import * as vfx from "./vfx";
 
 // 動的ボーン
 // Boneが静的で様々なシステムから参照されるのに対し、
@@ -23,6 +24,7 @@ class Posture {
 	attachments: Attachment[];
 	finalizedCell: FinalizedCell;
 	index: number; // Array.prototype.sortを安定にするための追加情報
+	effects: vfx.Effect[];
 
 	_trigger: g.Trigger<AnimationHandlerParam>;
 
@@ -30,6 +32,7 @@ class Posture {
 		this.m = new g.PlainMatrix();
 		this.attrs[AttrId.cv] = new CellValue();
 		this.attachments = [];
+		this.effects = [];
 
 		if (Posture._costbl.length === 0) {
 			// [0, 90] degree の範囲をテーブル化

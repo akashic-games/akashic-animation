@@ -1,0 +1,3 @@
+# akashic-animationサンプル
+
+*WIP*
