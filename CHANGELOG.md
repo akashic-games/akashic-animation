@@ -1,6 +1,7 @@
 # ChangeLog
 
 ## 4.0.0
+
 * akashic-engine@3.0.0 に追従
 
 ## ## 4.0.0-beta.1
