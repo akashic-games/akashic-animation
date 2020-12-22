@@ -1,17 +1,14 @@
 global.g = require("@akashic/akashic-engine");
 var utils = require("./helper/utils.js");
-var fs = require("fs");
 var Actor = require("../lib/Actor.js");
 var Resource = require("../lib/Resource.js");
-var CellAttachment = require("../lib/CellAttachment.js");
-var BoneCellCollider = require("../lib/BoneCellCollider.js");
 
 describe("BoneCellCollider", function() {
 	var actor;
 
 	beforeEach(function() {
 
-		var game = new g.Game({width: 320, height: 320, fps: 30});
+		var game = new g.Game(utils.gameParam);
 		var scene = new g.Scene({game: game});
 
 		utils.createImageAsset("stickman.png", scene);

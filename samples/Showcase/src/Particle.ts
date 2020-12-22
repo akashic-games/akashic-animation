@@ -19,9 +19,9 @@ class Particle {
 	}
 
 	reset(): void {
-		this.x = this.scene.game.width * Math.random();
+		this.x = this.scene.game.width * g.game.random.generate();
 		this.y = -8;
-		this.vx = ((Math.random() - 0.5) * 2) * 5;
+		this.vx = ((g.game.random.generate() - 0.5) * 2) * 5;
 		this.vy = 0;
 		this.avz = 0;
 		this.collidable = true;
@@ -34,9 +34,9 @@ class Particle {
 
 	collide(): void {
 		this.vy *= -0.75;
-		this.avz = (Math.random() * 2 - 1) * 20;
+		this.avz = (g.game.random.generate() * 2 - 1) * 20;
 		this.collidable = false;
-		this.e.cssColor = "#7C5684"
+		this.e.cssColor = "#7C5684";
 	}
 
 	update(): void {

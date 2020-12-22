@@ -7,7 +7,7 @@ describe("CellAttachment", function() {
 	var resource;
 
 	beforeEach(function() {
-		var game = new g.Game({width: 320, height: 320, fps: 30});
+		var game = new g.Game(utils.gameParam);
 		var scene = new g.Scene({game: game});
 
 		utils.createImageAsset("stickman.png", scene);

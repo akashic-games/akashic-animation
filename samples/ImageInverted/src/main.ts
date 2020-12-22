@@ -37,11 +37,13 @@ class DemoScene extends g.Scene {
 			boneSetName: "support_image_inverted",
 			width: 240,
 			height: 240,
-			scaleX: 0.75,
-			scaleY: 0.75,
+			scaleX: 0.7,
+			scaleY: 0.7,
 			x: x,
 			y: y,
-			playSpeed: 1
+			playSpeed: 1,
+			anchorX: -0.2,
+			anchorY: -0.2
 		});
 		const collisionRect =  new g.FilledRect({
 			scene: this,
@@ -78,17 +80,24 @@ class DemoScene extends g.Scene {
 		const resource = new Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
 
+		const dynamicFont = new g.DynamicFont({
+			game: g.game,
+			fontFamily: "sans-serif",
+			strokeWidth: 0.25,
+			size: 28
+		});
+
 		// メッセージ生成
-		const message = new g.SystemLabel({
+		const message = new g.Label({
 			text: "顔か☆をクリックしてみよう",
 			fontSize: 28,
-			textAlign: g.TextAlign.Center,
-			textBaseline: g.TextBaseline.Alphabetic,
+			textAlign: "center",
 			textColor: "black",
-			fontFamily: g.FontFamily.SansSerif,
+			font: dynamicFont,
 			x: g.game.width / 2 | 0,
 			y: g.game.height * 4 / 5 | 0,
-			scene: this
+			scene: this,
+			anchorX: 0.5
 		});
 		this.append(message);
 

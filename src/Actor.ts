@@ -19,8 +19,9 @@ import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import AlphaBlendMode = require("./AlphaBlendMode");
 import * as vfx from "./vfx";
 
-const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0);
-const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0);
+// `x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とするため、anchorX, anchorY に null 指定。
+const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, null, null);
+const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, null, null);
 
 /*
  * アニメーションフレームカウンタを適切な範囲に調整する。
@@ -63,7 +64,7 @@ function setupColliderForCell(info: ColliderInfo, bone: Bone): Collider {
 			collider = new BoneCellCollider(bone.name, info.boundType === "aabb");
 			break;
 		default:
-			g.game.logger.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
+			console.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
 			break;
 	}
 
@@ -79,7 +80,7 @@ function setupColliderForCircle(info: ColliderInfo, bone: Bone): Collider {
 			collider = new CircleCollider(bone.name, info.boundType === "aabb", info.scaleOption);
 			break;
 		default:
-			g.game.logger.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
+			console.warn("Invalid type combination: " + info.geometryType + ", " + info.boundType);
 			break;
 	}
 
@@ -97,37 +98,14 @@ function setupCollider(bones: Bone[], actor: Actor): void {
 			switch (info.geometryType) {
 				case "cell":   collider = setupColliderForCell(info, bone); break;
 				case "circle": collider = setupColliderForCircle(info, bone); break;
-				case "box":    g.game.logger.warn("Not implemented geometory type " + info.geometryType); break;
-				default:       g.game.logger.warn("Unknown geometory type " + info.geometryType); break;
+				case "box":    console.warn("Not implemented geometory type " + info.geometryType); break;
+				default:       console.warn("Unknown geometory type " + info.geometryType); break;
 			}
 			if (collider) {
 				actor.addCollider(collider);
 			}
 		});
 	});
-}
-
-function getInverse(width: number, height: number, scaleX: number, scaleY: number, angle: number, x: number, y: number): g.Matrix {
-	const m = new g.PlainMatrix();
-
-	const r = angle * Math.PI / 180;
-	const _cos = Math.cos(r);
-	const _sin = Math.sin(r);
-	const a = _cos / scaleX;
-	const b = _sin / scaleY;
-	const c = _sin / scaleX;
-	const d = _cos / scaleY;
-	const w = width / 2;
-	const h = height / 2;
-
-	m._matrix[0] = a;
-	m._matrix[1] = -b;
-	m._matrix[2] = c;
-	m._matrix[3] = d;
-	m._matrix[4] = -a * (w + x) - c * (h + y) + w;
-	m._matrix[5] =  b * (w + x) - d * (h + y) + h;
-
-	return m;
 }
 
 /**
@@ -187,6 +165,7 @@ class Actor extends g.E {
 	private _nextCntr: number;
 	private _elapse: number;
 	private _ended: g.Trigger<void>;
+	private _inv: g.Matrix;
 
 	/**
 	 * 各種パラメータを指定して `Actor` のインスタンスを生成する。
@@ -241,6 +220,7 @@ class Actor extends g.E {
 		this._cntr = 0;
 		this._nextCntr = 0;
 		this._elapse = 0;
+		this._inv = new g.PlainMatrix();
 		this.pause = false;
 		this.loop = true;
 		this.playSpeed = param.playSpeed !== undefined && param.playSpeed !== null ? param.playSpeed : 1.0;
@@ -482,8 +462,16 @@ class Actor extends g.E {
 		renderer.save();
 		{
 			// E#render()が乗算したActor#getMatrix()をキャンセルする。Postureはこのマトリクスを含んでいる
-			const inv = getInverse(this.width, this.height, this.scaleX, this.scaleY, this.angle, this.x, this.y);
-			renderer.transform(inv._matrix);
+
+			this._inv.updateByInverse(
+				this.width, this.height,
+				this.scaleX, this.scaleY,
+				this.angle,
+				this.x, this.y,
+				this.anchorX, this.anchorY
+			);
+
+			renderer.transform(this._inv._matrix);
 
 			// render myself
 			this.renderPostures(sortedComposedCaches, renderer, camera);
@@ -745,12 +733,12 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 	return finalizedCell;
 }
 
-function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOperation {
+function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOperationString {
 	switch (alphaBlendMode) {
 		case "add":
-			return g.CompositeOperation.Lighter;
+			return "lighter";
 		default:
-			return g.CompositeOperation.SourceOver;
+			return "source-over";
 	}
 }
 
