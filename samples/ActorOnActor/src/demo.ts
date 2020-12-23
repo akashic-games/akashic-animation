@@ -69,10 +69,10 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.handleLoad, this);
 	}
 
-	onLoaded() {
+	handleLoad() {
 		//
 		// Load ASA resource
 		//
@@ -118,7 +118,7 @@ class DemoScene extends g.Scene {
 		this.indicator = new UI.Indicator(this);
 		this.append(this.indicator);
 
-		this.update.add(this.handleUpdate, this);
+		this.onUpdate.add(this.handleUpdate, this);
 	}
 
 	handleUpdate(): void {
