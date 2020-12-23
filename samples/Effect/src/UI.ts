@@ -24,7 +24,7 @@ export class ToggleButton extends g.Sprite {
 
 		this.toggled = new g.Trigger<boolean>();
 
-		this.pointDown.add(this.onPointDown, this);
+		this.pointDown.add(this._onPointDownHandler, this);
 
 		if (param.onoff) {
 			this.highlight.show();
@@ -33,16 +33,16 @@ export class ToggleButton extends g.Sprite {
 		}
 	}
 
-	onPointDown(e: g.PointDownEvent): void {
-		this.toggle();
-		this.toggled.fire(this.onoff);
-	}
-
 	setState(onoff: boolean): void {
 		if (this.onoff != onoff) {
 			this.toggle();
 			this.toggled.fire(this.onoff);
 		}
+	}
+
+	private _onPointDownHandler(e: g.PointDownEvent): void {
+		this.toggle();
+		this.toggled.fire(this.onoff);
 	}
 
 	private toggle(): void {

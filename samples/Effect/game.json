@@ -2,6 +2,7 @@
 	"width": 640,
 	"height": 480,
 	"fps": 30,
+	"main": "./script/mainScene.js",
 	"assets": {
 		"mainScene": {
 			"type": "script",
@@ -108,11 +109,16 @@
 		"node_modules/@akashic-extension/akashic-animation/package.json",
 		"node_modules/@akashic-extension/akashic-animation/lib/aps/Emitter.js",
 		"node_modules/@akashic-extension/akashic-animation/lib/aps/Particle.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/aps/ParticleEffect.js",
 		"node_modules/@akashic-extension/akashic-animation/lib/aps/ParticleSystem.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/aps/index.js"
+		"node_modules/@akashic-extension/akashic-animation/lib/aps/index.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/ContainerV2.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/ContainerV3.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Content.js"
 	],
 	"environment": {
-		"sandbox-runtime": "2"
+		"sandbox-runtime": "3"
+	},
+	"moduleMainScripts": {
+		"@akashic-extension/akashic-animation": "node_modules/@akashic-extension/akashic-animation/lib/index.js"
 	}
 }
