@@ -1,7 +1,4 @@
-import Resource = require("../../../src/Resource");
-import Actor = require("../../../src/Actor");
-import Bone = require("../../../src/Bone");
-import AlphaBlendMode = require("../../../src/AlphaBlendMode");
+import * as asa from "@akashic-extension/akashic-animation";
 
 const ASA_PJ_NAME = "pj_practice_swing";
 const CSS_COLORS = [
@@ -19,10 +16,10 @@ const CSS_COLORS = [
 	"navy",
 	"teal"
 ];
-const ALPHA_BLEND_TYPES: AlphaBlendMode[] = ["normal", "add"];
+const ALPHA_BLEND_TYPES: asa.AlphaBlendMode[] = ["normal", "add"];
 
 class DemoScene extends g.Scene {
-	private actor: Actor = undefined;
+	private actor: asa.Actor = undefined;
 	private bgRect: g.FilledRect = undefined;
 	private bgColorIndex: number = 0;
 	private colorButton: g.E = undefined;
@@ -34,7 +31,7 @@ class DemoScene extends g.Scene {
 	}
 
 	private onLoaded(): void {
-		const resource = new Resource();
+		const resource = new asa.Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
 
 		// 背景色
@@ -54,7 +51,7 @@ class DemoScene extends g.Scene {
 		this.append(this.bgRect);
 
 		// Actor
-		this.actor = new Actor({
+		this.actor = new asa.Actor({
 			scene: this,
 			resource: resource,
 			animationName: "anime_1",
@@ -161,7 +158,7 @@ class DemoScene extends g.Scene {
 		});
 	}
 
-	private getButtonText(alphaBlendMode: AlphaBlendMode): string {
+	private getButtonText(alphaBlendMode: asa.AlphaBlendMode): string {
 		const buttonText = "α-blend：";
 		switch (alphaBlendMode) {
 			case "add":
@@ -172,7 +169,7 @@ class DemoScene extends g.Scene {
 		}
 	}
 
-	private getBone(name: string): Bone {
+	private getBone(name: string): asa.Bone {
 		const targetBones = this.actor.skeleton.bones.filter(bone => name === bone.name);
 		return targetBones[0];
 	}
