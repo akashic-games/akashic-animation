@@ -1,11 +1,9 @@
-import Resource = require("../../../src/Resource");
-import Actor = require("../../../src/Actor");
-import AttrId = require("../../../src/AttrId");
+import * as asa from "@akashic-extension/akashic-animation";
 
 const ASA_PJ_NAME = "pj_stop_motion";
 
 class DemoScene extends g.Scene {
-	private actor: Actor;
+	private actor: asa.Actor;
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
@@ -13,9 +11,9 @@ class DemoScene extends g.Scene {
 	}
 
 	private onLoaded(): void {
-		const resource = new Resource();
+		const resource = new asa.Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
-		this.actor = new Actor({
+		this.actor = new asa.Actor({
 			scene: this,
 			resource: resource,
 			animationName: "stop_motion",
@@ -107,7 +105,7 @@ class DemoScene extends g.Scene {
 		this.actor.calculated(partsName, true).addOnce((param) => {
 			if (param.posture) {
 				const t = param.currentFrame / param.frameCount;
-				param.posture.attrs[AttrId.lalpha] = 1 - t;
+				param.posture.attrs[asa.AttrId.lalpha] = 1 - t;
 				param.posture.updateMatrix();
 			}
 		});

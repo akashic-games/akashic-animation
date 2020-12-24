@@ -1,19 +1,17 @@
-import Resource = require("../../../src/Resource");
-import Actor = require("../../../src/Actor");
-import AttrId = require("../../../src/AttrId");
+import * as asa from "@akashic-extension/akashic-animation";
 
 const ASA_PJ_NAME = "pj_support_image_inverted";
 
 type Direction = "right" | "left";
 
 class Runner {
-	actor: Actor;
+	actor: asa.Actor;
 	collisionRect: g.FilledRect;
 	direction: Direction;
 	isInvertedStar: boolean = false;
 	isInvertedHead: boolean = false;
 
-	constructor(actor: Actor, collisionRect: g.FilledRect, isRightDirection: boolean) {
+	constructor(actor: asa.Actor, collisionRect: g.FilledRect, isRightDirection: boolean) {
 		this.actor = actor;
 		this.collisionRect = collisionRect;
 		this.direction = isRightDirection ? "right" : "left";
@@ -28,8 +26,8 @@ class DemoScene extends g.Scene {
 		this.loaded.add(this.onLoaded, this);
 	}
 
-	private generateRunner(resource: Resource, x: number, y: number, isRightDirection: boolean): Runner {
-		const actor = new Actor({
+	private generateRunner(resource: asa.Resource, x: number, y: number, isRightDirection: boolean): Runner {
+		const actor = new asa.Actor({
 			scene: this,
 			resource: resource,
 			animationName: "anime_1",
@@ -77,7 +75,7 @@ class DemoScene extends g.Scene {
 	}
 
 	private onLoaded(): void {
-		const resource = new Resource();
+		const resource = new asa.Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
 
 		const dynamicFont = new g.DynamicFont({
@@ -108,19 +106,19 @@ class DemoScene extends g.Scene {
 			// ランナーの向き先変更イベントもここで登録する
 			runner.actor.calculated("root", true).add((param) => {
 				if (param.posture) {
-					param.posture.attrs[AttrId.sx] *= runner.direction === "right" ? -1 : 1;
+					param.posture.attrs[asa.AttrId.sx] *= runner.direction === "right" ? -1 : 1;
 					param.posture.updateMatrix();
 				}
 			});
 			runner.actor.calculated("stick_head", true).add((param) => {
 				if (param.posture) {
-					param.posture.attrs[AttrId.iflh] = runner.isInvertedHead;
+					param.posture.attrs[asa.AttrId.iflh] = runner.isInvertedHead;
 					param.posture.updateMatrix();
 				}
 			});
 			runner.actor.calculated("star", true).add((param) => {
 				if (param.posture) {
-					param.posture.attrs[AttrId.iflv] = runner.isInvertedStar;
+					param.posture.attrs[asa.AttrId.iflv] = runner.isInvertedStar;
 					param.posture.updateMatrix();
 				}
 			});

@@ -39,10 +39,10 @@ class DemoScene extends g.Scene {
 		this.indicator = new UI.Indicator(this);
 		this.append(this.indicator);
 
-		this.update.add(this.onUpdate, this);
+		this.update.add(this._onUpdateHandler, this);
 	}
 
-	onUpdate(): void {
+	private _onUpdateHandler(): void {
 		this.actor.modified();
 		this.actor.calc();
 		this.indicator.position = this.actor.currentFrame / (this.actor.animation.frameCount - 1);

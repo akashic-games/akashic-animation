@@ -1,8 +1,4 @@
-import Resource = require("../../../src/Resource");
-import Actor = require("../../../src/Actor");
-import AttrId = require("../../../src/AttrId");
-import Volume = require("../../../src/Volume");
-import Collider = require("../../../src/Collider");
+import * as asa from "@akashic-extension/akashic-animation";
 
 const ASA_PJ_NAME = "pj_stop_motion";
 
@@ -10,7 +6,7 @@ class HeartItem {
 	public sprite: g.Sprite;
 	public localXScale: number;
 	public localYScale: number;
-	private collisions: {[name: string]: Volume} = {};
+	private collisions: {[name: string]: asa.Volume} = {};
 
 	constructor(sprite: g.Sprite, localXScale: number, localYScale: number) {
 		this.sprite = sprite;
@@ -18,7 +14,7 @@ class HeartItem {
 		this.localYScale = localYScale;
 	}
 
-	addCollisions(colliders: Collider[]): void {
+	addCollisions(colliders: asa.Collider[]): void {
 		this.collisions = {};
 		colliders.forEach((collider) => {
 			const volume = collider.getVolume();
@@ -46,7 +42,7 @@ class HeartItem {
 }
 
 class DemoScene extends g.Scene {
-	private actor: Actor = undefined;
+	private actor: asa.Actor = undefined;
 	private heartItems: {[key: string]: HeartItem} = {};
 
 	constructor(param: g.SceneParameterObject) {
@@ -55,9 +51,9 @@ class DemoScene extends g.Scene {
 	}
 
 	private onLoaded(): void {
-		const resource = new Resource();
+		const resource = new asa.Resource();
 		resource.loadProject(ASA_PJ_NAME, this.assets, g.game.assets);
-		this.actor = new Actor({
+		this.actor = new asa.Actor({
 			scene: this,
 			resource: resource,
 			animationName: "stop_motion",
@@ -138,8 +134,8 @@ class DemoScene extends g.Scene {
 		this.actor.calculated(partsName, true).addOnce((param) => {
 			if (param.posture) {
 				const t = param.currentFrame / param.frameCount;
-				param.posture.attrs[AttrId.lsx] += localXScale * t;
-				param.posture.attrs[AttrId.lsy] += localYScale * t;
+				param.posture.attrs[asa.AttrId.lsx] += localXScale * t;
+				param.posture.attrs[asa.AttrId.lsy] += localYScale * t;
 				param.posture.updateMatrix();
 			}
 		});

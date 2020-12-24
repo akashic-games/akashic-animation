@@ -2,143 +2,8 @@
 	"width": 400,
 	"height": 480,
 	"fps": 30,
-	"main": "./script/samples/AlphaBlend/src/main.js",
+	"main": "./script/main.js",
 	"assets": {
-		"main": {
-			"type": "script",
-			"path": "script/samples/AlphaBlend/src/main.js",
-			"global": true
-		},
-		"AABB": {
-			"type": "script",
-			"path": "script/src/AABB.js",
-			"global": true
-		},
-		"Actor": {
-			"type": "script",
-			"path": "script/src/Actor.js",
-			"global": true
-		},
-		"ActorParameterObject": {
-			"type": "script",
-			"path": "script/src/ActorParameterObject.js",
-			"global": true
-		},
-		"AnimationHandlerParams": {
-			"type": "script",
-			"path": "script/src/AnimationHandlerParams.js",
-			"global": true
-		},
-		"AnimeParams": {
-			"type": "script",
-			"path": "script/src/AnimeParams.js",
-			"global": true
-		},
-		"Attachment": {
-			"type": "script",
-			"path": "script/src/Attachment.js",
-			"global": true
-		},
-		"AttrId": {
-			"type": "script",
-			"path": "script/src/AttrId.js",
-			"global": true
-		},
-		"Bone": {
-			"type": "script",
-			"path": "script/src/Bone.js",
-			"global": true
-		},
-		"BoneCellCollider": {
-			"type": "script",
-			"path": "script/src/BoneCellCollider.js",
-			"global": true
-		},
-		"BoneSet": {
-			"type": "script",
-			"path": "script/src/BoneSet.js",
-			"global": true
-		},
-		"BoxVolume": {
-			"type": "script",
-			"path": "script/src/BoxVolume.js",
-			"global": true
-		},
-		"Cell": {
-			"type": "script",
-			"path": "script/src/Cell.js",
-			"global": true
-		},
-		"CellAttachment": {
-			"type": "script",
-			"path": "script/src/CellAttachment.js",
-			"global": true
-		},
-		"CircleCollider": {
-			"type": "script",
-			"path": "script/src/CircleCollider.js",
-			"global": true
-		},
-		"CircleVolume": {
-			"type": "script",
-			"path": "script/src/CircleVolume.js",
-			"global": true
-		},
-		"Collider": {
-			"type": "script",
-			"path": "script/src/Collider.js",
-			"global": true
-		},
-		"ColliderInfo": {
-			"type": "script",
-			"path": "script/src/ColliderInfo.js",
-			"global": true
-		},
-		"Container": {
-			"type": "script",
-			"path": "script/src/Container.js",
-			"global": true
-		},
-		"FinalizedCell": {
-			"type": "script",
-			"path": "script/src/FinalizedCell.js",
-			"global": true
-		},
-		"Posture": {
-			"type": "script",
-			"path": "script/src/Posture.js",
-			"global": true
-		},
-		"Resource": {
-			"type": "script",
-			"path": "script/src/Resource.js",
-			"global": true
-		},
-		"Size2": {
-			"type": "script",
-			"path": "script/src/Size2.js",
-			"global": true
-		},
-		"Skeleton": {
-			"type": "script",
-			"path": "script/src/Skeleton.js",
-			"global": true
-		},
-		"Skin": {
-			"type": "script",
-			"path": "script/src/Skin.js",
-			"global": true
-		},
-		"Vector2": {
-			"type": "script",
-			"path": "script/src/Vector2.js",
-			"global": true
-		},
-		"Volume": {
-			"type": "script",
-			"path": "script/src/Volume.js",
-			"global": true
-		},
 		"button": {
 			"type": "image",
 			"width": 205,
@@ -173,13 +38,50 @@
 			"type": "text",
 			"path": "text/sk_stickman.asask"
 		},
-		"AlphaBlendMode": {
+		"main": {
 			"type": "script",
-			"path": "script/src/AlphaBlendMode.js",
+			"path": "script/main.js",
 			"global": true
 		}
 	},
 	"environment": {
 		"sandbox-runtime": "3"
+	},
+	"globalScripts": [
+		"node_modules/@akashic-extension/akashic-animation/lib/AABB.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Actor.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AnimationHandlerParams.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AnimeParams.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Attachment.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/AttrId.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Bone.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/BoneCellCollider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/BoneSet.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/BoxVolume.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Cell.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CellAttachment.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CellAttachmentCollider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CircleCollider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/CircleVolume.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Collider.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/ContainerV2.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/ContainerV3.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Content.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/FinalizedCell.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Posture.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Resource.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Size2.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Skeleton.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Skin.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/Vector2.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/aps/Emitter.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/aps/Particle.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/aps/ParticleSystem.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/aps/index.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/index.js",
+		"node_modules/@akashic-extension/akashic-animation/lib/vfx.js"
+	],
+	"moduleMainScripts": {
+		"@akashic-extension/akashic-animation": "node_modules/@akashic-extension/akashic-animation/lib/index.js"
 	}
 }
