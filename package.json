@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "doc": "typedoc --out ./doc",
-    "prepublish": "npm run build && npm run doc",
+    "prepare": "npm run build && npm run doc",
     "clean": "rimraf lib",
     "test": "npm run build && npm run test:jasmine && npm run lint",
     "lint": "npm run lint:ts && npm run lint:md",
@@ -41,6 +41,7 @@
     "url": "https://github.com/akashic-games/akashic-aniamtion.git"
   },
   "publishConfig": {
-    "@akashic-extension:registry": "http://registry.npmjs.org/"
+    "@akashic-extension:registry": "http://registry.npmjs.org/",
+    "tag": "for_ae1x"
   }
 }
