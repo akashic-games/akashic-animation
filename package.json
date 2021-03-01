@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "doc": "typedoc --out ./doc --gaID UA-162208211-1",
-    "prepublish": "npm run build && npm run doc",
+    "prepare": "npm run build && npm run doc",
     "clean": "rimraf lib",
     "test": "npm run build && npm run test:jasmine && npm run lint",
     "lint": "npm run lint:ts && npm run lint:md",
