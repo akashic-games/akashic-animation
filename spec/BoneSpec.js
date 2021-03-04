@@ -1,4 +1,4 @@
-var Bone = require("../lib/Bone.js");
+var Bone = require("../lib/Bone.js").Bone;
 
 describe("Bone", function() {
 	it("should constructs itself properly", function() {

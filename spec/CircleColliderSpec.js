@@ -1,8 +1,8 @@
 global.g = require("@akashic/akashic-engine");
 var utils = require("./helper/utils.js");
-var Actor = require("../lib/Actor.js");
-var Resource = require("../lib/Resource.js");
-var CircleCollider = require("../lib/CircleCollider.js");
+var Actor = require("../lib/Actor.js").Actor;
+var Resource = require("../lib/Resource.js").Resource;
+var CircleCollider = require("../lib/CircleCollider.js").CircleCollider;
 
 describe("CircleCollider", function() {
 	var actor;

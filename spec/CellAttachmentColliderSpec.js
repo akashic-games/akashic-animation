@@ -1,8 +1,8 @@
 global.g = require("@akashic/akashic-engine");
 var utils = require("./helper/utils.js");
-var Actor = require("../lib/Actor.js");
-var Resource = require("../lib/Resource.js");
-var CellAttachmentCollider = require("../lib/CellAttachmentCollider");
+var Actor = require("../lib/Actor.js").Actor;
+var Resource = require("../lib/Resource.js").Resource;
+var CellAttachmentCollider = require("../lib/CellAttachmentCollider").CellAttachmentCollider;
 
 describe("CellAttachmentCollider", function() {
 	var actor;

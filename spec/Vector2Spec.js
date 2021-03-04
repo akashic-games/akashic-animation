@@ -1,4 +1,4 @@
-var Vector2 = require("../lib/Vector2.js");
+var Vector2 = require("../lib/Vector2.js").Vector2;
 
 describe("Vector2", function() {
 	it("should construct itself properly", function() {

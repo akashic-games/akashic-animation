@@ -1,5 +1,5 @@
 global.g = require("@akashic/akashic-engine");
-var BoxVolume = require("../lib/BoxVolume.js");
+var BoxVolume = require("../lib/BoxVolume.js").BoxVolume;
 
 describe("BoxVolume", function() {
 	it("should return AABB based on itself", function() {
