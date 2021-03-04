@@ -11,7 +11,7 @@
     "clean": "rimraf lib",
     "test": "npm run build && npm run test:jasmine && npm run lint",
     "lint": "npm run lint:ts && npm run lint:md",
-    "lint:ts": "eslint src/*.ts src/**/*.ts --fix",
+    "lint:ts": "eslint \"src/**/*.ts\" --fix",
     "lint:md": "remark ./*.md --frail --no-stdout --quiet --rc-path ./.remarkrc",
     "test:jasmine": "istanbul cover --report text --report html --colors -i ./lib/index.js ./node_modules/jasmine/bin/jasmine.js"
   },
