@@ -1,3 +1,4 @@
+export {AABB} from "./AABB";
 export {Actor} from "./Actor";
 export {ActorParameterObject} from "./ActorParameterObject";
 export {AlphaBlendMode} from "./AlphaBlendMode";

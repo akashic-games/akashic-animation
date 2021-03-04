@@ -214,7 +214,8 @@ export class Resource {
 			mergedAssets,
 			(c: BoneSet, _asseta: {[key: string]: g.Asset}): void => {
 				constructBoneTree(c.bones);
-			});
+			}
+		);
 		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, mergedAssets, bindTextureFromAsset);
 		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, mergedAssets, undefined);
 		this.animations.forEach((animation: Animation) => {
