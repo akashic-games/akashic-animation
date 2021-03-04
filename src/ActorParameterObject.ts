@@ -1,6 +1,6 @@
-import Resource = require("./Resource");
+import {Resource} from "./Resource";
 
-interface ActorParameterObject extends g.EParameterObject {
+export interface ActorParameterObject extends g.EParameterObject {
 	scene: g.Scene;
 	resource: Resource;
 	animationName: string;
@@ -10,5 +10,3 @@ interface ActorParameterObject extends g.EParameterObject {
 	height: number;
 	playSpeed?: number;
 }
-
-export = ActorParameterObject;

@@ -1,9 +1,9 @@
-import Collider = require("./Collider");
-import Bone = require("./Bone");
-import Posture = require("./Posture");
-import BoxVolume = require("./BoxVolume");
-import Actor = require("./Actor");
-import AttrId = require("./AttrId");
+import {Actor} from "./Actor";
+import {AttrId} from "./AttrId";
+import {Bone} from "./Bone";
+import {BoxVolume} from "./BoxVolume";
+import {Collider} from "./Collider";
+import {Posture} from "./Posture";
 
 /**
  * セル用コライダー
@@ -11,7 +11,7 @@ import AttrId = require("./AttrId");
  * セルの矩形から当たり判定用ボリュームを算出するコライダー
  * 初期化にはセルを含むPostureを与える
  */
-class BoneCellCollider extends Collider {
+export class BoneCellCollider extends Collider {
 	private _posture: Posture;
 	private _volume: BoxVolume;
 
@@ -67,5 +67,3 @@ class BoneCellCollider extends Collider {
 		return this._volume;
 	}
 }
-
-export = BoneCellCollider;

@@ -1,9 +1,9 @@
-import Posture = require("./Posture");
+import {Posture} from "./Posture";
 
 /**
  * アタッチメントクラス
  */
-abstract class Attachment {
+export abstract class Attachment {
 	/**
 	 * Actor#attach()の際に与えられる接続先Posture
 	 *
@@ -20,5 +20,3 @@ abstract class Attachment {
 	 */
 	abstract render(renderer: g.Renderer): void;
 }
-
-export = Attachment;

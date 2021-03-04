@@ -1,6 +1,4 @@
-import ContainerV2 = require("./ContainerV2");
-import ContainerV3 = require("./ContainerV3");
+import {ContainerV2} from "./ContainerV2";
+import {ContainerV3} from "./ContainerV3";
 
-type Container = ContainerV2 | ContainerV3;
-
-export = Container;
+export type Container = ContainerV2 | ContainerV3;

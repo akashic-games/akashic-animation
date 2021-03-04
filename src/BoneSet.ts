@@ -1,9 +1,9 @@
-import Bone = require("./Bone");
+import {Bone} from "./Bone";
 
 /**
  * ボーン集合。
  */
-class BoneSet {
+export class BoneSet {
 	name: string;
 	bones: Bone[];
 
@@ -12,5 +12,3 @@ class BoneSet {
 		this.bones = bones;
 	}
 }
-
-export = BoneSet;

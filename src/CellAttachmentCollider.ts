@@ -1,6 +1,6 @@
-import Collider = require("./Collider");
-import CellAttachment = require("./CellAttachment");
-import BoxVolume = require("./BoxVolume");
+import {BoxVolume} from "./BoxVolume";
+import {CellAttachment} from "./CellAttachment";
+import {Collider} from "./Collider";
 
 function multiply(m1: number[], m2: number[]): void {
 	const m10 = m1[0];
@@ -18,7 +18,7 @@ function multiply(m1: number[], m2: number[]): void {
 /**
  * CellAttachmentをアタリ判定に用いるコライダー
  */
-class CellAttachmentCollider extends Collider {
+export class CellAttachmentCollider extends Collider {
 	cellAttachment: CellAttachment;
 	private _volume: BoxVolume;
 
@@ -69,5 +69,3 @@ class CellAttachmentCollider extends Collider {
 		return this._volume;
 	}
 }
-
-export = CellAttachmentCollider;

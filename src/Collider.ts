@@ -1,10 +1,10 @@
-import Volume = require("./Volume");
-import Actor = require("./Actor");
+import { Actor } from "./Actor";
+import { Volume } from "./Volume";
 
 /**
  * コリジョンのためのVolume算出役
  */
-class Collider {
+export class Collider {
 	/**
 	 * 名前
 	 *
@@ -47,9 +47,7 @@ class Collider {
 		return undefined;
 	}
 
-	onAttached(actor: Actor): void {
+	onAttached(_actor: Actor): void {
 		// nothing to do
 	}
 }
-
-export = Collider;

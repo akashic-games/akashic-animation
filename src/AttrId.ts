@@ -4,7 +4,7 @@
  * Posture#attrs 属性配列に格納された値にアクセスするための添字として用いる。
  * 例えばX方向移動量にアクセスするには posture.attrs[AttrId.tx] とする。
  */
-enum AttrId {
+export enum AttrId {
 	/**
 	 * X方向移動。
 	 */
@@ -144,5 +144,3 @@ enum AttrId {
 	 */
 	effect
 }
-
-export = AttrId;

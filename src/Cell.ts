@@ -1,10 +1,10 @@
-import Vector2 = require("./Vector2");
-import Size2 = require("./Size2");
+import {Size2} from "./Size2";
+import {Vector2} from "./Vector2";
 
 /**
  * セル
  */
-class Cell {
+export class Cell {
 	name: string;
 	pos: Vector2;
 	size: Size2;
@@ -23,5 +23,3 @@ class Cell {
 		this.m = undefined;
 	}
 }
-
-export = Cell;

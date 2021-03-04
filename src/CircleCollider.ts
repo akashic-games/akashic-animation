@@ -1,9 +1,9 @@
-import Collider = require("./Collider");
-import Bone = require("./Bone");
-import Posture = require("./Posture");
-import CircleVolume = require("./CircleVolume");
-import Actor = require("./Actor");
-import AttrId = require("./AttrId");
+import {Actor} from "./Actor";
+import {AttrId} from "./AttrId";
+import {Bone} from "./Bone";
+import {CircleVolume} from "./CircleVolume";
+import {Collider} from "./Collider";
+import {Posture} from "./Posture";
 
 function getScaleFromMatrix(m: g.Matrix): [number, number] {
 	const sx = Math.sqrt(m._matrix[0] * m._matrix[0] + m._matrix[1] * m._matrix[1]);
@@ -14,7 +14,7 @@ function getScaleFromMatrix(m: g.Matrix): [number, number] {
 /**
  * 円形コライダー
  */
-class CircleCollider extends Collider {
+export class CircleCollider extends Collider {
 	private _posture: Posture;
 	private _volume: CircleVolume;
 	private _scaleOption: string;
@@ -88,5 +88,3 @@ class CircleCollider extends Collider {
 		return this._volume;
 	}
 }
-
-export = CircleCollider;

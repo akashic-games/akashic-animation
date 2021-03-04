@@ -1,12 +1,12 @@
-import Content = require("./Content");
-import ContentType = require("./ContentType");
+import {Content} from "./Content";
+import {ContentType} from "./ContentType";
 
 /**
  * v3 のアニメーションデータコンテナ
  *
  * ASAファイルのデータが格納されている
  */
-class ContainerV3 {
+export class ContainerV3 {
 	// "3.x.x" でなければならない
 	version: string;
 	type: ContentType;
@@ -18,5 +18,3 @@ class ContainerV3 {
 		this.contents = contents;
 	}
 }
-
-export = ContainerV3;

@@ -1,7 +1,7 @@
 /**
  * 2Dサイズクラス
  */
-class Size2 implements g.CommonSize {
+export class Size2 implements g.CommonSize {
 	width: number;
 	height: number;
 
@@ -10,5 +10,3 @@ class Size2 implements g.CommonSize {
 		this.height = height !== undefined ? height : 0;
 	}
 }
-
-export = Size2;

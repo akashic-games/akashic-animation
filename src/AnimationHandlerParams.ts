@@ -1,4 +1,4 @@
-import Posture = require("./Posture");
+import {Posture} from "./Posture";
 
 /**
  * AnimationHandlerParamのためのキーフレーム情報

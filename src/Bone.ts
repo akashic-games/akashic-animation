@@ -1,10 +1,10 @@
-import ColliderInfo = require("./ColliderInfo");
-import AlphaBlendMode = require("./AlphaBlendMode");
+import {AlphaBlendMode} from "./AlphaBlendMode";
+import {ColliderInfo} from "./ColliderInfo";
 
 /**
  * ボーンクラス。
  */
-class Bone {
+export class Bone {
 	parentIndex: number;
 	parent: Bone;
 	children: Bone[];
@@ -20,5 +20,3 @@ class Bone {
 		this.parentIndex = -1;
 	}
 }
-
-export = Bone;

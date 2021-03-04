@@ -1,13 +1,13 @@
-import Attachment = require("./Attachment");
-import Cell = require("./Cell");
-import Skin = require("./Skin");
+import {Attachment} from "./Attachment";
+import {Cell} from "./Cell";
+import {Skin} from "./Skin";
 
 /**
  * セル用アタッチメント
  *
  * セルを`Actor`の任意のボーンにアタッチするためのアタッチメント。
  */
-class CellAttachment extends Attachment {
+export class CellAttachment extends Attachment {
 	matrix: g.Matrix;
 	cell: Cell;
 	skin: Skin;
@@ -56,5 +56,3 @@ class CellAttachment extends Attachment {
 		renderer.restore();
 	}
 }
-
-export = CellAttachment;

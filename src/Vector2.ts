@@ -1,7 +1,7 @@
 /**
  * 2Dベクトルクラス
  */
-class Vector2 implements g.CommonOffset {
+export class Vector2 implements g.CommonOffset {
 	x: number;
 	y: number;
 
@@ -10,5 +10,3 @@ class Vector2 implements g.CommonOffset {
 		this.y = y ? y : 0;
 	}
 }
-
-export = Vector2;

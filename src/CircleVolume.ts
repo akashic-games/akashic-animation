@@ -1,13 +1,13 @@
-import Volume = require("./Volume");
-import AABB = require("./AABB");
-import Vector2 = require("./Vector2");
+import {AABB} from "./AABB";
+import {Vector2} from "./Vector2";
+import {Volume} from "./Volume";
 
 /**
  * CircleVolume。
  *
  * アタリ判定用真円形Volume。
  */
-class CircleVolume implements Volume {
+export class CircleVolume implements Volume {
 	/**
 	 * 位置（ワールド座標）。
 	 */
@@ -40,5 +40,3 @@ class CircleVolume implements Volume {
 		return this._aabb;
 	}
 }
-
-export = CircleVolume;
