@@ -1,4 +1,4 @@
-var Size2 = require("../lib/Size2.js");
+var Size2 = require("../lib/Size2.js").Size2;
 
 describe("Size2", function() {
 	it("should construct itself properly", function() {

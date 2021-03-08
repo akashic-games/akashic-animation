@@ -1,6 +1,6 @@
-var AABB = require("../lib/AABB.js");
-var Vector2 = require("../lib/Vector2.js");
-var Size2 = require("../lib/Size2.js");
+var AABB = require("../lib/AABB.js").AABB;
+var Vector2 = require("../lib/Vector2.js").Vector2;
+var Size2 = require("../lib/Size2.js").Size2;
 
 describe("AABB", function() {
 	it("should construct itself with params properly", function() {

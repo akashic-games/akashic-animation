@@ -1,7 +1,7 @@
 global.g = require("@akashic/akashic-engine");
 var utils = require("./helper/utils.js");
-var Resource = require("../lib/Resource.js");
-var CellAttachment = require("../lib/CellAttachment.js");
+var Resource = require("../lib/Resource.js").Resource;
+var CellAttachment = require("../lib/CellAttachment.js").CellAttachment;
 
 describe("CellAttachment", function() {
 	var resource;

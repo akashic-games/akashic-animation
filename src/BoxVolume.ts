@@ -1,7 +1,7 @@
-import Volume = require("./Volume");
-import AABB = require("./AABB");
-import Vector2 = require("./Vector2");
-import Size2 = require("./Size2");
+import {AABB} from "./AABB";
+import {Size2} from "./Size2";
+import {Vector2} from "./Vector2";
+import {Volume} from "./Volume";
 
 /**
  * BoxVolume
@@ -10,7 +10,7 @@ import Size2 = require("./Size2");
  *
  * 実際にアタリ判定を行うときは `BoxVolume#matrix`,`origin` そして, `size` を用いてワールド座標系での領域を求める必要があります。
  */
-class BoxVolume implements Volume {
+export class BoxVolume implements Volume {
 	/**
 	 * 矩形の原点（ローカル座標）
 	 */
@@ -73,5 +73,3 @@ class BoxVolume implements Volume {
 
 	// TODO: 検討。BoxVolumeについてはOBBを返すメソッドがあっても良い
 }
-
-export = BoxVolume;

@@ -1,9 +1,9 @@
-import Attachment = require("./Attachment");
-import FinalizedCell = require("./FinalizedCell");
-import AttrId = require("./AttrId");
+import {AlphaBlendMode} from "./AlphaBlendMode";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
 import {CellValue} from "./AnimeParams";
-import AlphaBlendMode = require("./AlphaBlendMode");
+import {Attachment} from "./Attachment";
+import {AttrId} from "./AttrId";
+import {FinalizedCell} from "./FinalizedCell";
 import * as vfx from "./vfx";
 
 // 動的ボーン
@@ -11,7 +11,7 @@ import * as vfx from "./vfx";
 // Postureは実行時に定まるボーンの情報を扱う
 // 主なものはAnimationの計算結果
 //
-class Posture {
+export class Posture {
 	private static _costbl: number[] = [];
 
 	attrs: any[] = [];
@@ -100,5 +100,3 @@ class Posture {
 		m[5] = attrs[AttrId.ty];
 	}
 }
-
-export = Posture;

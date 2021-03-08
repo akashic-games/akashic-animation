@@ -1,9 +1,9 @@
-import ContentType = require("./ContentType");
+import {ContentType} from "./ContentType";
 
 /**
  * コンテンツデータ。
  */
-class Content<T> {
+export class Content<T> {
 	type: ContentType;
 	name: string;
 	data: T;
@@ -14,5 +14,3 @@ class Content<T> {
 		this.data = data;
 	}
 }
-
-export = Content;

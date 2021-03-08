@@ -1,12 +1,12 @@
-import Skin = require("./Skin");
-import Bone = require("./Bone");
-import BoneSet = require("./BoneSet");
-import Container = require("./Container");
-import ContainerV2 = require("./ContainerV2");
-import ContainerV3 = require("./ContainerV3");
-import Content = require("./Content");
-import AttrId = require("./AttrId");
 import {Animation, Curve} from "./AnimeParams";
+import {AttrId} from "./AttrId";
+import {Bone} from "./Bone";
+import {BoneSet} from "./BoneSet";
+import {Container} from "./Container";
+import {ContainerV2} from "./ContainerV2";
+import {ContainerV3} from "./ContainerV3";
+import {Content} from "./Content";
+import {Skin} from "./Skin";
 import * as vfx from "./vfx";
 
 function checkVersion(version: string, fname: string): string {
@@ -112,7 +112,7 @@ function mergeAssetArray(assetArray: {[key: string]: g.Asset}[]): {[key: string]
 /**
  * アニメーションリソースクラス
  */
-class Resource {
+export class Resource {
 	skins: Skin[] = [];
 	boneSets: BoneSet[] = [];
 	animations: Animation[] = [];
@@ -212,15 +212,20 @@ class Resource {
 		this.boneSets = loadResourceFromTextAsset<BoneSet>(
 			data.contents.boneSetFileNames,
 			mergedAssets,
-			(c: BoneSet, asseta: {[key: string]: g.Asset}): void => {
+			(c: BoneSet, _asseta: {[key: string]: g.Asset}): void => {
 				constructBoneTree(c.bones);
-		});
+			}
+		);
 		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, mergedAssets, bindTextureFromAsset);
 		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, mergedAssets, undefined);
 		this.animations.forEach((animation: Animation) => {
 			assignAttributeID(animation);
 		});
-		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(data.contents.effectFileNames, mergedAssets, undefined);
+		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(
+			data.contents.effectFileNames,
+			mergedAssets,
+			undefined
+		);
 	}
 
 	protected loadProjectV3(data: ContainerV3, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
@@ -253,5 +258,3 @@ class Resource {
 		);
 	}
 }
-
-export = Resource;

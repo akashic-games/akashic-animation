@@ -1,10 +1,10 @@
-import Vector2 = require("./Vector2");
-import Size2 = require("./Size2");
+import {Size2} from "./Size2";
+import {Vector2} from "./Vector2";
 
 /**
  * AABBクラス。
  */
-class AABB {
+export class AABB {
 	/**
 	 * Bounding Box の中心位置。
 	 */
@@ -20,5 +20,3 @@ class AABB {
 		this.extent = new Size2();
 	}
 }
-
-export = AABB;

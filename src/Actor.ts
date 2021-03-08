@@ -1,27 +1,27 @@
-import ActorParameterObject = require("./ActorParameterObject");
-import Skin = require("./Skin");
-import Posture = require("./Posture");
-import Skeleton = require("./Skeleton");
-import Bone = require("./Bone");
-import Resource = require("./Resource");
-import Attachment = require("./Attachment");
-import CellAttachment = require("./CellAttachment");
-import FinalizedCell = require("./FinalizedCell");
-import ColliderInfo = require("./ColliderInfo");
-import Collider = require("./Collider");
-import BoneCellCollider = require("./BoneCellCollider");
-import CircleCollider = require("./CircleCollider");
-import BoxVolume = require("./BoxVolume");
-import CircleVolume = require("./CircleVolume");
-import AttrId = require("./AttrId");
-import {Animation} from "./AnimeParams";
+import {ActorParameterObject} from "./ActorParameterObject";
+import {AlphaBlendMode} from "./AlphaBlendMode";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
-import AlphaBlendMode = require("./AlphaBlendMode");
+import {Animation} from "./AnimeParams";
+import {Attachment} from "./Attachment";
+import {AttrId} from "./AttrId";
+import {Bone} from "./Bone";
+import {BoneCellCollider } from "./BoneCellCollider";
+import {BoxVolume} from "./BoxVolume";
+import {CellAttachment} from "./CellAttachment";
+import {CircleCollider} from "./CircleCollider";
+import {CircleVolume} from "./CircleVolume";
+import {Collider} from "./Collider";
+import {ColliderInfo} from "./ColliderInfo";
+import {FinalizedCell} from "./FinalizedCell";
+import {Posture} from "./Posture";
+import {Resource} from "./Resource";
+import {Skeleton} from "./Skeleton";
+import {Skin} from "./Skin";
 import * as vfx from "./vfx";
 
 // `x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とするため、anchorX, anchorY に null 指定。
-const g_flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, null, null);
-const g_flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, null, null);
+const flipHMatrix  = new g.PlainMatrix(0, 0, -1,  1, 0, null, null);
+const flipVMatrix  = new g.PlainMatrix(0, 0,  1, -1, 0, null, null);
 
 /*
  * アニメーションフレームカウンタを適切な範囲に調整する。
@@ -111,7 +111,7 @@ function setupCollider(bones: Bone[], actor: Actor): void {
 /**
  * ボーンベースのアニメーションを描画するエンティティ。
  */
-class Actor extends g.E {
+export class Actor extends g.E {
 	resource: Resource;
 	animation: Animation;
 	skeleton: Skeleton;
@@ -554,7 +554,7 @@ class Actor extends g.E {
 		renderer.restore();
 	}
 
-	private renderEffect(effect: vfx.Effect, renderer: g.Renderer, camera: g.Camera): void {
+	private renderEffect(effect: vfx.Effect, renderer: g.Renderer, _camera: g.Camera): void {
 		effect.particleSystem.traverse((e) => {
 			const skin = this.resource.getSkinByName(e.userData.skinName);
 			const surface = skin.surface;
@@ -625,7 +625,7 @@ class Actor extends g.E {
 		}
 	}
 
-	private renderSelfCore(renderer: g.Renderer, camera: g.Camera, finalizedCell: FinalizedCell): void {
+	private renderSelfCore(renderer: g.Renderer, _camera: g.Camera, finalizedCell: FinalizedCell): void {
 		// 原点に描画する。CANVAS座標系
 		// +----------> x
 		// |   /\
@@ -716,10 +716,10 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 
 	// セルの水平(垂直)フリップとセル画像の左右(上下)反転の両方が指定されていると二重に反転して元に戻るので、どちらか片方が指定されている時のみ反転させる
 	if (attrs[AttrId.flipH] !== attrs[AttrId.iflh]) {
-		m = g_flipHMatrix.multiplyNew(m);
+		m = flipHMatrix.multiplyNew(m);
 	}
 	if (attrs[AttrId.flipV] !== attrs[AttrId.iflv]) {
-		m = g_flipVMatrix.multiplyNew(m);
+		m = flipVMatrix.multiplyNew(m);
 	}
 
 	const finalizedCell = new FinalizedCell();
@@ -741,5 +741,3 @@ function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOpera
 			return "source-over";
 	}
 }
-
-export = Actor;

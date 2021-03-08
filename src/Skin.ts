@@ -1,11 +1,11 @@
-import Cell = require("./Cell");
+import {Cell} from "./Cell";
 
 /**
  * スキンクラス
  *
  * スキンはActorの各ボーンに取り付けられる表示物であるセルの集合です
  */
-class Skin {
+export class Skin {
 	name: string;
 	imageAssetName: string;
 	imageSizeH: number;
@@ -13,5 +13,3 @@ class Skin {
 	surface: g.Surface;
 	cells: {[key: string]: Cell} = {};
 }
-
-export = Skin;

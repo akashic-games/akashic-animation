@@ -1,4 +1,4 @@
-var Cell = require("../lib/Cell.js");
+var Cell = require("../lib/Cell.js").Cell;
 /*
 this.pos = new Vector2();
 this.size = new Size2();

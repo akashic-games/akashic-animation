@@ -1,8 +1,8 @@
-import Cell = require("./Cell");
-import AlphaBlendMode = require("./AlphaBlendMode");
+import {AlphaBlendMode} from "./AlphaBlendMode";
+import {Cell} from "./Cell";
 
 // FinalizedCell = 画像 + Cell(静的データ) + アニメーション(動的)パラメタ
-class FinalizedCell {
+export class FinalizedCell {
 	surface: g.Surface;
 	cell: Cell;
 	u: number;
@@ -10,5 +10,3 @@ class FinalizedCell {
 	matrix: g.Matrix;
 	alphaBlendMode: AlphaBlendMode;
 }
-
-export = FinalizedCell;

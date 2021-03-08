@@ -1,5 +1,5 @@
-var BoneSet = require("../lib/BoneSet.js");
-var Bone = require("../lib/Bone.js");
+var BoneSet = require("../lib/BoneSet.js").BoneSet;
+var Bone = require("../lib/Bone.js").Bone;
 
 describe("BoneSet", function() {
 	it("should constructs itself properly", function() {

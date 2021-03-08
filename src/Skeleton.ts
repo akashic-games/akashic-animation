@@ -1,10 +1,9 @@
-import Posture = require("./Posture");
-import Bone = require("./Bone");
-import Attachment = require("./Attachment");
-import AttrId = require("./AttrId");
-import {Animation, CurveTie, Curve, KeyFrame} from "./AnimeParams";
 import {AnimationHandlerParam} from "./AnimationHandlerParams";
-import * as aps from "./aps";
+import {Animation, CurveTie, Curve, KeyFrame} from "./AnimeParams";
+import {Attachment} from "./Attachment";
+import {AttrId} from "./AttrId";
+import {Bone} from "./Bone";
+import {Posture} from "./Posture";
 import * as vfx from "./vfx";
 
 // 属性初期値テーブル
@@ -229,7 +228,7 @@ function interpolate(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: number): an
  *
  * スケルトンクラスはアニメーションの計算と結果の保持を行う。
  */
-class Skeleton {
+export class Skeleton {
 	bones: Bone[];
 	caches: Posture[];
 	composedCaches: Posture[];
@@ -626,5 +625,3 @@ class Skeleton {
 		}
 	}
 }
-
-export = Skeleton;

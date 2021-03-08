@@ -1,10 +1,10 @@
 global.g = require("@akashic/akashic-engine");
 var utils = require("./helper/utils.js");
-var Actor = require("../lib/Actor.js");
-var Resource = require("../lib/Resource.js");
-var CellAttachment = require("../lib/CellAttachment.js");
-var CircleCollider = require("../lib/CircleCollider.js");
-var AttrId = require("../lib/AttrId.js");
+var Actor = require("../lib/Actor.js").Actor;
+var Resource = require("../lib/Resource.js").Resource;
+var CellAttachment = require("../lib/CellAttachment.js").CellAttachment;
+var CircleCollider = require("../lib/CircleCollider.js").CircleCollider;
+var AttrId = require("../lib/AttrId.js").AttrId;
 
 describe("Actor", function() {
 	var scene;
