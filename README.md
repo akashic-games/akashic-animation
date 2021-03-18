@@ -6,8 +6,6 @@
 
 Akashic Animationは[Akashic Engine](https://akashic-games.github.io/)向けのアニメーションライブラリです。
 
-**現バージョンでは、不具合によりエフェクト機能が利用できません。**
-
 ## 利用方法
 
 [akashic-cli](https://github.com/akashic-games/akashic-cli)をインストールした後、
