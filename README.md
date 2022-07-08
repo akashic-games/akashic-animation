@@ -25,7 +25,7 @@ var aa = require("@akashic-extension/akashic-animation");
 Akashic Engineの詳細な利用方法については、 [公式ページ](https://akashic-games.github.io/) を参照してください。
 
 ## APIリファレンス
-[こちら](https://akashic-games.github.io/reference/akashic-animation/index.html)。
+[こちら](https://akashic-games.github.io/akashic-animation/api/index.html)。
 
 ## 補足
 ### ループアニメーションの補間

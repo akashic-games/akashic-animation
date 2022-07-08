@@ -6,7 +6,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "doc": "typedoc --out ./doc src/index.ts",
+    "doc": "typedoc --out ./public/api src/index.ts",
     "prepare": "npm run build && npm run doc",
     "clean": "rimraf lib",
     "test": "npm run build && npm run test:jasmine && npm run lint",
