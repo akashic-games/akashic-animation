@@ -9,51 +9,14 @@
     "types": ["node"],
     "allowUmdGlobalAccess": true
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     "lib"
   ],
   "files": [
-    "./node_modules/@akashic/akashic-engine/index.runtime.d.ts",
-    "./src/AABB.ts",
-    "./src/Actor.ts",
-    "./src/ActorParameterObject.ts",
-    "./src/AlphaBlendMode.ts",
-    "./src/AnimationHandlerParams.ts",
-    "./src/AnimeParams.ts",
-    "./src/Attachment.ts",
-    "./src/AttrId.ts",
-    "./src/Bone.ts",
-    "./src/BoneCellCollider.ts",
-    "./src/BoneSet.ts",
-    "./src/BoxVolume.ts",
-    "./src/Cell.ts",
-    "./src/CellAttachment.ts",
-    "./src/CellAttachmentCollider.ts",
-    "./src/CircleCollider.ts",
-    "./src/CircleVolume.ts",
-    "./src/Collider.ts",
-    "./src/ColliderInfo.ts",
-    "./src/Container.ts",
-    "./src/ContainerV2.ts",
-    "./src/ContainerV3.ts",
-    "./src/Content.ts",
-    "./src/ContentType.ts",
-    "./src/FinalizedCell.ts",
-    "./src/index.ts",
-    "./src/Posture.ts",
-    "./src/Resource.ts",
-    "./src/Size2.ts",
-    "./src/Skeleton.ts",
-    "./src/Skin.ts",
-    "./src/Vector2.ts",
-    "./src/Volume.ts",
-    "./src/aps/Emitter.ts",
-    "./src/aps/Particle.ts",
-    "./src/aps/ParticleSystem.ts",
-    "./src/aps/index.ts"
-  ],
-  "atom": {
-    "rewriteTsconfig": true
-  }
+    "./node_modules/@akashic/akashic-engine/index.runtime.d.ts"
+  ]
 }
