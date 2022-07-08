@@ -1,7 +1,7 @@
 import {AABB} from "./AABB";
 import {Size2} from "./Size2";
 import {Vector2} from "./Vector2";
-import {Volume} from "./Volume";
+import type {Volume} from "./Volume";
 
 /**
  * BoxVolume

@@ -1,6 +1,6 @@
 import {Attachment} from "./Attachment";
-import {Cell} from "./Cell";
-import {Skin} from "./Skin";
+import type {Cell} from "./Cell";
+import type {Skin} from "./Skin";
 
 /**
  * セル用アタッチメント

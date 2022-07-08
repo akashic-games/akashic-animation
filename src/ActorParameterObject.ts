@@ -1,4 +1,4 @@
-import {Resource} from "./Resource";
+import type {Resource} from "./Resource";
 
 export interface ActorParameterObject extends g.EParameterObject {
 	scene: g.Scene;

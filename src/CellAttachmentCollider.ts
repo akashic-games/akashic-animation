@@ -1,5 +1,5 @@
 import {BoxVolume} from "./BoxVolume";
-import {CellAttachment} from "./CellAttachment";
+import type {CellAttachment} from "./CellAttachment";
 import {Collider} from "./Collider";
 
 function multiply(m1: number[], m2: number[]): void {

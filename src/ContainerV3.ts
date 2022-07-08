@@ -1,5 +1,5 @@
-import {Content} from "./Content";
-import {ContentType} from "./ContentType";
+import type {Content} from "./Content";
+import type {ContentType} from "./ContentType";
 
 /**
  * v3 のアニメーションデータコンテナ

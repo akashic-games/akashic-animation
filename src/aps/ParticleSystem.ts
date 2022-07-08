@@ -1,4 +1,5 @@
-import {Emitter, EmitterStatus} from "./Emitter";
+import type {Emitter} from "./Emitter";
+import { EmitterStatus} from "./Emitter";
 
 function traverse(e: Emitter, callback: (e: Emitter) => void): void {
 	callback(e);

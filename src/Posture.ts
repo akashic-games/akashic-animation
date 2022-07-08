@@ -1,10 +1,10 @@
-import {AlphaBlendMode} from "./AlphaBlendMode";
-import {AnimationHandlerParam} from "./AnimationHandlerParams";
+import type {AlphaBlendMode} from "./AlphaBlendMode";
+import type {AnimationHandlerParam} from "./AnimationHandlerParams";
 import {CellValue} from "./AnimeParams";
-import {Attachment} from "./Attachment";
+import type {Attachment} from "./Attachment";
 import {AttrId} from "./AttrId";
-import {FinalizedCell} from "./FinalizedCell";
-import * as vfx from "./vfx";
+import type {FinalizedCell} from "./FinalizedCell";
+import type * as vfx from "./vfx";
 
 // 動的ボーン
 // Boneが静的で様々なシステムから参照されるのに対し、

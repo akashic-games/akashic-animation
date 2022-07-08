@@ -1,8 +1,9 @@
-import {AnimationHandlerParam} from "./AnimationHandlerParams";
-import {Animation, CurveTie, Curve, KeyFrame} from "./AnimeParams";
-import {Attachment} from "./Attachment";
+import type {AnimationHandlerParam} from "./AnimationHandlerParams";
+import type {Animation, CurveTie, Curve} from "./AnimeParams";
+import { KeyFrame} from "./AnimeParams";
+import type {Attachment} from "./Attachment";
 import {AttrId} from "./AttrId";
-import {Bone} from "./Bone";
+import type {Bone} from "./Bone";
 import {Posture} from "./Posture";
 import * as vfx from "./vfx";
 
@@ -295,12 +296,12 @@ export class Skeleton {
 	 */
 	removeAttachment(attachment: Attachment): void {
 		this.bones.some((bone: Bone) => {
-			let posture = this.caches[bone.arrayIndex];
-			let index = posture.attachments.indexOf(attachment);
+			const posture = this.caches[bone.arrayIndex];
+			const index = posture.attachments.indexOf(attachment);
 			if (index === -1) {
 				return false;
 			}
-			let removed = posture.attachments.splice(index, 1);
+			const removed = posture.attachments.splice(index, 1);
 			removed[0].posture = undefined;
 			return true;
 		});

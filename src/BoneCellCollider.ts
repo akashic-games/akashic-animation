@@ -1,9 +1,9 @@
-import {Actor} from "./Actor";
+import type {Actor} from "./Actor";
 import {AttrId} from "./AttrId";
-import {Bone} from "./Bone";
+import type {Bone} from "./Bone";
 import {BoxVolume} from "./BoxVolume";
 import {Collider} from "./Collider";
-import {Posture} from "./Posture";
+import type {Posture} from "./Posture";
 
 /**
  * セル用コライダー
@@ -55,7 +55,7 @@ export class BoneCellCollider extends Collider {
 		}
 
 		// 2018/06/21: cellを持たないpostureでの当たり判定をサポート
-		var fCell = this._posture.finalizedCell;
+		const fCell = this._posture.finalizedCell;
 		this._volume.aabbFirst = this.aabbFirst;
 		this._volume.origin.x = 0;
 		this._volume.origin.y = 0;

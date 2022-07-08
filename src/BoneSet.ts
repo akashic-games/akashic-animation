@@ -1,4 +1,4 @@
-import {Bone} from "./Bone";
+import type {Bone} from "./Bone";
 
 /**
  * ボーン集合。
