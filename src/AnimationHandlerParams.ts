@@ -1,4 +1,4 @@
-import {Posture} from "./Posture";
+import type {Posture} from "./Posture";
 
 /**
  * AnimationHandlerParamのためのキーフレーム情報

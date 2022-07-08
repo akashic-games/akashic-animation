@@ -313,7 +313,7 @@ export class Emitter {
 		const tyMin = this.pickParam(this.initParam.tyMin, undefined);
 		const tyMax = this.pickParam(this.initParam.tyMax, undefined);
 
-		let   v = this.pickParam(this.initParam.v, 0);
+		const   v = this.pickParam(this.initParam.v, 0);
 		let   vMin = this.pickParam(this.initParam.vMin, undefined);
 		let   vMax = this.pickParam(this.initParam.vMax, undefined);
 
@@ -363,7 +363,7 @@ export class Emitter {
 		let syMax = this.pickParam(this.initParam.syMax, 1);
 
 		let vsy = this.pickParam(this.initParam.vsy, 0);
-		let vsyMin = this.pickParam(this.initParam.vsyMin, 0);
+		const vsyMin = this.pickParam(this.initParam.vsyMin, 0);
 		let vsyMax = this.pickParam(this.initParam.vsyMax, 0);
 
 		let asy = this.pickParam(this.initParam.asy, 0);

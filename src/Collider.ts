@@ -1,5 +1,5 @@
-import { Actor } from "./Actor";
-import { Volume } from "./Volume";
+import type { Actor } from "./Actor";
+import type { Volume } from "./Volume";
 
 /**
  * コリジョンのためのVolume算出役

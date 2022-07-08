@@ -1,4 +1,4 @@
-import {AABB} from "./AABB";
+import type {AABB} from "./AABB";
 
 /**
  * アタリ判定用領域インターフェース

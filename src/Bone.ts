@@ -1,5 +1,5 @@
-import {AlphaBlendMode} from "./AlphaBlendMode";
-import {ColliderInfo} from "./ColliderInfo";
+import type {AlphaBlendMode} from "./AlphaBlendMode";
+import type {ColliderInfo} from "./ColliderInfo";
 
 /**
  * ボーンクラス。

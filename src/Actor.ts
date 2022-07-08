@@ -1,22 +1,22 @@
-import {ActorParameterObject} from "./ActorParameterObject";
-import {AlphaBlendMode} from "./AlphaBlendMode";
-import {AnimationHandlerParam} from "./AnimationHandlerParams";
-import {Animation} from "./AnimeParams";
+import type {ActorParameterObject} from "./ActorParameterObject";
+import type {AlphaBlendMode} from "./AlphaBlendMode";
+import type {AnimationHandlerParam} from "./AnimationHandlerParams";
+import type {Animation} from "./AnimeParams";
 import {Attachment} from "./Attachment";
 import {AttrId} from "./AttrId";
-import {Bone} from "./Bone";
+import type {Bone} from "./Bone";
 import {BoneCellCollider } from "./BoneCellCollider";
 import {BoxVolume} from "./BoxVolume";
 import {CellAttachment} from "./CellAttachment";
 import {CircleCollider} from "./CircleCollider";
 import {CircleVolume} from "./CircleVolume";
-import {Collider} from "./Collider";
-import {ColliderInfo} from "./ColliderInfo";
+import type {Collider} from "./Collider";
+import type {ColliderInfo} from "./ColliderInfo";
 import {FinalizedCell} from "./FinalizedCell";
-import {Posture} from "./Posture";
-import {Resource} from "./Resource";
+import type {Posture} from "./Posture";
+import type {Resource} from "./Resource";
 import {Skeleton} from "./Skeleton";
-import {Skin} from "./Skin";
+import type {Skin} from "./Skin";
 import * as vfx from "./vfx";
 
 // `x`, `y` は左上端を基準に、拡大・縮小・回転の基点は中央を基準とするため、anchorX, anchorY に null 指定。
@@ -61,6 +61,7 @@ function setupColliderForCell(info: ColliderInfo, bone: Bone): Collider {
 	switch (info.boundType) {
 		case "aabb":
 		case "box":
+			// eslint-disable-next-line prefer-const
 			collider = new BoneCellCollider(bone.name, info.boundType === "aabb");
 			break;
 		default:
@@ -77,6 +78,7 @@ function setupColliderForCircle(info: ColliderInfo, bone: Bone): Collider {
 	switch (info.boundType) {
 		case "aabb":
 		case "circle":
+			// eslint-disable-next-line prefer-const
 			collider = new CircleCollider(bone.name, info.boundType === "aabb", info.scaleOption);
 			break;
 		default:
@@ -261,7 +263,7 @@ export class Actor extends g.E {
 	 */
 	setSkins(skins: Skin[]): void {
 		for (let i = 0; i < skins.length; i = (i + 1) | 0) {
-			let skin = skins[i];
+			const skin = skins[i];
 			this.skins[skin.name] = skin;
 		}
 	}
@@ -301,7 +303,7 @@ export class Actor extends g.E {
 
 		// Update additional information around posture
 		for (let i = 0; i < this.skeleton.composedCaches.length; i = (i + 1) | 0) {
-			let cc = this.skeleton.composedCaches[i];
+			const cc = this.skeleton.composedCaches[i];
 			cc.finalizedCell = createFinalizedCell(cc, this.skins);
 		}
 
@@ -385,10 +387,10 @@ export class Actor extends g.E {
 		let attachment: Attachment = undefined;
 
 		if (typeof attachable === "string") {
-			let cellName = <string>attachable;
+			const cellName = <string>attachable;
 			Object.keys(this.skins).some((key: string): boolean => {
-				let skin = this.skins[key];
-				let cell = skin.cells[cellName];
+				const skin = this.skins[key];
+				const cell = skin.cells[cellName];
 				if (cell) {
 					attachment = new CellAttachment(cellName, skin, matrix);
 				}
@@ -446,7 +448,7 @@ export class Actor extends g.E {
 		// そのことでわかりにくいバグが生まれた。BoneCellColliderの参照するセルが変化した
 		//
 		// 単純のためここで配列を複製し、それをソートする
-		let sortedComposedCaches: Posture[] = [].concat(this.skeleton.composedCaches);
+		const sortedComposedCaches: Posture[] = [].concat(this.skeleton.composedCaches);
 		sortedComposedCaches.sort((a: Posture, b: Posture): number => {
 			if (a.attrs[AttrId.prio] === b.attrs[AttrId.prio]) {
 				// Array.prototype.sort()は不安定。安定にするために一手間加える

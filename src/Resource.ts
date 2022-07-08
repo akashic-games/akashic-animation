@@ -1,13 +1,13 @@
-import {Animation, Curve} from "./AnimeParams";
+import type {Animation, Curve} from "./AnimeParams";
 import {AttrId} from "./AttrId";
-import {Bone} from "./Bone";
-import {BoneSet} from "./BoneSet";
-import {Container} from "./Container";
-import {ContainerV2} from "./ContainerV2";
-import {ContainerV3} from "./ContainerV3";
-import {Content} from "./Content";
-import {Skin} from "./Skin";
-import * as vfx from "./vfx";
+import type {Bone} from "./Bone";
+import type {BoneSet} from "./BoneSet";
+import type {Container} from "./Container";
+import type {ContainerV2} from "./ContainerV2";
+import type {ContainerV3} from "./ContainerV3";
+import type {Content} from "./Content";
+import type {Skin} from "./Skin";
+import type * as vfx from "./vfx";
 
 function checkVersion(version: string, fname: string): string {
 	const r = version.match(/(\d+)\.\d+.\d+/);
