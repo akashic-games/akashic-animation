@@ -1,5 +1,5 @@
 <p align="center">
-<img src="img/akashic-animation.png" />
+<img src="https://raw.githubusercontent.com/akashic-games/akashic-animation/master/img/akashic-animation.png" />
 </p>
 
 # Akashic Animation
