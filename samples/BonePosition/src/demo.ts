@@ -22,7 +22,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 		this.timeInfo = new TimeInfo(1.0);
 	}
 
@@ -77,7 +77,7 @@ class DemoScene extends g.Scene {
 			src: this.asset.getImageById("smoke")
 		}, this.timeInfo);
 
-		this.update.add(this.handleUpdate, this);
+		this.onUpdate.add(this.handleUpdate, this);
 	}
 
 	handleUpdate(): void {

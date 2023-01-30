@@ -24,7 +24,7 @@ export class ToggleButton extends g.Sprite {
 
 		this.toggled = new g.Trigger<boolean>();
 
-		this.pointDown.add(this.handlePointDown, this);
+		this.onPointDown.add(this.handlePointDown, this);
 
 		if (param.onoff) {
 			this.highlight.show();

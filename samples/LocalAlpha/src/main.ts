@@ -7,7 +7,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 	}
 
 	private onLoaded(): void {
@@ -39,7 +39,7 @@ class DemoScene extends g.Scene {
 			opacity: 0.6,
 			touchable: true
 		});
-		sprite.pointMove.add((ev) => {
+		sprite.onPointMove.add((ev) => {
 			const nextX = sprite.x + ev.prevDelta.x;
 			const nextY = sprite.y + ev.prevDelta.y;
 			if (
@@ -75,7 +75,7 @@ class DemoScene extends g.Scene {
 		});
 		this.append(messageLabel);
 
-		this.update.add(() => {
+		this.onUpdate.add(() => {
 			this.actor.colliders.forEach((c) => {
 				const volume = c.getVolume();
 				if (! volume) return;

@@ -27,7 +27,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 	}
 
 	private onLoaded(): void {
@@ -44,7 +44,7 @@ class DemoScene extends g.Scene {
 			y: 0,
 			touchable: true
 		});
-		this.bgRect.pointDown.add(() => {
+		this.bgRect.onPointDown.add(() => {
 			this.bgColorIndex = (this.bgColorIndex + 1) % CSS_COLORS.length;
 			this.bgRect.cssColor = CSS_COLORS[this.bgColorIndex];
 		});
@@ -87,7 +87,7 @@ class DemoScene extends g.Scene {
 		});
 		this.append(messageLabel);
 
-		this.update.add(() => {
+		this.onUpdate.add(() => {
 			this.actor.modified();
 			this.actor.calc();
 		});
@@ -131,11 +131,11 @@ class DemoScene extends g.Scene {
 			opacity: 0,
 			touchable: true
 		});
-		touchableRect.pointDown.add(() => {
+		touchableRect.onPointDown.add(() => {
 			buttonSprite.hide();
 			pushedButtonSprite.show();
 		});
-		touchableRect.pointUp.add(() => {
+		touchableRect.onPointUp.add(() => {
 			pushedButtonSprite.hide();
 			buttonSprite.show();
 			this.alphaBlendIndex = (this.alphaBlendIndex + 1) % ALPHA_BLEND_TYPES.length;

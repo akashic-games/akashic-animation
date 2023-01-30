@@ -42,7 +42,7 @@ function equipSecondaryBloodSword(actor: asa.Actor): any {
 }
 
 function rotateBody(actor: asa.Actor): void {
-	var handler = (param: asa.AnimationHandlerParams.AnimationHandlerParam) => {
+	const handler = (param: asa.AnimationHandlerParams.AnimationHandlerParam) => {
 		const t = param.currentFrame / param.frameCount;
 		param.posture.attrs[asa.AttrId.sx] = Math.cos(Math.PI * 2 * t * 4 + Math.PI / 2);
 		param.posture.updateMatrix();
@@ -162,7 +162,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 	}
 
 	onLoaded() {
@@ -235,7 +235,7 @@ class DemoScene extends g.Scene {
 			this.particles.push(new Particle(this));
 		}
 
-		this.update.add(this.handleUpdate, this);
+		this.onUpdate.add(this.handleUpdate, this);
 	}
 
 	handleUpdate(): void {

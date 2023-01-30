@@ -44,7 +44,7 @@ class Particle {
 			return;
 		}
 
-		var acc = 0.4;
+		const acc = 0.4;
 		this.vy += acc;
 		this.x += this.vx;
 		this.y += this.vy;
