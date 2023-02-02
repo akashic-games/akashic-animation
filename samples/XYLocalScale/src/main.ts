@@ -47,7 +47,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 	}
 
 	private onLoaded(): void {
@@ -73,7 +73,7 @@ class DemoScene extends g.Scene {
 		this.heartItems["y--"] = this.generateHeartItem("y_minus", 192, 0, 0, -0.5);
 		Object.keys(this.heartItems).forEach((key) => {
 			const heartItem = this.heartItems[key];
-			heartItem.sprite.pointMove.add((ev) => {
+			heartItem.sprite.onPointMove.add((ev) => {
 				const nextX = heartItem.sprite.x + ev.prevDelta.x;
 				const nextY = heartItem.sprite.y + ev.prevDelta.y;
 				if (
@@ -110,7 +110,7 @@ class DemoScene extends g.Scene {
 		});
 		this.append(messageLabel);
 
-		this.update.add(() => {
+		this.onUpdate.add(() => {
 			this.actor.colliders.forEach((c) => {
 				let isCollided = false;
 				Object.keys(this.heartItems).forEach((key) => {

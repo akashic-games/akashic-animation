@@ -13,7 +13,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 	}
 
 	onLoaded() {
@@ -39,7 +39,7 @@ class DemoScene extends g.Scene {
 		this.indicator = new UI.Indicator(this);
 		this.append(this.indicator);
 
-		this.update.add(this._onUpdateHandler, this);
+		this.onUpdate.add(this._onUpdateHandler, this);
 	}
 
 	private _onUpdateHandler(): void {

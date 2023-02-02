@@ -23,7 +23,7 @@ class DemoScene extends g.Scene {
 
 	constructor(param: g.SceneParameterObject) {
 		super(param);
-		this.loaded.add(this.onLoaded, this);
+		this.onLoad.add(this.onLoaded, this);
 	}
 
 	private generateRunner(resource: asa.Resource, x: number, y: number, isRightDirection: boolean): Runner {
@@ -122,7 +122,7 @@ class DemoScene extends g.Scene {
 					param.posture.updateMatrix();
 				}
 			});
-			runner.collisionRect.pointDown.add((ev) => {
+			runner.collisionRect.onPointDown.add((ev) => {
 				const px = runner.collisionRect.x + ev.point.x;
 				const py = runner.collisionRect.y + ev.point.y;
 				if (this.isCollidedByRunner(runner, "stick_head", px, py)) {
@@ -140,7 +140,7 @@ class DemoScene extends g.Scene {
 			this.append(runner.collisionRect);
 		});
 
-		this.update.add(() => {
+		this.onUpdate.add(() => {
 			this.runners.forEach((runner) => {
 				runner.actor.modified();
 				runner.actor.calc();
