@@ -199,6 +199,22 @@ function interpolateHermite(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: numb
 	);
 }
 
+// SpriteStudioでサポートされている補間方法（加速）
+// see: https://github.com/SpriteStudio/SpriteStudio6-SDK/blob/master/Common/Loader/ssInterpolation.cpp#L25
+function interpolateAcceleration(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: number): number {
+	const t: number = (time - kFrom.time) / (kTo.time - kFrom.time);
+	const r: number = t * t;
+	return kFrom.value * (1 - r) + kTo.value * r;
+}
+
+// SpriteStudioでサポートされている補間方法（減速）
+// see: https://github.com/SpriteStudio/SpriteStudio6-SDK/blob/master/Common/Loader/ssInterpolation.cpp#L40
+function interpolateDeceleration(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: number): number {
+	const t: number = 1 - (time - kFrom.time) / (kTo.time - kFrom.time);
+	const r: number = 1 - t * t;
+	return kFrom.value * (1 - r) + kTo.value * r;
+}
+
 // SSの実装は次の通り
 // https://github.com/SpriteStudio/SpriteStudio5-SDK/blob/master/Common/Animator/ssplayer_animedecode.cpp
 // https://github.com/SpriteStudio/SpriteStudio5-SDK/blob/master/Common/Loader/ssInterpolation.cpp
@@ -213,8 +229,8 @@ function interpolate(kFrom: KeyFrame<any>, kTo: KeyFrame<any>, time: number): an
 			case "linear":  return interpolateLinear(kFrom, kTo, time);
 			case "bezier":  return interpolateBezier(kFrom, kTo, time);
 			case "hermite": return interpolateHermite(kFrom, kTo, time);
-			// case "acceleration": // SpriteStuioのサポートする方式。一般的でないかもしれないので対応保留
-			// case "deceleration": // SpriteStuioのサポートする方式。一般的でないかもしれないので対応保留
+			case "acceleration": return interpolateAcceleration(kFrom, kTo, time);
+			case "deceleration": return interpolateDeceleration(kFrom, kTo, time);
 			default:
 				// 未知の補間方法は不正なデータである
 				console.warn("Unknown interpolation: " + kFrom.ipType);
