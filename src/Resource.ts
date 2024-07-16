@@ -1,5 +1,6 @@
 import type {Animation, Curve} from "./AnimeParams";
 import {AttrId} from "./AttrId";
+import { AssetResolver } from "./auxiliary/AssetResolver";
 import type {Bone} from "./Bone";
 import type {BoneSet} from "./BoneSet";
 import type {Container} from "./Container";
@@ -18,10 +19,9 @@ function checkVersion(version: string, fname: string): string {
 	return r[1];
 }
 
-function bindTextureFromAsset(skin: Skin, assets: {[key: string]: g.Asset}): void {
-	const assetName = skin.imageAssetName ? skin.imageAssetName : skin.name;
-	const anAsset: g.Asset = assets[assetName];
-	skin.surface = (<g.ImageAsset>anAsset).asSurface();
+function bindTextureFromAsset(skin: Skin, assetResolver: AssetResolver): void {
+	const anAsset = assetResolver.getImage(skin.imageAssetName);
+	skin.surface = anAsset.asSurface();
 }
 
 function constructBoneTree(bones: Bone[]): void {
@@ -43,14 +43,15 @@ function constructBoneTree(bones: Bone[]): void {
 
 function loadResourceFromContents<T>(
 	contents: Content<T>[],
-	assets: {[key: string]: g.Asset},
-	resolver?: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
+	assetResolver: AssetResolver,
+	resolver?: (c: T, assetResolver: AssetResolver) => void,
+): T[] {
 	const resources: T[] = [];
 
 	for (let i = 0; i < contents.length; i++) {
 		const content = contents[i];
 		if (resolver) {
-			resolver(content.data, assets);
+			resolver(content.data, assetResolver);
 		}
 		resources.push(content.data);
 	}
@@ -60,19 +61,18 @@ function loadResourceFromContents<T>(
 
 function loadResourceFromTextAsset<T>(
 	fileNames: string[],
-	assets: {[key: string]: g.Asset},
-	resolver: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
+	assetResolver: AssetResolver,
+	resolver?: (c: T, assetResolver: AssetResolver) => void,
+): T[] {
 	const resources: T[] = [];
 
 	if (fileNames) {
 		fileNames.forEach((fname: string): void => {
-			const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
-			const data: ContainerV2 = JSON.parse((<g.TextAsset>assets[assetName]).data);
-
+			const data = assetResolver.getJSON<ContainerV2>(fname);
 			checkVersion(data.version, fname);
 
 			if (resolver) {
-				resolver(data.contents, assets);
+				resolver(data.contents, assetResolver);
 			}
 
 			resources.push(data.contents);
@@ -125,25 +125,49 @@ export class Resource {
 	/**
 	 * asapjテキストアセットを読み込む。関連するアセットがある場合、それも読み込む。
 	 *
-	 * すでに読み込んだaapjテキストアセットがあった場合、このResourceインスタンスから削除される。
+	 * すでに読み込んだasapjテキストアセットがあった場合、このResourceインスタンスから削除される。
 	 *
+	 * @deprecated 第2引数に `scene.asset` または `game.asset` を指定すべきである。
 	 * @param assetName asapjテキストアセット名
 	 * @param assets 利用できるアセット
 	 * @param ...otherAssets 利用できるアセット（可変長引数）
 	 */
-	loadProject(assetName: string, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
-		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+	loadProject(assetName: string, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void;
 
-		const json = (<g.TextAsset>mergedAssets[assetName]).data;
-		const data: Container = JSON.parse(json);
-		const majorVersion = checkVersion(data.version, assetName);
+	/**
+	 * asapjテキストアセットを読み込む。関連するアセットがある場合、それも読み込む。
+	 * 関連するアセットはすべて同一パスに存在しなければならないことに注意。
+	 * すでに読み込んだasapjテキストアセットがあった場合、このResourceインスタンスから削除される。
+	 *
+	 * @param projectPath asapjのファイルパス
+	 * @param asset 利用するアセットアクセッサ
+	 */
+	loadProject(projectPath: string, asset: g.AssetAccessor): void;
+
+	loadProject(
+		assetNameOrProjectPath: string,
+		assetsOrAccessor: {[key: string]: g.Asset} | g.AssetAccessor,
+		...otherAssets: {[key: string]: g.Asset}[]
+	): void {
+		let assetResolver: AssetResolver;
+
+		if (assetsOrAccessor instanceof g.AssetAccessor) {
+			const basePath = g.PathUtil.resolveDirname(assetNameOrProjectPath);
+			assetResolver = new AssetResolver(assetsOrAccessor, basePath);
+		} else {
+			const assets = mergeAssetArray([assetsOrAccessor].concat(otherAssets));
+			assetResolver = new AssetResolver(assets);
+		}
+
+		const data = assetResolver.getJSON<Container>(assetNameOrProjectPath);
+		const majorVersion = checkVersion(data.version, assetNameOrProjectPath);
 
 		if (majorVersion === "2") {
-			this.loadProjectV2(data, assets, ...otherAssets);
+			this.loadProjectV2(data, assetResolver);
 			return;
 		}
 
-		this.loadProjectV3(data as ContainerV3, assets, ...otherAssets);
+		this.loadProjectV3(data as ContainerV3, assetResolver);
 	}
 
 	/**
@@ -206,55 +230,50 @@ export class Resource {
 		return undefined;
 	}
 
-	protected loadProjectV2(data: ContainerV2, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
-		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
-
+	protected loadProjectV2(data: ContainerV2, assetResolver: AssetResolver): void {
 		this.boneSets = loadResourceFromTextAsset<BoneSet>(
 			data.contents.boneSetFileNames,
-			mergedAssets,
-			(c: BoneSet, _asseta: {[key: string]: g.Asset}): void => {
+			assetResolver,
+			(c: BoneSet): void => {
 				constructBoneTree(c.bones);
 			}
 		);
-		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, mergedAssets, bindTextureFromAsset);
-		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, mergedAssets, undefined);
+		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, assetResolver, bindTextureFromAsset);
+		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, assetResolver);
 		this.animations.forEach((animation: Animation) => {
 			assignAttributeID(animation);
 		});
 		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(
 			data.contents.effectFileNames,
-			mergedAssets,
-			undefined
+			assetResolver,
 		);
 	}
 
-	protected loadProjectV3(data: ContainerV3, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
+	protected loadProjectV3(data: ContainerV3, assetResolver: AssetResolver): void {
 		if (data.type !== "bundle") {
 			throw  g.ExceptionFactory.createAssertionError("Invalid file type: " + data.type + ", supported only \"bundle\" type");
 		}
 
-		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
-
 		this.boneSets = loadResourceFromContents<BoneSet>(
 			data.contents.filter(content => content.type === "bone"),
-			mergedAssets,
+			assetResolver,
 			c => constructBoneTree(c.bones)
 		);
 		this.skins = loadResourceFromContents<Skin>(
 			data.contents.filter(content => content.type === "skin"),
-			mergedAssets,
+			assetResolver,
 			bindTextureFromAsset
 		);
 		this.animations = loadResourceFromContents<Animation>(
 			data.contents.filter(content => content.type === "animation"),
-			mergedAssets
+			assetResolver
 		);
 		this.animations.forEach((animation: Animation) => {
 			assignAttributeID(animation);
 		});
 		this.effectParameters = loadResourceFromContents<vfx.EffectParameterObject>(
 			data.contents.filter(content => content.type === "effect"),
-			mergedAssets
+			assetResolver,
 		);
 	}
 }
