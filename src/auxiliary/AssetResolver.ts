@@ -18,10 +18,25 @@ export class AssetResolver {
 		}
 	}
 
-	getImage(name: string, ext: string = ".png"): g.ImageAsset {
+	getImage(name: string, exts: string[] = [".png", ".jpg", ".jpeg"]): g.ImageAsset {
 		if (this.accessor) {
-			const assetPath = g.PathUtil.resolvePath(this.basePath, `${name}${ext}`);
-			return this.accessor.getImage(assetPath);
+			let asset: g.ImageAsset;
+			for (const ext of exts) {
+				try {
+					const assetPath = g.PathUtil.resolvePath(this.basePath, `${name}${ext}`);
+					asset = this.accessor.getImage(assetPath);
+				} catch (error) {
+					// nothing to do.
+				}
+			}
+
+			if (!asset) {
+				throw g.ExceptionFactory.createAssetLoadError(
+					`Failed to load asset ${exts.map(ext => name + ext).join(" or ")}`
+				);
+			}
+
+			return asset;
 		} else {
 			const assetId = name.split(".")[0]; // アセット ID は拡張子を除いたファイル名
 			return this.assets[assetId] as g.ImageAsset;
