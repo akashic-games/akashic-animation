@@ -28,6 +28,7 @@ export class AssetResolver {
 				} catch (error) {
 					// nothing to do.
 				}
+				if (asset) break;
 			}
 
 			if (!asset) {
