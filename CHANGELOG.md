@@ -1,5 +1,9 @@
 # ChangeLog
 
+## unreleased changes
+
+* `Resource#loadProject()` に `g.AssetAccessor` (`scene.asset`, `game.asset`) を渡せるように修正
+
 ## 4.1.0
 
 * SpriteStudioで利用される補間方法の一部をサポート
