@@ -3,6 +3,8 @@ import {Vector2} from "./Vector2";
 
 /**
  * セル
+ *
+ *
  */
 export class Cell {
 	name: string;

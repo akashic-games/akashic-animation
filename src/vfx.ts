@@ -1,5 +1,5 @@
+import type { AlphaBlendMode } from "./AlphaBlendMode";
 import * as aps from "./aps";
-import type { AlphaBlendMode } from ".";
 
 let randomGenerator: g.RandomGenerator;
 let defaultRandomFunc: () => number;
@@ -12,13 +12,15 @@ function initDefaultRandomFunc(): () => number {
 	return defaultRandomFunc;
 }
 
+export interface EmitterParameterUserData {
+	skinName: string;
+	cellName: string;
+	alphaBlendMode: AlphaBlendMode;
+}
+
 export interface EmitterParameterObject extends aps.EmitterParameterObject {
 	parentIndex: number;
-	userData: {
-		skinName: string;
-		cellName: string;
-		alphaBlendMode: AlphaBlendMode;
-	};
+	userData: EmitterParameterUserData;
 }
 
 export interface EffectParameterObject {

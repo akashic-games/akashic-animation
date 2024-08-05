@@ -2,10 +2,13 @@ import type {Animation, Curve} from "./AnimeParams";
 import {AttrId} from "./AttrId";
 import type {Bone} from "./Bone";
 import type {BoneSet} from "./BoneSet";
-import type {Container} from "./Container";
-import type {ContainerV2} from "./ContainerV2";
-import type {ContainerV3} from "./ContainerV3";
-import type {Content} from "./Content";
+import { aop } from "./serialize";
+import type { AOPSchema } from "./serialize/ArrayOrientedPorter/AOPSchema";
+import type {Container} from "./serialize/Container";
+import type {ContainerV2} from "./serialize/ContainerV2";
+import type {ContainerV3} from "./serialize/ContainerV3";
+import type {Content} from "./serialize/Content";
+import type { ProjectV2 } from "./serialize/ProjectV2";
 import type {Skin} from "./Skin";
 import type * as vfx from "./vfx";
 
@@ -135,15 +138,16 @@ export class Resource {
 		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
 
 		const json = (<g.TextAsset>mergedAssets[assetName]).data;
-		const data: Container = JSON.parse(json);
-		const majorVersion = checkVersion(data.version, assetName);
+		const container: Container = JSON.parse(json);
+		const majorVersion = checkVersion(container.version, assetName);
 
 		if (majorVersion === "2") {
-			this.loadProjectV2(data, assets, ...otherAssets);
+			// asapjファイルのコンテナがv2なら、contentsはProjectV2である
+			this.loadProjectV2(container.contents, assets, ...otherAssets);
 			return;
 		}
 
-		this.loadProjectV3(data as ContainerV3, assets, ...otherAssets);
+		this.loadProjectV3(container as ContainerV3, assets, ...otherAssets);
 	}
 
 	/**
@@ -206,23 +210,35 @@ export class Resource {
 		return undefined;
 	}
 
-	protected loadProjectV2(data: ContainerV2, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
+	protected loadProjectV2(proj: ProjectV2, assets: { [key: string]: g.Asset }, ...otherAssets: { [key: string]: g.Asset }[]): void {
 		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
 
 		this.boneSets = loadResourceFromTextAsset<BoneSet>(
-			data.contents.boneSetFileNames,
+			proj.boneSetFileNames,
 			mergedAssets,
 			(c: BoneSet, _asseta: {[key: string]: g.Asset}): void => {
 				constructBoneTree(c.bones);
 			}
 		);
-		this.skins = loadResourceFromTextAsset<Skin>(data.contents.skinFileNames, mergedAssets, bindTextureFromAsset);
-		this.animations = loadResourceFromTextAsset<Animation>(data.contents.animationFileNames, mergedAssets, undefined);
+		this.skins = loadResourceFromTextAsset<Skin>(proj.skinFileNames, mergedAssets, bindTextureFromAsset);
+		if (proj.schema) {
+			if (proj.schema.type === "aop") {
+				console.log("Import aop animation");
+				const schema = proj.schema as AOPSchema;
+				const animations = loadResourceFromTextAsset<any[][]>(proj.animationFileNames, mergedAssets, undefined);
+				const importer = new aop.AOPImporter(schema);
+				this.animations = animations.map(animation => importer.importAnimation(animation));
+			} else {
+				throw  g.ExceptionFactory.createAssertionError(`Unknown schema: ${proj.schema}`);
+			}
+		} else {
+			this.animations = loadResourceFromTextAsset<Animation>(proj.animationFileNames, mergedAssets, undefined);
+		}
 		this.animations.forEach((animation: Animation) => {
 			assignAttributeID(animation);
 		});
 		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(
-			data.contents.effectFileNames,
+			proj.effectFileNames,
 			mergedAssets,
 			undefined
 		);

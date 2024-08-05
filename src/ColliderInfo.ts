@@ -1,22 +1,67 @@
+/**
+ * コライダー情報。
+ *
+ * Colliderの生成に用いる情報。
+ */
 export interface ColliderInfo {
-	// コライダーの内部形状 (cell, box, circle)
-	// Volumeを生成する元になる形状
+	/**
+	 * コライダー形状。
+	 *
+	 * cell, box, circle がある。
+	 */
 	geometryType: string;
 
-	// コライダー境界形状 (aabb, box, circle)
-	// どのようなVolumeを生成するか
+	/**
+	 * コライダー境界形状。
+	 *
+	 * aabb, box, circle がある。
+	 */
 	boundType: string;
 
-	// geometry type: cell
+	/**
+	 * コライダーの形状が cell の時参照するセルの名前。
+	 */
 	cellName?: string;
 
-	// geometry type: circle
-	center?: { x: number; y: number }; // bone相対位置
-	radius?: number; // アタリ半径。アニメーションで定義されているとき上書きされる
-	scaleOption?: string; // 半径のスケール方法(min, max, or none)
+	/**
+	 * circle の中心位置。
+	 *
+	 * bone相対位置。
+	 *
+	 * コライダーの形状が circle の時参照される。
+	 */
+	center?: { x: number; y: number };
 
-	// geometry type: box
+	/**
+	 * circle の半径。
+	 *
+	 * アニメーションで定義されているとき上書きされる。
+	 *
+	 * コライダーの形状が circle の時参照される。
+	 */
+	radius?: number;
+
+	/**
+	 * circle の半径のスケール方法。
+	 *
+	 * min, max, または none 。
+	 *
+	 * コライダーの形状が circle の時参照される。
+	 */
+	scaleOption?: string;
+
+	/**
+	 * box の幅。
+	 *
+	 * コライダーの形状が box の時参照される。
+	 */
 	width?: number;
+
+	/**
+	 * box の高さ。
+	 *
+	 * コライダーの形状が box の時参照される。
+	 */
 	height?: number;
 }
 
