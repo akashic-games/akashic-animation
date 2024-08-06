@@ -15,7 +15,7 @@ function initDefaultRandomFunc(): () => number {
 export interface EmitterParameterUserData {
 	skinName: string;
 	cellName: string;
-	alphaBlendMode: AlphaBlendMode;
+	alphaBlendMode: AlphaBlendMode | undefined;
 }
 
 export interface EmitterParameterObject extends aps.EmitterParameterObject {

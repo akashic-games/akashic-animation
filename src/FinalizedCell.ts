@@ -8,5 +8,5 @@ export class FinalizedCell {
 	u: number;
 	v: number;
 	matrix: g.Matrix;
-	alphaBlendMode: AlphaBlendMode;
+	alphaBlendMode: AlphaBlendMode | undefined;
 }

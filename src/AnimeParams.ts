@@ -15,8 +15,7 @@ export class IpCurve {
 /**
  * 補間方法の配列。
  *
- * 補間方法を表す文字列リテラルの配列上の位置（インデックス）を利用する
- * ことがあるため、順序を変更してはならない。
+ * 各方法の配列上の位置を利用することがあるため、順序を変更してはならない。
  */
 export const ipTypes = [
 	"undefined",
@@ -37,7 +36,7 @@ export type IpType = typeof ipTypes[number];
 export class KeyFrame<T> {
 	time: number;
 	value: T;
-	ipType: IpType;
+	ipType: IpType | undefined;
 	ipCurve: IpCurve;
 }
 

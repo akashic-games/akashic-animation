@@ -18,7 +18,7 @@ export class Posture {
 
 	m: g.Matrix;
 
-	alphaBlendMode: AlphaBlendMode = undefined;
+	alphaBlendMode: AlphaBlendMode | undefined = undefined;
 
 	// 以下、アニメーション結果から直接決まらないが、実行時にボーンに与えたい情報
 	attachments: Attachment[];

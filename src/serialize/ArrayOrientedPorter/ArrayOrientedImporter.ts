@@ -1,3 +1,6 @@
+import type { AlphaBlendMode} from "../../AlphaBlendMode";
+import { alphaBlendModes } from "../../AlphaBlendMode";
+import type { IpType } from "../../AnimeParams";
 import { Animation, Curve, CurveTie, KeyFrame, IpCurve, CellValue, ipTypes } from "../../AnimeParams";
 import type { ParticleInitialParameterObject } from "../../aps";
 import { AttrId } from "../../AttrId";
@@ -73,22 +76,6 @@ function put<T extends object>(
 	const { optional, importer } = opts ?? {};
 	const idx = mapper.indexOf(key);
 
-	// mapper から key の index がを取得できても optional な
-	// プロパティの場合 data[key] に値が存在しないこともある。
-	//
-	// つまりあるときは data に値を格納して、あるときは格納しない、
-	// といったことがあり得る。
-	//
-	// data は JSON.parse() の結果であるため data 中に undefined
-	// は存在しない(stringify() した時 null に置き換えられる)。
-	//
-	// data[key] が null なら、それは以下のいずれかの理由である。
-	// - 正しく null を格納した
-	// - 誤って undefined を格納した
-	// - [v1, なし v2] のような配列が [v1, null, v2] となった
-	//   - arr[1] に何も代入されないケース
-	//
-	// data[key] が undefined なら、key が配列の範囲外である。
 	if (idx === -1) {
 		if (optional) {
 			return;
@@ -96,17 +83,41 @@ function put<T extends object>(
 		throw new Error(`Failed to get the index of ${key}`);
 	}
 
-	if (data[idx] === undefined) {
+	const value = data[idx];
+
+	// mapper から key の index がを取得できても optional な
+	// プロパティの場合 data[key] に値が存在しないこともある。
+	//
+	// data は JSON.parse() の結果であるため data 中に undefined
+	// は存在しない(stringify() した時 null に置き換えられる)。
+	//
+	// data[key] が null なら、それは以下のいずれかの理由である。
+	// 1. 正しく null を格納した
+	// 2. 誤って undefined を格納、JSONによって null に置き換えられた
+	// 3. a=[],a[0]=v1,a[2]=v2 が [v1, null, v2] となった
+	//
+	// data[key] が undefined なら、key が配列の範囲外である。
+	//
+	if (value === undefined) {
 		// 配列の範囲外の場合。値は格納されていない
-	} else if (data[idx] === null && optional) {
+	} else if (value === null && optional) {
 		// 配列中に null があるが optional なプロパティの場合。
-		// このとき、省略されたプロパティの値(=undefined)が格納された
-		// と解釈する。
-		// { foo?: Foo | null = null } のようなプロパティの null を
-		// シリアライズできないことに注意。
+		// 上で述べた 3. のケースと解釈する。そのため、
+		// { foo?: Foo | null = null } のようなプロパティの
+		// null をシリアライズできないことに注意。
 	} else {
-		obj[key] = importer ? importer(data[idx]) : data[idx];
+		obj[key] = importer ? importer(value) : value;
 	}
+}
+
+function importIpType(value: any): IpType {
+	return value === -1 ? undefined : ipTypes[value];
+}
+
+function importIpCurve(value: any): IpCurve {
+	const ipCurve = new IpCurve();
+	ipCurve.values = value;
+	return ipCurve;
 }
 
 function importKeyFrame(
@@ -119,21 +130,8 @@ function importKeyFrame(
 
 	put(keyFrame, "time", mapper, data);
 	put(keyFrame, "value", mapper, data, { importer: valuePredicate });
-	put(keyFrame, "ipType", mapper, data, {
-		importer: value => {
-			console.log(`ipTypes: ${value}`);
-			return value === "undefined" ? undefined : ipTypes[value];
-		}
-	});
-	put(keyFrame, "ipCurve", mapper, data, {
-		optional: true,
-		importer: value => {
-			console.log(`value = ${value}`);
-			const ipCurve = new IpCurve();
-			ipCurve.values = value;
-			return ipCurve;
-		}
-	});
+	put(keyFrame, "ipType", mapper, data, { importer: importIpType });
+	put(keyFrame, "ipCurve", mapper, data, { importer: importIpCurve, optional: true });
 
 	return keyFrame;
 }
@@ -144,6 +142,17 @@ function importKeyFrames(
 	valuePredicate?: (value: any) => any
 ): KeyFrame<any>[] {
 	return data.map(value => importKeyFrame(value, schema, valuePredicate));
+}
+
+function importCellValueKeyFrame(indices: [number, number], schema: AOPSchema): CellValue {
+	const skinMapper = schema.propertyIdMaps.skinName;
+	const cellMapper = schema.propertyIdMaps.cellName;
+
+	const cv = new CellValue();
+	cv.skinName = skinMapper[indices[0]];
+	cv.cellName = cellMapper[indices[1]];
+
+	return cv;
 }
 
 function importCurve(data: any[], schema: AOPSchema): Curve<any> {
@@ -164,14 +173,7 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 		get(data, mapper, "keyFrames"),
 		schema,
 		curve.attribute === "cv"
-			? (indices: [number, number]) => {
-				const skinMapper = schema.propertyIdMaps.skinName;
-				const cellMapper = schema.propertyIdMaps.cellName;
-				const cv = new CellValue();
-				cv.skinName = skinMapper[indices[0]];
-				cv.cellName = cellMapper[indices[1]];
-				return cv;
-			}
+			? value => importCellValueKeyFrame(value, schema)
 			: curve.attribute === "effect"
 				? (value: any): vfx.EffectValue => ({ emitterOp: value })
 				: curve.attribute === "userData"
@@ -278,7 +280,7 @@ function importBone(data: any[], schema: AOPSchema): Bone {
 	put(bone, "arrayIndex", mapper, data);
 	put(bone, "colliderInfos", mapper, data);
 	put(bone, "colliderInfos", mapper, data, { importer: data => importColliderInfos(data, schema) });
-	put(bone, "alphaBlendMode", mapper, data);
+	put(bone, "alphaBlendMode", mapper, data, { importer: v => importAlphaBlendMode(v) });
 	put(bone, "effectName", mapper, data, { optional: true });
 
 	return bone;
@@ -317,13 +319,17 @@ function importCells(data: any[], schema: AOPSchema): { [key: string]: Cell } {
 	return cells;
 }
 
+function importAlphaBlendMode(value: any): AlphaBlendMode {
+	return value === -1 ? undefined : alphaBlendModes[value];
+}
+
 function importEmitterUserData(data: any[], schema: AOPSchema): vfx.EmitterParameterUserData {
 	const userData = {} as vfx.EmitterParameterUserData;
 	const mapper = schema.propertyIdMaps.emitterUserData;
 
 	put(userData, "skinName", mapper, data, { importer: idx => schema.propertyIdMaps.skinName[idx] });
 	put(userData, "cellName", mapper, data, { importer: idx => schema.propertyIdMaps.cellName[idx] });
-	put(userData, "alphaBlendMode", mapper, data);
+	put(userData, "alphaBlendMode", mapper, data, { importer: v => importAlphaBlendMode(v) });
 
 	return userData;
 }

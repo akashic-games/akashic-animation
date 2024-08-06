@@ -735,11 +735,15 @@ function createFinalizedCell(posture: Posture, skins: {[key: string]: Skin}): Fi
 	return finalizedCell;
 }
 
-function getCompositeOperation(alphaBlendMode: AlphaBlendMode): g.CompositeOperationString {
+function getCompositeOperation(alphaBlendMode: AlphaBlendMode | undefined): g.CompositeOperationString {
 	switch (alphaBlendMode) {
 		case "add":
 			return "lighter";
-		default:
+		case "normal":
+			return "source-over";
+		case undefined: // normal と解釈する
+			return "source-over";
+		default: // 未知の値の時、normal と解釈する
 			return "source-over";
 	}
 }

@@ -1,3 +1,5 @@
+import { alphaBlendModes } from "../../AlphaBlendMode";
+import type { AlphaBlendMode } from "../../AlphaBlendMode";
 import type { Animation, Curve, CurveTie, KeyFrame } from "../../AnimeParams";
 import { ipTypes } from "../../AnimeParams";
 import type { ParticleInitialParameterObject } from "../../aps";
@@ -12,22 +14,30 @@ import type { AOPSchema } from "./AOPSchema";
 import type { MapperTable } from "./MapperTable";
 import { PropertyIdMapper } from "./PropertyIdMapper";
 
+function exportIpType(ipType: any): number {
+	return ipType === undefined ? -1 : ipTypes.indexOf(ipType);
+}
+
+function exportIpCurve(ipCurve: any): number[] {
+	return ipCurve.values;
+}
+
 function exportKeyFrame(
 	keyFrame: KeyFrame<any>,
 	mapperTable: MapperTable,
-	valuePredicate?: (value: any) => any
+	exporter?: (value: any) => any
 ): any[] {
 	const mapper = mapperTable.keyFrame;
 
 	const exported: any[] = [];
 
 	put(exported, keyFrame, "time", mapper);
-	put(exported, keyFrame, "value", mapper, valuePredicate);
-
-	// undefined を出力するため、put を用いない
-	exported[mapper.getIndex("ipType")] = keyFrame.ipType === undefined ? "undefined" : ipTypes.indexOf(keyFrame.ipType);
-
-	put(exported, keyFrame, "ipCurve", mapper, ipCurve => ipCurve.values);
+	put(exported, keyFrame, "value", mapper, { exporter });
+	put(exported, keyFrame, "ipType", mapper, {
+		exporter: exportIpType,
+		handleUndefined: true,
+	});
+	put(exported, keyFrame, "ipCurve", mapper, { exporter: exportIpCurve });
 
 	return exported;
 }
@@ -90,8 +100,12 @@ function exportCurveTie(
 	const exported: any[] = [];
 	const mapper = mapperTable.curveTie;
 
-	put(exported, curveTie, "boneName", mapper, name => mapperTable.boneName.getIndex(name));
-	put(exported, curveTie, "curves", mapper, curves => exportCurves(curves, mapperTable));
+	put(exported, curveTie, "boneName", mapper, {
+		exporter: name => mapperTable.boneName.getIndex(name)
+	});
+	put(exported, curveTie, "curves", mapper, {
+		exporter: curves => exportCurves(curves, mapperTable)
+	});
 
 	return exported;
 }
@@ -114,8 +128,13 @@ function exportCurveTies(
 	return exported;
 }
 
+interface PutOption {
+	exporter?: (src: any) => any;
+	handleUndefined?: boolean;
+}
+
 /**
- * オブジェクトのデータを配列に格納する。
+ * オブジェクトの値を配列に格納する。
  *
  * src[key] === undefined の時、何もしない。
  *
@@ -124,21 +143,28 @@ function exportCurveTies(
  * @param key データのキー
  * @param mapper プロパティ名とインデックスの対応表
  * @param exporter データを配列に変換する関数。省略時 src[key] がそのまま格納される
+ * @param opt オプション
  */
 function put<T extends object>(
 	dst: any[],
 	src: T,
 	key: Extract<keyof T, string>,
 	mapper: PropertyIdMapper<T>,
-	exporter?: (src: any) => any
+	opt?: PutOption,
 ): void {
+	const { exporter, handleUndefined } = opt ?? {};
 	// undefined を配列に格納すると JSON では null になる。
 	// そのため undefined は格納しない。
-	if (src[key] === undefined) {
+	const value = exporter != null
+		? src[key] !== undefined || handleUndefined
+			? exporter(src[key])
+			: src[key]
+		: src[key];
+	if (value === undefined) {
 		return;
 	}
 	const idx = mapper.getIndex(key);
-	dst[idx] = exporter ? exporter(src[key]) : src[key];
+	dst[idx] = value;
 }
 
 function exportVector(vec: { x: number; y: number }): number[] {
@@ -152,7 +178,7 @@ function exportColliderInfo(colliderInfo: ColliderInfo, mapperTable: MapperTable
 	put(exported, colliderInfo, "geometryType", mapper);
 	put(exported, colliderInfo, "boundType", mapper);
 	put(exported, colliderInfo, "cellName", mapper);
-	put(exported, colliderInfo, "center", mapper, exportVector);
+	put(exported, colliderInfo, "center", mapper, { exporter: exportVector });
 	put(exported, colliderInfo, "radius", mapper);
 	put(exported, colliderInfo, "scaleOption", mapper);
 	put(exported, colliderInfo, "width", mapper);
@@ -176,11 +202,15 @@ function exportBone(bone: Bone, mapperTable: MapperTable): any[] {
 	const mapper = mapperTable.bone;
 
 	put(exported, bone, "parentIndex", mapper);
-	put(exported, bone, "name", mapper, name => mapperTable.boneName.getIndex(name));
+	put(exported, bone, "name", mapper, {
+		exporter: name => mapperTable.boneName.getIndex(name)
+	});
 	put(exported, bone, "children", mapper);
 	put(exported, bone, "arrayIndex", mapper);
-	put(exported, bone, "colliderInfos", mapper, colliderInfos => exportColliderInfos(colliderInfos, mapperTable));
-	put(exported, bone, "alphaBlendMode", mapper);
+	put(exported, bone, "colliderInfos", mapper, {
+		exporter: colliderInfos => exportColliderInfos(colliderInfos, mapperTable)
+	});
+	put(exported, bone, "alphaBlendMode", mapper, { exporter: exportAlphaBlendMode });
 	put(exported, bone, "effectName", mapper);
 
 	return exported;
@@ -204,10 +234,12 @@ function exportCell(cell: Cell, mapperTable: MapperTable): any[] {
 	const exported: any[] = [];
 	const mapper = mapperTable.cell;
 
-	put(exported, cell, "name", mapper, name => mapperTable.cellName.getIndex(name));
-	put(exported, cell, "pos", mapper, exportVector);
-	put(exported, cell, "size", mapper, exportSize);
-	put(exported, cell, "pivot", mapper, exportVector);
+	put(exported, cell, "name", mapper, {
+		exporter: name => mapperTable.cellName.getIndex(name)
+	});
+	put(exported, cell, "pos", mapper, { exporter: exportVector });
+	put(exported, cell, "size", mapper, { exporter: exportSize });
+	put(exported, cell, "pivot", mapper, { exporter: exportVector });
 	put(exported, cell, "rz", mapper);
 
 	return exported;
@@ -239,13 +271,21 @@ function exportParticleInitialParameter(initParam: ParticleInitialParameterObjec
 	return exported;
 }
 
+function exportAlphaBlendMode(mode: AlphaBlendMode | undefined): number {
+	return mode === undefined ? -1 : alphaBlendModes.indexOf(mode);
+}
+
 function exportEmitterUserData(userData: EmitterParameterUserData, mapperTable: MapperTable): any[] {
 	const exported: any[] = [];
 	const mapper = mapperTable.emitterUserData;
 
-	put(exported, userData, "skinName", mapper, name => mapperTable.skinName.getIndex(name));
-	put(exported, userData, "cellName", mapper, name => mapperTable.cellName.getIndex(name));
-	put(exported, userData, "alphaBlendMode", mapper);
+	put(exported, userData, "skinName", mapper, {
+		exporter: name => mapperTable.skinName.getIndex(name)
+	});
+	put(exported, userData, "cellName", mapper, {
+		exporter: name => mapperTable.cellName.getIndex(name)
+	});
+	put(exported, userData, "alphaBlendMode", mapper, { exporter: exportAlphaBlendMode });
 
 	return exported;
 }
@@ -263,13 +303,17 @@ function exportEmitterParameter(emitterParam: EmitterParameterObject, mapperTabl
 	put(exported, emitterParam, "numParticlesPerEmit", mapper);
 	put(exported, emitterParam, "maxParticles", mapper);
 	// children: Emitter[] はエクスポートしない
-	put(exported, emitterParam, "initParam", mapper, initParam => exportParticleInitialParameter(initParam, mapperTable));
+	put(exported, emitterParam, "initParam", mapper, {
+		exporter: initParam => exportParticleInitialParameter(initParam, mapperTable)
+	});
 
 	// VFX
 	put(exported, emitterParam, "parentIndex", mapper);
 	// APS は userData: any だが、VFX つまり ASA のレイヤでは userData の型が
 	// 定義されているので、それに合わせた形aでエクスポートする。
-	put(exported, emitterParam, "userData", mapper, userData => exportEmitterUserData(userData, mapperTable));
+	put(exported, emitterParam, "userData", mapper, {
+		exporter: userData => exportEmitterUserData(userData, mapperTable)
+	});
 
 	return exported;
 }
@@ -324,6 +368,7 @@ export class AOPExporter {
 		const mapper = mapperTable.animation;
 		const exported: any[] = [];
 
+		// アニメーション名は繰り返さないのでそのまま格納する
 		exported[mapper.getIndex("name")] = anim.name;
 		exported[mapper.getIndex("fps")] = anim.fps;
 		exported[mapper.getIndex("frameCount")] = anim.frameCount;
@@ -338,7 +383,9 @@ export class AOPExporter {
 		const exported: any[] = [];
 
 		put(exported, boneSet, "name", mapper);
-		put(exported, boneSet, "bones", mapper, bones => exportBones(bones, mapperTable));
+		put(exported, boneSet, "bones", mapper, {
+			exporter: bones => exportBones(bones, mapperTable)
+		});
 
 		return exported;
 	}
@@ -348,11 +395,15 @@ export class AOPExporter {
 		const mapper = mapperTable.skin;
 		const exported: any[] = [];
 
-		put(exported, skin, "name", mapper, name => mapperTable.skinName.getIndex(name));
+		put(exported, skin, "name", mapper, {
+			exporter: name => mapperTable.skinName.getIndex(name)
+		});
 		put(exported, skin, "imageAssetName", mapper);
 		put(exported, skin, "imageSizeH", mapper);
 		put(exported, skin, "imageSizeW", mapper);
-		put(exported, skin, "cells", mapper, cells => exportCells(cells, mapperTable));
+		put(exported, skin, "cells", mapper, {
+			exporter: cells => exportCells(cells, mapperTable)
+		});
 
 		return exported;
 	}
@@ -363,9 +414,9 @@ export class AOPExporter {
 		const exported: any[] = [];
 
 		put(exported, effectParam, "name", mapper);
-		put(exported, effectParam, "emitterParameters", mapper,
-			emitterParams => exportEmitterParameters(emitterParams, mapperTable)
-		);
+		put(exported, effectParam, "emitterParameters", mapper, {
+			exporter: emitterParams => exportEmitterParameters(emitterParams, mapperTable)
+		});
 
 		return exported;
 	}

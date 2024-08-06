@@ -44,7 +44,7 @@ export class Bone {
 	/**
 	 * アルファブレンドモード。
 	 */
-	alphaBlendMode: AlphaBlendMode = undefined;
+	alphaBlendMode: AlphaBlendMode | undefined = undefined;
 
 	/**
 	 *エフェクト名。
