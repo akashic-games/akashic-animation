@@ -28,4 +28,5 @@ export interface PropertyIdMaps {
 	boneName: string[];
 	skinName: string[];
 	cellName: string[];
+	effectName: string[];
 }

@@ -205,13 +205,17 @@ function exportBone(bone: Bone, mapperTable: MapperTable): any[] {
 	put(exported, bone, "name", mapper, {
 		exporter: name => mapperTable.boneName.getIndex(name)
 	});
-	put(exported, bone, "children", mapper);
+
+	// children は export しない
+
 	put(exported, bone, "arrayIndex", mapper);
 	put(exported, bone, "colliderInfos", mapper, {
 		exporter: colliderInfos => exportColliderInfos(colliderInfos, mapperTable)
 	});
 	put(exported, bone, "alphaBlendMode", mapper, { exporter: exportAlphaBlendMode });
-	put(exported, bone, "effectName", mapper);
+	put(exported, bone, "effectName", mapper, {
+		exporter: name => mapperTable.effectName.getIndex(name)
+	});
 
 	return exported;
 }
@@ -352,6 +356,7 @@ function createMappterTable(): MapperTable {
 		boneName: new PropertyIdMapper<{ [key: string]: string }>(),
 		skinName: new PropertyIdMapper<{ [key: string]: string }>(),
 		cellName: new PropertyIdMapper<{ [key: string]: string }>(),
+		effectName: new PropertyIdMapper<{ [key: string]: string }>(),
 	};
 	return mapperTable;
 }
@@ -413,7 +418,9 @@ export class AOPExporter {
 		const mapper = mapperTable.effectParam;
 		const exported: any[] = [];
 
-		put(exported, effectParam, "name", mapper);
+		put(exported, effectParam, "name", mapper, {
+			exporter: name => mapperTable.effectName.getIndex(name)
+		});
 		put(exported, effectParam, "emitterParameters", mapper, {
 			exporter: emitterParams => exportEmitterParameters(emitterParams, mapperTable)
 		});
@@ -446,7 +453,8 @@ export class AOPExporter {
 
 				boneName: mapperTable.boneName.properties,
 				skinName: mapperTable.skinName.properties,
-				cellName: mapperTable.cellName.properties
+				cellName: mapperTable.cellName.properties,
+				effectName: mapperTable.effectName.properties,
 			}
 		};
 	}

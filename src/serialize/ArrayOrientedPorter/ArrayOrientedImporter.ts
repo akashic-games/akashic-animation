@@ -276,12 +276,17 @@ function importBone(data: any[], schema: AOPSchema): Bone {
 	const bone = new Bone();
 	put(bone, "parentIndex", mapper, data);
 	put(bone, "name", mapper, data, { importer: data => schema.propertyIdMaps.boneName[data] });
-	put(bone, "children", mapper, data);
+
+	// children は export されていない
+
 	put(bone, "arrayIndex", mapper, data);
 	put(bone, "colliderInfos", mapper, data);
 	put(bone, "colliderInfos", mapper, data, { importer: data => importColliderInfos(data, schema) });
-	put(bone, "alphaBlendMode", mapper, data, { importer: v => importAlphaBlendMode(v) });
-	put(bone, "effectName", mapper, data, { optional: true });
+	put(bone, "alphaBlendMode", mapper, data, { importer: importAlphaBlendMode });
+	put(bone, "effectName", mapper, data, {
+		importer: data => schema.propertyIdMaps.effectName[data],
+		optional: true,
+	});
 
 	return bone;
 }
@@ -433,7 +438,9 @@ export class AOPImporter {
 		const mapper = this.schema.propertyIdMaps.effectParam;
 		const effect = {} as vfx.EffectParameterObject;
 
-		put(effect, "name", mapper, data);
+		put(effect, "name", mapper, data, {
+			importer: idx => this.schema.propertyIdMaps.effectName[idx]
+		});
 		put(effect, "emitterParameters", mapper, data, {
 			importer: emitterParameters => importEmitterParameters(emitterParameters, this.schema)
 		});

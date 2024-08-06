@@ -29,4 +29,5 @@ export interface MapperTable {
 	boneName: PropertyIdMapper<{ [key: string]: string }>;
 	skinName: PropertyIdMapper<{ [key: string]: string }>;
 	cellName: PropertyIdMapper<{ [key: string]: string }>;
+	effectName: PropertyIdMapper<{ [key: string]: string }>;
 }
