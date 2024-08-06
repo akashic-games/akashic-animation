@@ -50,35 +50,34 @@ function exportKeyFrames(keyFrames: KeyFrame<any>[], mapperTable: MapperTable, v
 
 function exportCurve(curve: Curve<any>, mapperTable: MapperTable): any[] {
 	const exported: any[] = [];
-
 	const mapper = mapperTable.curve;
-	const attrId = AttrId[curve.attribute as keyof typeof AttrId];
-	if (attrId === undefined) {
-		throw new Error(`Unknown attribute: ${curve.attribute}`);
+
+	put(exported, curve, "attribute", mapper, {
+		exporter: attribute => {
+			const attrId = AttrId[attribute as keyof typeof AttrId];
+			if (attrId === undefined) {
+				throw new Error(`Unknown curve attribute: ${curve.attribute}`);
+			}
+			return attrId;
+		}
+	});
+
+	let keyFrameValueExporter: (value: any) => any;
+
+	if (curve.attribute === "cv") {
+		keyFrameValueExporter = (value: any) => [
+			mapperTable.skinName.getIndex(value.skinName),
+			mapperTable.cellName.getIndex(value.cellName)
+		];
+	} else if (curve.attribute === "effect") {
+		keyFrameValueExporter = (value: any) => value.emitterOp;
+	} else {
+		keyFrameValueExporter = (value: any) => typeof value === "boolean" ? (value ? 1 : 0) : value;
 	}
 
-	// TODO: put()を使う
-	exported[mapper.getIndex("attribute")] = attrId;
-	exported[mapper.getIndex("keyFrames")] = exportKeyFrames(
-		curve.keyFrames,
-		mapperTable,
-		curve.attribute === "cv"
-			? (value: any) => {
-				// cell value は スキン名とセル名の辞書を作成し、そのインデックスを格納する
-				return [
-					mapperTable.skinName.getIndex(value.skinName),
-					mapperTable.cellName.getIndex(value.cellName)
-				];
-			}
-			: curve.attribute === "effect"
-				? (value: any) => value.emitterOp
-				: (value: any) => {
-					if (typeof value === "boolean") {
-						return value ? 1 : 0;
-					}
-					return value;
-				}
-	);
+	put(exported, curve, "keyFrames", mapper, {
+		exporter: keyFrames => exportKeyFrames(keyFrames, mapperTable, keyFrameValueExporter)
+	});
 
 	return exported;
 }
@@ -374,10 +373,12 @@ export class AOPExporter {
 		const exported: any[] = [];
 
 		// アニメーション名は繰り返さないのでそのまま格納する
-		exported[mapper.getIndex("name")] = anim.name;
-		exported[mapper.getIndex("fps")] = anim.fps;
-		exported[mapper.getIndex("frameCount")] = anim.frameCount;
-		exported[mapper.getIndex("curveTies")] = exportCurveTies(anim.curveTies, mapperTable);
+		put(exported, anim, "name", mapper);
+		put(exported, anim, "fps", mapper);
+		put(exported, anim, "frameCount", mapper);
+		put(exported, anim, "curveTies", mapper, {
+			exporter: curveTies => exportCurveTies(curveTies, mapperTable)
+		});
 
 		return exported;
 	}

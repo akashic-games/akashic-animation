@@ -156,9 +156,6 @@ function importCellValueKeyFrame(indices: [number, number], schema: AOPSchema): 
 }
 
 function importCurve(data: any[], schema: AOPSchema): Curve<any> {
-	const curve = new Curve<any>();
-
-	const mapper = schema.propertyIdMaps.curve;
 	const booleanAttributes = [
 		"iflh",
 		"iflv",
@@ -167,21 +164,28 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 		"flipV"
 	];
 
-	curve.attribute = AttrId[get(data, mapper, "attribute")];
+	const curve = new Curve<any>();
+	const mapper = schema.propertyIdMaps.curve;
 
-	curve.keyFrames = importKeyFrames(
-		get(data, mapper, "keyFrames"),
-		schema,
-		curve.attribute === "cv"
-			? value => importCellValueKeyFrame(value, schema)
-			: curve.attribute === "effect"
-				? (value: any): vfx.EffectValue => ({ emitterOp: value })
-				: curve.attribute === "userData"
-					? (value: any) => value
-					: booleanAttributes.indexOf(curve.attribute) !== -1
-						? (value: any) => value !== 0
-						: (value: any) => value
-	);
+	put(curve, "attribute", mapper, data, {
+		importer: value => AttrId[value]
+	});
+
+	let keyFrameValueImporter: (value: any) => any;
+
+	if (curve.attribute === "cv") {
+		keyFrameValueImporter = value => importCellValueKeyFrame(value, schema);
+	} else if (curve.attribute === "effect") {
+		keyFrameValueImporter = value => ({ emitterOp: value });
+	} else if (booleanAttributes.indexOf(curve.attribute) !== -1) {
+		keyFrameValueImporter = value => value !== 0;
+	} else {
+		// nop;
+	}
+
+	put(curve, "keyFrames", mapper, data, {
+		importer: keyFrames => importKeyFrames(keyFrames, schema, keyFrameValueImporter)
+	});
 
 	return curve;
 }
