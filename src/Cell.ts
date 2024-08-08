@@ -4,7 +4,7 @@ import {Vector2} from "./Vector2";
 /**
  * セル
  *
- *
+ * ボーンに追従して描画するもの。
  */
 export class Cell {
 	name: string;

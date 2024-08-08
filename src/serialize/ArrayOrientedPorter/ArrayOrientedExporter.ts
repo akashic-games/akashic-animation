@@ -12,7 +12,60 @@ import type { Skin } from "../../Skin";
 import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
 import type { AOPSchema } from "./AOPSchema";
 import type { MapperTable } from "./MapperTable";
-import { PropertyIdMapper } from "./PropertyIdMapper";
+import { PropertyIndexMapper } from "./PropertyIdMapper";
+
+/**
+ * put() のオプション。
+ */
+interface PutOption {
+	/**
+	 * データを格納する前に加工する。
+	 *
+	 * 省略時 src[key] がそのまま格納される
+	 */
+	exporter?: (src: any) => any;
+
+	/**
+	 * 真の時、src[key] が undefined でも exporter に値を渡す。
+	 *
+	 * 省略時、偽。
+	 */
+	handleUndefined?: boolean;
+}
+
+/**
+ * オブジェクトの値を配列に格納する。
+ *
+ * src[key] === undefined の時、何もしない。
+ *
+ * @param dst データを格納する配列
+ * @param src 格納するデータを持つオブジェクト
+ * @param key データのキー
+ * @param mapper プロパティ名とインデックスの対応表
+ * @param exporter
+ * @param opt オプション
+ */
+function put<T extends object>(
+	dst: any[],
+	src: T,
+	key: Extract<keyof T, string>,
+	mapper: PropertyIndexMapper<T>,
+	opt?: PutOption,
+): void {
+	const { exporter, handleUndefined } = opt ?? {};
+	// undefined を配列に格納すると JSON では null になる。
+	// そのため undefined は格納しない。
+	const value = exporter != null
+		? src[key] !== undefined || handleUndefined
+			? exporter(src[key])
+			: src[key]
+		: src[key];
+	if (value === undefined) {
+		return;
+	}
+	const idx = mapper.getIndex(key);
+	dst[idx] = value;
+}
 
 function exportIpType(ipType: any): number {
 	return ipType === undefined ? -1 : ipTypes.indexOf(ipType);
@@ -65,14 +118,14 @@ function exportCurve(curve: Curve<any>, mapperTable: MapperTable): any[] {
 	let keyFrameValueExporter: (value: any) => any;
 
 	if (curve.attribute === "cv") {
-		keyFrameValueExporter = (value: any) => [
+		keyFrameValueExporter = value => [
 			mapperTable.skinName.getIndex(value.skinName),
 			mapperTable.cellName.getIndex(value.cellName)
 		];
 	} else if (curve.attribute === "effect") {
-		keyFrameValueExporter = (value: any) => value.emitterOp;
+		keyFrameValueExporter = value => value.emitterOp;
 	} else {
-		keyFrameValueExporter = (value: any) => typeof value === "boolean" ? (value ? 1 : 0) : value;
+		keyFrameValueExporter = value => typeof value === "boolean" ? (value ? 1 : 0) : value;
 	}
 
 	put(exported, curve, "keyFrames", mapper, {
@@ -127,45 +180,6 @@ function exportCurveTies(
 	return exported;
 }
 
-interface PutOption {
-	exporter?: (src: any) => any;
-	handleUndefined?: boolean;
-}
-
-/**
- * オブジェクトの値を配列に格納する。
- *
- * src[key] === undefined の時、何もしない。
- *
- * @param dst データを格納する配列
- * @param src 格納するデータを持つオブジェクト
- * @param key データのキー
- * @param mapper プロパティ名とインデックスの対応表
- * @param exporter データを配列に変換する関数。省略時 src[key] がそのまま格納される
- * @param opt オプション
- */
-function put<T extends object>(
-	dst: any[],
-	src: T,
-	key: Extract<keyof T, string>,
-	mapper: PropertyIdMapper<T>,
-	opt?: PutOption,
-): void {
-	const { exporter, handleUndefined } = opt ?? {};
-	// undefined を配列に格納すると JSON では null になる。
-	// そのため undefined は格納しない。
-	const value = exporter != null
-		? src[key] !== undefined || handleUndefined
-			? exporter(src[key])
-			: src[key]
-		: src[key];
-	if (value === undefined) {
-		return;
-	}
-	const idx = mapper.getIndex(key);
-	dst[idx] = value;
-}
-
 function exportVector(vec: { x: number; y: number }): number[] {
 	return [vec.x, vec.y];
 }
@@ -205,13 +219,16 @@ function exportBone(bone: Bone, mapperTable: MapperTable): any[] {
 		exporter: name => mapperTable.boneName.getIndex(name)
 	});
 
-	// children は export しない
+	// children はエクスポートしない
 
 	put(exported, bone, "arrayIndex", mapper);
 	put(exported, bone, "colliderInfos", mapper, {
 		exporter: colliderInfos => exportColliderInfos(colliderInfos, mapperTable)
 	});
-	put(exported, bone, "alphaBlendMode", mapper, { exporter: exportAlphaBlendMode });
+	put(exported, bone, "alphaBlendMode", mapper, {
+		exporter: exportAlphaBlendMode,
+		handleUndefined: true
+	});
 	put(exported, bone, "effectName", mapper, {
 		exporter: name => mapperTable.effectName.getIndex(name)
 	});
@@ -305,15 +322,15 @@ function exportEmitterParameter(emitterParam: EmitterParameterObject, mapperTabl
 	put(exported, emitterParam, "delayEmit", mapper);
 	put(exported, emitterParam, "numParticlesPerEmit", mapper);
 	put(exported, emitterParam, "maxParticles", mapper);
-	// children: Emitter[] はエクスポートしない
+	// children はエクスポートしない
 	put(exported, emitterParam, "initParam", mapper, {
 		exporter: initParam => exportParticleInitialParameter(initParam, mapperTable)
 	});
 
 	// VFX
 	put(exported, emitterParam, "parentIndex", mapper);
-	// APS は userData: any だが、VFX つまり ASA のレイヤでは userData の型が
-	// 定義されているので、それに合わせた形aでエクスポートする。
+	// APS では userData: any だが、VFX つまり ASA のレイヤでは userData の型が
+	// 定義されているので、それに合わせた形でエクスポートする。
 	put(exported, emitterParam, "userData", mapper, {
 		exporter: userData => exportEmitterUserData(userData, mapperTable)
 	});
@@ -333,33 +350,35 @@ function exportEmitterParameters(emitterParams: EmitterParameterObject[], mapper
 
 function createMappterTable(): MapperTable {
 	const mapperTable: MapperTable = {
-		// プロパティ名をキーとして、インデックスを格納する
-		animation: new PropertyIdMapper<Animation>(),
-		curveTie: new PropertyIdMapper<CurveTie>(),
-		curve: new PropertyIdMapper<Curve<any>>(),
-		keyFrame: new PropertyIdMapper<KeyFrame<any>>(),
+		animation: new PropertyIndexMapper<Animation>(),
+		curveTie: new PropertyIndexMapper<CurveTie>(),
+		curve: new PropertyIndexMapper<Curve<any>>(),
+		keyFrame: new PropertyIndexMapper<KeyFrame<any>>(),
 
-		boneSet: new PropertyIdMapper<BoneSet>(),
-		bone: new PropertyIdMapper<Bone>(),
-		colliderInfo: new PropertyIdMapper<ColliderInfo>(),
+		boneSet: new PropertyIndexMapper<BoneSet>(),
+		bone: new PropertyIndexMapper<Bone>(),
+		colliderInfo: new PropertyIndexMapper<ColliderInfo>(),
 
-		skin: new PropertyIdMapper<Skin>(),
-		cell: new PropertyIdMapper<Cell>(),
+		skin: new PropertyIndexMapper<Skin>(),
+		cell: new PropertyIndexMapper<Cell>(),
 
-		effectParam: new PropertyIdMapper<EffectParameterObject>(),
-		emitterParam: new PropertyIdMapper<EmitterParameterObject>(),
-		particleInitialParam: new PropertyIdMapper<ParticleInitialParameterObject>(),
-		emitterUserData: new PropertyIdMapper<EmitterParameterUserData>(),
+		effectParam: new PropertyIndexMapper<EffectParameterObject>(),
+		emitterParam: new PropertyIndexMapper<EmitterParameterObject>(),
+		particleInitialParam: new PropertyIndexMapper<ParticleInitialParameterObject>(),
+		emitterUserData: new PropertyIndexMapper<EmitterParameterUserData>(),
 
 		// ボーン名などの文字列を短縮するために数値で置き換える
-		boneName: new PropertyIdMapper<{ [key: string]: string }>(),
-		skinName: new PropertyIdMapper<{ [key: string]: string }>(),
-		cellName: new PropertyIdMapper<{ [key: string]: string }>(),
-		effectName: new PropertyIdMapper<{ [key: string]: string }>(),
+		boneName: new PropertyIndexMapper<{ [key: string]: string }>(),
+		skinName: new PropertyIndexMapper<{ [key: string]: string }>(),
+		cellName: new PropertyIndexMapper<{ [key: string]: string }>(),
+		effectName: new PropertyIndexMapper<{ [key: string]: string }>(),
 	};
 	return mapperTable;
 }
 
+/**
+ * AOP形式のエクスポータ。
+ */
 export class AOPExporter {
 	private mapperTable: MapperTable;
 

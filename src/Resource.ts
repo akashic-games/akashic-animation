@@ -1,13 +1,14 @@
 import type {Animation, Curve} from "./AnimeParams";
 import {AttrId} from "./AttrId";
+import { AssetResolver } from "./auxiliary/AssetResolver";
 import type {Bone} from "./Bone";
 import type {BoneSet} from "./BoneSet";
+import type { ProjectV3 } from "./serialize";
 import { aop } from "./serialize";
 import type { AOPSchema } from "./serialize/ArrayOrientedPorter/AOPSchema";
 import type {Container} from "./serialize/Container";
 import type {ContainerV2} from "./serialize/ContainerV2";
 import type {ContainerV3} from "./serialize/ContainerV3";
-import type {Content} from "./serialize/Content";
 import type { ProjectV2 } from "./serialize/ProjectV2";
 import type {Skin} from "./Skin";
 import type * as vfx from "./vfx";
@@ -21,10 +22,9 @@ function checkVersion(version: string, fname: string): string {
 	return r[1];
 }
 
-function bindTextureFromAsset(skin: Skin, assets: {[key: string]: g.Asset}): void {
-	const assetName = skin.imageAssetName ? skin.imageAssetName : skin.name;
-	const anAsset: g.Asset = assets[assetName];
-	skin.surface = (<g.ImageAsset>anAsset).asSurface();
+function bindTextureFromAsset(skin: Skin, assetResolver: AssetResolver): void {
+	const anAsset = assetResolver.getImage(skin.imageAssetName);
+	skin.surface = anAsset.asSurface();
 }
 
 function constructBoneTree(bones: Bone[]): void {
@@ -44,43 +44,21 @@ function constructBoneTree(bones: Bone[]): void {
 	}
 }
 
-function loadResourceFromContents<T>(
-	contents: Content<T>[],
-	assets: {[key: string]: g.Asset},
-	resolver?: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
-	const resources: T[] = [];
-
-	for (let i = 0; i < contents.length; i++) {
-		const content = contents[i];
-		if (resolver) {
-			resolver(content.data, assets);
-		}
-		resources.push(content.data);
-	}
-
-	return resources;
-}
-
 function loadResourceFromTextAsset<T>(
 	fileNames: string[],
-	assets: {[key: string]: g.Asset},
-	resolver: (c: T, assets: {[key: string]: g.Asset}) => void): T[] {
+	assetResolver: AssetResolver
+): T[] {
 	const resources: T[] = [];
 
-	if (fileNames) {
-		fileNames.forEach((fname: string): void => {
-			const assetName: string = fname.split(".")[0]; // アセット名は拡張子を覗いたファイル名
-			const data: ContainerV2 = JSON.parse((<g.TextAsset>assets[assetName]).data);
-
-			checkVersion(data.version, fname);
-
-			if (resolver) {
-				resolver(data.contents, assets);
-			}
-
-			resources.push(data.contents);
-		});
+	if (fileNames == null) {
+		return resources;
 	}
+
+	fileNames.forEach(fname => {
+		const data = assetResolver.getJSON<ContainerV2>(fname);
+		checkVersion(data.version, fname);
+		resources.push(data.contents);
+	});
 
 	return resources;
 }
@@ -128,26 +106,49 @@ export class Resource {
 	/**
 	 * asapjテキストアセットを読み込む。関連するアセットがある場合、それも読み込む。
 	 *
-	 * すでに読み込んだaapjテキストアセットがあった場合、このResourceインスタンスから削除される。
+	 * すでに読み込んだasapjテキストアセットがあった場合、このResourceインスタンスから削除される。
 	 *
+	 * @deprecated 第2引数に `scene.asset` または `game.asset` を指定すべきである。
 	 * @param assetName asapjテキストアセット名
 	 * @param assets 利用できるアセット
 	 * @param ...otherAssets 利用できるアセット（可変長引数）
 	 */
-	loadProject(assetName: string, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
-		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+	loadProject(assetName: string, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void;
 
-		const json = (<g.TextAsset>mergedAssets[assetName]).data;
-		const container: Container = JSON.parse(json);
-		const majorVersion = checkVersion(container.version, assetName);
+	/**
+	 * asapjテキストアセットを読み込む。関連するアセットがある場合、それも読み込む。
+	 * 関連するアセットはすべて同一ディレクトリに存在しなければならないことに注意。
+	 * すでに読み込んだasapjテキストアセットがあった場合、このResourceインスタンスから削除される。
+	 *
+	 * @param projectPath asapjのファイルパス
+	 * @param asset 利用するアセットアクセッサ
+	 */
+	loadProject(projectPath: string, asset: g.AssetAccessor): void;
+
+	loadProject(
+		assetNameOrProjectPath: string,
+		assetsOrAccessor: {[key: string]: g.Asset} | g.AssetAccessor,
+		...otherAssets: {[key: string]: g.Asset}[]
+	): void {
+		let assetResolver: AssetResolver;
+
+		if (assetsOrAccessor instanceof g.AssetAccessor) {
+			const basePath = g.PathUtil.resolveDirname(assetNameOrProjectPath);
+			assetResolver = new AssetResolver(assetsOrAccessor, basePath);
+		} else {
+			const assets = mergeAssetArray([assetsOrAccessor].concat(otherAssets));
+			assetResolver = new AssetResolver(assets);
+		}
+
+		const data = assetResolver.getJSON<Container>(assetNameOrProjectPath);
+		const majorVersion = checkVersion(data.version, assetNameOrProjectPath);
 
 		if (majorVersion === "2") {
-			// asapjファイルのコンテナがv2なら、contentsはProjectV2である
-			this.loadProjectV2(container.contents, assets, ...otherAssets);
+			this.loadProjectV2(data, assetResolver);
 			return;
 		}
 
-		this.loadProjectV3(container as ContainerV3, assets, ...otherAssets);
+		this.loadProjectV3(data as ContainerV3, assetResolver);
 	}
 
 	/**
@@ -210,67 +211,104 @@ export class Resource {
 		return undefined;
 	}
 
-	protected loadProjectV2(proj: ProjectV2, assets: { [key: string]: g.Asset }, ...otherAssets: { [key: string]: g.Asset }[]): void {
-		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+	protected loadProjectV2(container: ContainerV2, assetResolver: AssetResolver): void {
+		const project = container.contents as ProjectV2;
 
-		this.boneSets = loadResourceFromTextAsset<BoneSet>(
-			proj.boneSetFileNames,
-			mergedAssets,
-			(c: BoneSet, _asseta: {[key: string]: g.Asset}): void => {
-				constructBoneTree(c.bones);
-			}
-		);
-		this.skins = loadResourceFromTextAsset<Skin>(proj.skinFileNames, mergedAssets, bindTextureFromAsset);
-		if (proj.schema) {
-			if (proj.schema.type === "aop") {
-				console.log("Import aop animation");
-				const schema = proj.schema as AOPSchema;
-				const animations = loadResourceFromTextAsset<any[][]>(proj.animationFileNames, mergedAssets, undefined);
-				const importer = new aop.AOPImporter(schema);
-				this.animations = animations.map(animation => importer.importAnimation(animation));
-			} else {
-				throw  g.ExceptionFactory.createAssertionError(`Unknown schema: ${proj.schema}`);
-			}
+		if (project.schema == null) {
+			this.boneSets = loadResourceFromTextAsset(project.boneSetFileNames, assetResolver);
+			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+
+			this.skins = loadResourceFromTextAsset(project.skinFileNames, assetResolver);
+			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
+
+			this.animations = loadResourceFromTextAsset(project.animationFileNames, assetResolver);
+			this.animations.forEach(animation => assignAttributeID(animation));
+
+			this.effectParameters = loadResourceFromTextAsset(project.effectFileNames, assetResolver);
+		} else if (project.schema.type === "aop") {
+			const schema = project.schema as AOPSchema;
+			const importer = new aop.AOPImporter(schema);
+
+			const boneSets = loadResourceFromTextAsset<any[][]>(project.boneSetFileNames, assetResolver);
+			this.boneSets = boneSets.map(boneSet => importer.importBoneSet(boneSet));
+			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+
+			const skins = loadResourceFromTextAsset<any[][]>(project.skinFileNames, assetResolver);
+			this.skins = skins.map(skin => importer.importSkin(skin));
+			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
+
+			const animations = loadResourceFromTextAsset<any[][]>(project.animationFileNames, assetResolver);
+			this.animations = animations.map(animation => importer.importAnimation(animation));
+			this.animations.forEach(animation => assignAttributeID(animation));
+
+			const effectParameters = loadResourceFromTextAsset<any[][]>(project.effectFileNames, assetResolver);
+			this.effectParameters = effectParameters.map(effectParameter => importer.importEffect(effectParameter));
 		} else {
-			this.animations = loadResourceFromTextAsset<Animation>(proj.animationFileNames, mergedAssets, undefined);
+			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
 		}
-		this.animations.forEach((animation: Animation) => {
-			assignAttributeID(animation);
-		});
-		this.effectParameters = loadResourceFromTextAsset<vfx.EffectParameterObject>(
-			proj.effectFileNames,
-			mergedAssets,
-			undefined
-		);
 	}
 
-	protected loadProjectV3(data: ContainerV3, assets: {[key: string]: g.Asset}, ...otherAssets: {[key: string]: g.Asset}[]): void {
-		if (data.type !== "bundle") {
-			throw  g.ExceptionFactory.createAssertionError("Invalid file type: " + data.type + ", supported only \"bundle\" type");
+	protected loadProjectV3(container: ContainerV3, assetResolver: AssetResolver): void {
+		if (container.type !== "bundle") {
+			throw  g.ExceptionFactory.createAssertionError(`Invalid container type ${container.type}, supported only bundle type`);
 		}
 
-		const mergedAssets = mergeAssetArray([assets].concat(otherAssets));
+		let project: ProjectV3;
+		for (const contents of container.contents) {
+			if (contents.type === "project") {
+				// ContainerV3 の格納するプロジェクトは必ず ProjectV3 型
+				project = contents.data;
+				break;
+			}
+		}
 
-		this.boneSets = loadResourceFromContents<BoneSet>(
-			data.contents.filter(content => content.type === "bone"),
-			mergedAssets,
-			c => constructBoneTree(c.bones)
-		);
-		this.skins = loadResourceFromContents<Skin>(
-			data.contents.filter(content => content.type === "skin"),
-			mergedAssets,
-			bindTextureFromAsset
-		);
-		this.animations = loadResourceFromContents<Animation>(
-			data.contents.filter(content => content.type === "animation"),
-			mergedAssets
-		);
-		this.animations.forEach((animation: Animation) => {
-			assignAttributeID(animation);
-		});
-		this.effectParameters = loadResourceFromContents<vfx.EffectParameterObject>(
-			data.contents.filter(content => content.type === "effect"),
-			mergedAssets
-		);
+		if (project == null) {
+			throw g.ExceptionFactory.createAssertionError("Invalid V3 container: project not found");
+		}
+
+		if (project.schema == null) {
+			this.boneSets = container.contents
+				.filter(content => content.type === "bone")
+				.map(content => content.data);
+			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+
+			this.skins = container.contents
+				.filter(content => content.type === "skin")
+				.map(content => content.data);
+			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
+
+			this.animations = container.contents
+				.filter(content => content.type === "animation")
+				.map(content => content.data);
+			this.animations.forEach(animation => assignAttributeID(animation));
+
+			this.effectParameters = container.contents
+				.filter(content => content.type === "effect")
+				.map(content => content.data);
+		} else if (project.schema.type === "aop") {
+			const schema = project.schema as AOPSchema;
+			const importer = new aop.AOPImporter(schema);
+
+			this.boneSets = container.contents
+				.filter(content => content.type === "bone")
+				.map(content => importer.importBoneSet(content.data));
+			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+
+			this.skins = container.contents
+				.filter(content => content.type === "skin")
+				.map(content => importer.importSkin(content.data));
+			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
+
+			this.animations = container.contents
+				.filter(content => content.type === "animation")
+				.map(content => importer.importAnimation(content.data));
+			this.animations.forEach(animation => assignAttributeID(animation));
+
+			this.effectParameters = container.contents
+				.filter(content => content.type === "effect")
+				.map(content => importer.importEffect(content.data));
+		} else {
+			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
+		}
 	}
 }

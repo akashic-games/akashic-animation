@@ -1,5 +1,5 @@
 /**
- * v2形式のASAデータコンテナ。
+ * V2形式のASAデータコンテナ。
  */
 export class ContainerV2 {
 	/**

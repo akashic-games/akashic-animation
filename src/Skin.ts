@@ -35,5 +35,5 @@ export class Skin {
 	 *
 	 * キーはセル名。
 	 */
-	cells: {[key: string]: Cell} = {};
+	cells: { [key: string]: Cell } = {};
 }

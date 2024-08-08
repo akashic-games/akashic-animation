@@ -111,6 +111,8 @@ function setupCollider(bones: Bone[], actor: Actor): void {
 }
 
 /**
+ * アクター。
+ *
  * ボーンベースのアニメーションを描画するエンティティ。
  */
 export class Actor extends g.E {

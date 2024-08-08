@@ -1,7 +1,10 @@
 import type { Schema } from "../Schema";
-import type { PropertyIdMaps } from "./PropertyIdMaps";
+import type { PropertyIndexMaps } from "./PropertyIdMaps";
 
+/**
+ * AOPスキーマ。
+ */
 export interface AOPSchema extends Schema {
 	type: "aop";
-	propertyIdMaps: PropertyIdMaps;
+	propertyIdMaps: PropertyIndexMaps;
 }

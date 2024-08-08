@@ -1,9 +1,9 @@
 import type {ContentType} from "./ContentType";
 
 /**
- * コンテンツデータ。
+ * コンテント。
  *
- * 任意のデータとその種別、名前を持つ。
+ * ContainerV3に格納するデータを、名前、種別と共に保持する。
  */
 export class Content<T> {
 	type: ContentType;

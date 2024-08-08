@@ -6,28 +6,36 @@ import type { Cell } from "../../Cell";
 import type { ColliderInfo } from "../../ColliderInfo";
 import type { Skin } from "../../Skin";
 import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
-import type { PropertyIdMapper } from "./PropertyIdMapper";
+import type { PropertyIndexMapper } from "./PropertyIdMapper";
 
+/**
+ * マッパーテーブル。
+ *
+ * 各種オブジェクトのマッパーの一覧。
+ *
+ * プロパティ名以外にも、ボーン名などの何度も現れる文字列を数値で表すための
+ * マッパーを持つ。
+ */
 export interface MapperTable {
-	animation: PropertyIdMapper<Animation>;
-	curveTie: PropertyIdMapper<CurveTie>;
-	curve: PropertyIdMapper<Curve<any>>;
-	keyFrame: PropertyIdMapper<KeyFrame<any>>;
+	animation: PropertyIndexMapper<Animation>;
+	curveTie: PropertyIndexMapper<CurveTie>;
+	curve: PropertyIndexMapper<Curve<any>>;
+	keyFrame: PropertyIndexMapper<KeyFrame<any>>;
 
-	boneSet: PropertyIdMapper<BoneSet>;
-	bone: PropertyIdMapper<Bone>;
-	colliderInfo: PropertyIdMapper<ColliderInfo>;
+	boneSet: PropertyIndexMapper<BoneSet>;
+	bone: PropertyIndexMapper<Bone>;
+	colliderInfo: PropertyIndexMapper<ColliderInfo>;
 
-	skin: PropertyIdMapper<Skin>;
-	cell: PropertyIdMapper<Cell>;
+	skin: PropertyIndexMapper<Skin>;
+	cell: PropertyIndexMapper<Cell>;
 
-	effectParam: PropertyIdMapper<EffectParameterObject>;
-	emitterParam: PropertyIdMapper<EmitterParameterObject>;
-	particleInitialParam: PropertyIdMapper<aps.ParticleInitialParameterObject>;
-	emitterUserData: PropertyIdMapper<EmitterParameterUserData>;
+	effectParam: PropertyIndexMapper<EffectParameterObject>;
+	emitterParam: PropertyIndexMapper<EmitterParameterObject>;
+	particleInitialParam: PropertyIndexMapper<aps.ParticleInitialParameterObject>;
+	emitterUserData: PropertyIndexMapper<EmitterParameterUserData>;
 
-	boneName: PropertyIdMapper<{ [key: string]: string }>;
-	skinName: PropertyIdMapper<{ [key: string]: string }>;
-	cellName: PropertyIdMapper<{ [key: string]: string }>;
-	effectName: PropertyIdMapper<{ [key: string]: string }>;
+	boneName: PropertyIndexMapper<{ [key: string]: string }>;
+	skinName: PropertyIndexMapper<{ [key: string]: string }>;
+	cellName: PropertyIndexMapper<{ [key: string]: string }>;
+	effectName: PropertyIndexMapper<{ [key: string]: string }>;
 }

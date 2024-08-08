@@ -7,7 +7,7 @@ import type { ColliderInfo } from "../../ColliderInfo";
 import type { Skin } from "../../Skin";
 import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
 
-export interface PropertyIdMaps {
+export interface PropertyIndexMaps {
 	animation: Array<Extract<keyof Animation, string>>;
 	curveTie: Array<Extract<keyof CurveTie, string>>;
 	curve: Array<Extract<keyof Curve<any>, string>>;

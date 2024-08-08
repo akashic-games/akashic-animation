@@ -1,17 +1,20 @@
-import type { Schema } from ".";
+import type { Schema } from "./Schema";
 
+/**
+ * プロジェクト(V3形式）。
+ *
+ * プロジェクトはさまざまなアニメーションデータのメタデータを持つ。
+ */
 export interface ProjectV3 {
 	/**
 	 * ユーザーデータ。
-	 *
-	 * ユーザーは任意のデータを格納できる。
 	 */
 	userData?: any;
 
 	/**
-	 * スキーマ
+	 * スキーマ。
 	 *
-	 * プロジェクトに関連するデータのスキーマ。
+	 * 各種データの構造を定義するデータ。
 	 */
 	schema?: Schema;
 }

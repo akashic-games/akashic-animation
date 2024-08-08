@@ -1,41 +1,18 @@
 import type { AlphaBlendMode} from "../../AlphaBlendMode";
 import { alphaBlendModes } from "../../AlphaBlendMode";
-import type { IpType } from "../../AnimeParams";
-import { Animation, Curve, CurveTie, KeyFrame, IpCurve, CellValue, ipTypes } from "../../AnimeParams";
+import type { IpType, Animation, Curve, CurveTie, KeyFrame, IpCurve, CellValue} from "../../AnimeParams";
+import { ipTypes } from "../../AnimeParams";
 import type { ParticleInitialParameterObject } from "../../aps";
 import { AttrId } from "../../AttrId";
-import { Bone } from "../../Bone";
-import { BoneSet } from "../../BoneSet";
-import { Cell } from "../../Cell";
+import type { Bone } from "../../Bone";
+import type { BoneSet } from "../../BoneSet";
+import type { Cell } from "../../Cell";
 import type { ColliderInfo } from "../../ColliderInfo";
-import { Size2 } from "../../Size2";
-import { Skin } from "../../Skin";
-import { Vector2 } from "../../Vector2";
+import type { Size2 } from "../../Size2";
+import type { Skin } from "../../Skin";
+import type { Vector2 } from "../../Vector2";
 import type * as vfx from "../../vfx";
 import type { AOPSchema } from "./AOPSchema";
-
-/**
- * 配列からプロパティの値を取得する。
- *
- * @param data 配列
- * @param mapper 配列とプロパティのマッピング
- * @param propertyName プロパティ名
- * @param optional 真の時、プロパティが存在しない場合 undefined を返す。省略時、偽
- * @returns プロパティの値。プロパティが存在しない場合 undefined
- */
-function get<T>(data: any[], mapper: T[], propertyName: T, optional?: boolean): any {
-	const idx = mapper.indexOf(propertyName);
-
-	if (idx !== -1) {
-		return data[idx];
-	}
-
-	if (!optional) {
-		throw new Error(`Failed to get ${propertyName} index`);
-	}
-
-	return undefined;
-}
 
 /**
  * put() のオプション。
@@ -85,8 +62,8 @@ function put<T extends object>(
 
 	const value = data[idx];
 
-	// mapper から key の index がを取得できても optional な
-	// プロパティの場合 data[key] に値が存在しないこともある。
+	// mapper から key のインデックスがを取得できても optional な
+	// プロパティの場合 data[idx] に値が存在しないこともある。
 	//
 	// data は JSON.parse() の結果であるため data 中に undefined
 	// は存在しない(stringify() した時 null に置き換えられる)。
@@ -115,7 +92,10 @@ function importIpType(value: any): IpType {
 }
 
 function importIpCurve(value: any): IpCurve {
-	const ipCurve = new IpCurve();
+	// Resource クラスに倣い IpCurve クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new IpCurve しない。
+	const ipCurve = {} as IpCurve;
 	ipCurve.values = value;
 	return ipCurve;
 }
@@ -123,13 +103,16 @@ function importIpCurve(value: any): IpCurve {
 function importKeyFrame(
 	data: any[],
 	schema: AOPSchema,
-	valuePredicate?: (value: any) => any
+	importer?: (value: any) => any
 ): KeyFrame<any> {
 	const mapper = schema.propertyIdMaps.keyFrame;
-	const keyFrame = new KeyFrame<any>();
+	// Resource クラスに倣い KeyFrame クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new KeyFrame しない。
+	const keyFrame = {} as KeyFrame<any>;
 
 	put(keyFrame, "time", mapper, data);
-	put(keyFrame, "value", mapper, data, { importer: valuePredicate });
+	put(keyFrame, "value", mapper, data, { importer });
 	put(keyFrame, "ipType", mapper, data, { importer: importIpType });
 	put(keyFrame, "ipCurve", mapper, data, { importer: importIpCurve, optional: true });
 
@@ -139,16 +122,19 @@ function importKeyFrame(
 function importKeyFrames(
 	data: any[],
 	schema: AOPSchema,
-	valuePredicate?: (value: any) => any
+	valueImporter?: (value: any) => any
 ): KeyFrame<any>[] {
-	return data.map(value => importKeyFrame(value, schema, valuePredicate));
+	return data.map(value => importKeyFrame(value, schema, valueImporter));
 }
 
 function importCellValueKeyFrame(indices: [number, number], schema: AOPSchema): CellValue {
 	const skinMapper = schema.propertyIdMaps.skinName;
 	const cellMapper = schema.propertyIdMaps.cellName;
 
-	const cv = new CellValue();
+	// Resource クラスに倣い CellValue クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new CellValue しない。
+	const cv = {} as CellValue;
 	cv.skinName = skinMapper[indices[0]];
 	cv.cellName = cellMapper[indices[1]];
 
@@ -164,7 +150,10 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 		"flipV"
 	];
 
-	const curve = new Curve<any>();
+	// Resource クラスに倣い Curve クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new Curve しない。
+	const curve = {} as Curve<any>;
 	const mapper = schema.propertyIdMaps.curve;
 
 	put(curve, "attribute", mapper, data, {
@@ -202,17 +191,21 @@ function importCurves(data: any[], schema: AOPSchema): Curve<any>[] {
 function importCurveTie(data: any[], schema: AOPSchema): CurveTie {
 	const mapper = schema.propertyIdMaps.curveTie;
 
-	const curveTie = new CurveTie();
-	curveTie.boneName = schema.propertyIdMaps.boneName[get(data, mapper, "boneName")];
-	curveTie.curves = importCurves(get(data, mapper, "curves"), schema);
+	// Resource クラスに倣い CurveTie クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new CurveTie しない。
+	const curveTie = {} as CurveTie;
+	put(curveTie, "boneName", mapper, data, {
+		importer: idx => schema.propertyIdMaps.boneName[idx]
+	});
+	put(curveTie, "curves", mapper, data, {
+		importer: curves => importCurves(curves, schema)
+	});
 
 	return curveTie;
 }
 
-function importCurveTies(
-	data: any[],
-	schema: AOPSchema
-): { [key: string]: CurveTie } {
+function importCurveTies(data: any[], schema: AOPSchema): { [key: string]: CurveTie } {
 	const curveTies: { [key: string]: CurveTie } = {};
 	for (const value of data) {
 		const curveTie = importCurveTie(value, schema);
@@ -221,27 +214,40 @@ function importCurveTies(
 	return curveTies;
 }
 
-function importVector(data: [number, number]): { x: number; y: number } {
-	return new Vector2(data[0], data[1]);
+function importVectorLike(data: [number, number]): { x: number; y: number } {
+	return { x: data[0], y: data[1] };
+}
+
+function importVector(data: [number, number]): Vector2 {
+	// Resource クラスに倣い Vector2 クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new Vector2 しない。
+	return importVectorLike(data);
 }
 
 function importSize(data: [number, number]): Size2 {
-	return new Size2(data[0], data[1]);
+	// Resource クラスに倣い Size2 クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new Size2 しない。
+	return { width: data[0], height: data[1] };
 }
 
 function importColliderInfo(data: any[], schema: AOPSchema): ColliderInfo {
 	const mapper = schema.propertyIdMaps.colliderInfo;
 
-	const colliderInfo: ColliderInfo =  {
-		geometryType: get(data, mapper, "geometryType"),
-		boundType: get(data, mapper, "boundType"),
-	};
+	// Resource クラスに倣い ColliderInfo クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new ColliderInfo しない。
+	const colliderInfo = {} as ColliderInfo;
+
+	put(colliderInfo, "geometryType", mapper, data);
+	put(colliderInfo, "boundType", mapper, data);
 
 	// optional properties
 	const optional = true;
 	put(colliderInfo, "cellName", mapper, data, { optional });
 	put(colliderInfo, "center", mapper, data, { optional });
-	put(colliderInfo, "center", mapper, data, { optional, importer: importVector });
+	put(colliderInfo, "center", mapper, data, { optional, importer: importVectorLike });
 	put(colliderInfo, "radius", mapper, data, { optional });
 	put(colliderInfo, "scaleOption", mapper, data, { optional });
 	put(colliderInfo, "width", mapper, data, { optional });
@@ -260,24 +266,13 @@ function importColliderInfos(data: any[], schema: AOPSchema): ColliderInfo[] {
 	return colliderInfos;
 }
 
-
-// コンソール中のdiffを見るに、おそらく、元データに undefined なプロパティがあるせいで比較したとき失敗する。JSONをシリアライザに用いる限り、
-// 1. undefinedは保存しない
-// 2. arr = []; arr[0] = "a"; arr[2] = "b" のような途中の欠落した配列は
-// ["a", null, "b"] となる。 はoptionalなプロパティだと値を格納したり
-// しなかったりするので arr[1] のようなことになる。オプショナルかつ
-// null を代入可能なプロパティは正しく扱えない。扱えるようにできるのかも
-// しれないが、ここでは「扱えない」とする。この制約に従うこと。
-//
-// JSONでシリアライズするときのルールまとめ
-// 1. undefined をデータに含めない
-// 2. オプショナルなプロパティはnullを代入できない
-// 3. 配列中の null は undefined と解釈し、読み込まない（プロパティを作らない）
-
 function importBone(data: any[], schema: AOPSchema): Bone {
 	const mapper = schema.propertyIdMaps.bone;
 
-	const bone = new Bone();
+	// Resource クラスに倣い Bone クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new Bone しない。
+	const bone = {} as Bone;
 	put(bone, "parentIndex", mapper, data);
 	put(bone, "name", mapper, data, { importer: data => schema.propertyIdMaps.boneName[data] });
 
@@ -294,6 +289,7 @@ function importBone(data: any[], schema: AOPSchema): Bone {
 
 	return bone;
 }
+
 function importBones(data: any[], schema: AOPSchema): Bone[] {
 	const bones: Bone[] = [];
 
@@ -305,7 +301,10 @@ function importBones(data: any[], schema: AOPSchema): Bone[] {
 }
 
 function importCell(data: any[], schema: AOPSchema): Cell {
-	const cell = new Cell();
+	// Resource クラスに倣い Cell クラスを用いない。
+	// Resource クラスは JSON.parse() の結果をそのまま実行時の
+	// データとして用いる。つまり new Cell しない。
+	const cell = {} as Cell;
 	const mapper = schema.propertyIdMaps.cell;
 
 	put(cell, "name", mapper, data, { importer: idx => schema.propertyIdMaps.cellName[idx] });
@@ -392,6 +391,9 @@ function importEmitterParameters(data: any[], schema: AOPSchema): vfx.EmitterPar
 	return emitterParameters;
 }
 
+/**
+ * AOP形式のインポータ。
+ */
 export class AOPImporter {
 	private schema: AOPSchema;
 
@@ -401,29 +403,42 @@ export class AOPImporter {
 
 	importAnimation(data: any[]): Animation {
 		const mapper = this.schema.propertyIdMaps.animation;
-		const animation = new Animation();
+		// Resource クラスに倣い Animation クラスを用いない。
+		// Resource クラスは JSON.parse() の結果をそのまま実行時の
+		// データとして用いる。つまり new Animation しない。
+		const animation = {} as Animation;
 
 		put(animation, "name", mapper, data);
 		put(animation, "fps", mapper, data);
 		put(animation, "frameCount", mapper, data);
-		animation.curveTies = importCurveTies(get(data, mapper, "curveTies"), this.schema);
+		put(animation, "curveTies", mapper, data, {
+			importer: curveTies => importCurveTies(curveTies, this.schema)
+		});
 
 		return animation;
 	}
 
 	importBoneSet(data: any[]): BoneSet {
 		const mapper = this.schema.propertyIdMaps.boneSet;
-		const boneSet = new BoneSet("", []);
+		// Resource クラスに倣い BoneSet クラスを用いない。
+		// Resource クラスは JSON.parse() の結果をそのまま実行時の
+		// データとして用いる。つまり new BoneSet しない。
+		const boneSet = {} as BoneSet;
 
 		put(boneSet, "name", mapper, data);
-		boneSet.bones = importBones(get(data, mapper, "bones"), this.schema);
+		put(boneSet, "bones", mapper, data, {
+			importer: bones => importBones(bones, this.schema)
+		});
 
 		return boneSet;
 	}
 
 	importSkin(data: any[]): Skin {
 		const mapper = this.schema.propertyIdMaps.skin;
-		const skin = new Skin();
+		// Resource クラスに倣い Skin クラスを用いない。
+		// Resource クラスは JSON.parse() の結果をそのまま実行時の
+		// データとして用いる。つまり new Skin しない。
+		const skin = {} as Skin;
 
 		put(skin, "name", mapper, data, {
 			importer: idx => this.schema.propertyIdMaps.skinName[idx]
