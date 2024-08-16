@@ -62,15 +62,15 @@ function put<T extends object>(
 
 	const value = data[idx];
 
-	// mapper から key のインデックスがを取得できても optional な
-	// プロパティの場合 data[idx] に値が存在しないこともある。
-	//
-	// data は JSON.parse() の結果であるため data 中に undefined
-	// は存在しない(stringify() した時 null に置き換えられる)。
+	// 前提:
+	// 1. mapper から key のインデックスがを取得できても optional な
+	//    プロパティの場合 data[idx] に値が存在しないこともある。
+	// 2. data は JSON.parse() の結果であるため data 中に undefined
+	//    は存在しない(stringify() した時 null に置き換えられる)。
 	//
 	// data[key] が null なら、それは以下のいずれかの理由である。
 	// 1. 正しく null を格納した
-	// 2. 誤って undefined を格納、JSONによって null に置き換えられた
+	// 2. 誤って undefined を格納し JSON によって null に置き換えられた
 	// 3. a=[],a[0]=v1,a[2]=v2 が [v1, null, v2] となった
 	//
 	// data[key] が undefined なら、key が配列の範囲外である。
