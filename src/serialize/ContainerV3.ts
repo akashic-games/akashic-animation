@@ -13,11 +13,30 @@ export type ContainerV3Type = "bundle";
  * ASAファイルのデータが格納されている
  */
 export class ContainerV3 {
-	// "3.x.x" でなければならない
+	/**
+	 * バージョン。
+	 *
+	 * メジャーバージョンが3である "3.x.x" のような形式でなければならない。
+	 */
 	version: string;
+
+	/**
+	 * コンテナの種別。
+	 */
 	type: ContainerV3Type;
+
+	/**
+	 * コンテンツ配列。
+	 */
 	contents: Content<any>[];
 
+	/**
+	 * コンストラクタ。
+	 *
+	 * @param version バージョン
+	 * @param type コンテナの種別
+	 * @param contents コンテンツ配列。
+	 */
 	constructor(version: string, type: ContainerV3Type, contents: Content<any>[]) {
 		this.version = version;
 		this.type = type;

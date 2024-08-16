@@ -5,11 +5,21 @@ export class ContainerV2 {
 	/**
 	 * バージョン。
 	 *
-	 * メジャーバージョンが２である"2.x.x" のような形式でなければならない。
+	 * メジャーバージョンが2である "2.x.x" のような形式でなければならない。
 	 */
 	version: string;
+
+	/**
+	 * コンテンツ。
+	 */
 	contents: any;
 
+	/**
+	 * コンストラクタ。
+	 *
+	 * @param version バージョン。
+	 * @param contents コンテンツ。
+	 */
 	constructor(version: string, contents: any) {
 		this.version = version;
 		this.contents = contents;
