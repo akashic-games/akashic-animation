@@ -45,10 +45,6 @@
 			"type": "text",
 			"path": "text/an_anime_1_liner.asaan"
 		},
-		"an_anime_1_liner_1": {
-			"type": "text",
-			"path": "text/an_anime_1_liner_1.asaan"
-		},
 		"loop": {
 			"type": "image",
 			"width": 64,
@@ -128,21 +124,7 @@
 		"node_modules/@akashic-extension/akashic-animation/lib/aps/ParticleSystem.js",
 		"node_modules/@akashic-extension/akashic-animation/lib/aps/index.js",
 		"node_modules/@akashic-extension/akashic-animation/lib/index.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/vfx.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/ActorParameterObject.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/AlphaBlendMode.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/ColliderInfo.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Container.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Volume.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/ArrayOrientedPorter.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/ContainerV2.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/ContainerV3.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/Content.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/ContentType.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/ProjectV2.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/ProjectV3.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/Schema.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/serialize/index.js"
+		"node_modules/@akashic-extension/akashic-animation/lib/vfx.js"
 	],
 	"environment": {
 		"sandbox-runtime": "3"
