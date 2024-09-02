@@ -23,13 +23,13 @@ describe("ArrayOrientedPorter", function () {
 			return asaan.contents;
 		});
 
-		const exporter = new aop.AOPExporter();
+		const exporter = new aop.ArrayOrientedExporter();
 
 		const exportedBoneSets = boneSets.map(boneSet => exporter.exportBoneSet(boneSet));
 		const exportedSkins = skins.map(skin => exporter.exportSkin(skin));
 		const exportedAnimations = animations.map(animation => exporter.exportAnimation(animation));
 
-		const importer = new aop.AOPImporter(exporter.getSchema());
+		const importer = new aop.ArrayOrientedImporter(exporter.getSchema());
 
 		const importedBoneSets = exportedBoneSets.map(boneSet => importer.importBoneSet(boneSet));
 		const importedSkins = exportedSkins.map(skin => importer.importSkin(skin));
