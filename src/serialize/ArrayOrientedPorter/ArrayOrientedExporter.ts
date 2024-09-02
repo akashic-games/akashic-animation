@@ -379,7 +379,7 @@ function createMappterTable(): MapperTable {
 /**
  * AOP形式のエクスポータ。
  */
-export class AOPExporter {
+export class ArrayOrientedExporter {
 	private mapperTable: MapperTable;
 
 	constructor() {

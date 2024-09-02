@@ -1,16 +1,12 @@
-import type {Animation, Curve} from "./AnimeParams";
-import {AttrId} from "./AttrId";
+import type { Animation, Curve } from "./AnimeParams";
+import { AttrId } from "./AttrId";
 import { AssetResolver } from "./auxiliary/AssetResolver";
-import type {Bone} from "./Bone";
-import type {BoneSet} from "./BoneSet";
-import type { ProjectV3 } from "./serialize";
+import type { Bone } from "./Bone";
+import type { BoneSet } from "./BoneSet";
+import type { Container, ContainerV2, ContainerV3, ProjectV2, ProjectV3 } from "./serialize";
 import { aop } from "./serialize";
-import type { AOPSchema } from "./serialize/ArrayOrientedPorter/AOPSchema";
-import type {Container} from "./serialize/Container";
-import type {ContainerV2} from "./serialize/ContainerV2";
-import type {ContainerV3} from "./serialize/ContainerV3";
-import type { ProjectV2 } from "./serialize/ProjectV2";
-import type {Skin} from "./Skin";
+import type { AOPSchema } from "./serialize/ArrayOrientedPorter";
+import type { Skin } from "./Skin";
 import type * as vfx from "./vfx";
 
 function checkVersion(version: string, fname: string): string {
@@ -227,7 +223,7 @@ export class Resource {
 			this.effectParameters = loadResourceFromTextAsset(project.effectFileNames, assetResolver);
 		} else if (project.schema.type === "aop") {
 			const schema = project.schema as AOPSchema;
-			const importer = new aop.AOPImporter(schema);
+			const importer = new aop.ArrayOrientedImporter(schema);
 
 			const boneSets = loadResourceFromTextAsset<any[][]>(project.boneSetFileNames, assetResolver);
 			this.boneSets = boneSets.map(boneSet => importer.importBoneSet(boneSet));
@@ -287,7 +283,7 @@ export class Resource {
 				.map(content => content.data);
 		} else if (project.schema.type === "aop") {
 			const schema = project.schema as AOPSchema;
-			const importer = new aop.AOPImporter(schema);
+			const importer = new aop.ArrayOrientedImporter(schema);
 
 			this.boneSets = container.contents
 				.filter(content => content.type === "bone")

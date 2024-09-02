@@ -394,7 +394,7 @@ function importEmitterParameters(data: any[], schema: AOPSchema): vfx.EmitterPar
 /**
  * AOP形式のインポータ。
  */
-export class AOPImporter {
+export class ArrayOrientedImporter {
 	private schema: AOPSchema;
 
 	constructor(schema: AOPSchema) {
