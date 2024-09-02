@@ -12,7 +12,7 @@ import type { Skin } from "../../Skin";
 import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
 import type { AOPSchema } from "./AOPSchema";
 import type { MapperTable } from "./MapperTable";
-import { PropertyIndexMapper } from "./PropertyIdMapper";
+import { PropertyIndexMapper } from "./PropertyIndexMapper";
 
 /**
  * put() のオプション。

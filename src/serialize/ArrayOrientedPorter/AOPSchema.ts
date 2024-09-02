@@ -1,5 +1,5 @@
 import type { Schema } from "../Schema";
-import type { PropertyIndexMaps } from "./PropertyIdMaps";
+import type { PropertyIndexMaps } from "./PropertyIndexMaps";
 
 /**
  * AOPスキーマ。

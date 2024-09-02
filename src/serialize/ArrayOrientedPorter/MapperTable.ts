@@ -6,7 +6,7 @@ import type { Cell } from "../../Cell";
 import type { ColliderInfo } from "../../ColliderInfo";
 import type { Skin } from "../../Skin";
 import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
-import type { PropertyIndexMapper } from "./PropertyIdMapper";
+import type { PropertyIndexMapper } from "./PropertyIndexMapper";
 
 /**
  * マッパーテーブル。
