@@ -250,10 +250,10 @@ export class Resource {
 		}
 
 		let project: ProjectV3;
-		for (const contents of container.contents) {
-			if (contents.type === "project") {
+		for (const content of container.contents) {
+			if (content.type === "project") {
 				// ContainerV3 の格納するプロジェクトは必ず ProjectV3 型
-				project = contents.data;
+				project = content.data;
 				break;
 			}
 		}
