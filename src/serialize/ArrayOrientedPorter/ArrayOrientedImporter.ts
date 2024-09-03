@@ -87,7 +87,7 @@ function put<T extends object>(
 	}
 }
 
-function importIpType(value: any): IpType {
+function importIpType(value: any): IpType | undefined {
 	return value === -1 ? undefined : ipTypes[value];
 }
 
