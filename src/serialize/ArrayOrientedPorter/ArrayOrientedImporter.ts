@@ -95,9 +95,7 @@ function importIpCurve(value: any): IpCurve {
 	// Resource クラスに倣い IpCurve クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new IpCurve しない。
-	const ipCurve = {} as IpCurve;
-	ipCurve.values = value;
-	return ipCurve;
+	return { values: value };
 }
 
 function importKeyFrame(
