@@ -49,11 +49,10 @@ function _deepEqual(a, b, info) {
 				return false;
 			}
 			for (i = length; i-- !== 0;) {
-				info.push(i);
 				if (!_deepEqual(a[i], b[i], info)) {
+					info.unshift(i);
 					return false;
 				}
-				info.pop();
 			}
 			return true;
 		}
@@ -99,21 +98,19 @@ function _deepEqual(a, b, info) {
 		length = aKeys.length;
 
 		for (i = length; i-- !== 0;) {
-			info.push(keys[i]);
 			if (!Object.prototype.hasOwnProperty.call(b, keys[i])) {
 				info.push("b does not have key " + keys[i]);
+				info.unshift(keys[i]);
 				return false;
 			}
-			info.pop();
 		}
 
 		for (i = length; i-- !== 0;) {
 			const key = keys[i];
-			info.push(key);
 			if (!_deepEqual(a[key], b[key], info)) {
+				info.unshift(key);
 				return false;
 			}
-			info.pop();
 		}
 
 		return true;
