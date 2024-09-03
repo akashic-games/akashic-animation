@@ -40,17 +40,28 @@ function constructBoneTree(bones: Bone[]): void {
 	}
 }
 
+/**
+ * Akashic Animation のデータを読み込む
+ *
+ * fileNames が null または undefined の場合、空の配列を返す。
+ *
+ * この関数はプロジェクトの持つファイル名のリストを利用してデータを読み込むため
+ * に使用される。それらリストは型定義上必須プロパティであるが、歴史的経緯から古
+ * いプロジェクトファイルではリストが欠落している懸念がある。そのため、この関数
+ * では null または undefined を正常系とし、空の配列を受けった場合と同じ結果に
+ * なるようにする。
+ *
+ * @param fileNames ファイル名前の配列
+ * @param assetResolver アセットを取得するためのアクセッサ
+ * @returns 読み込んだデータの配列
+ */
 function loadResourceFromTextAsset<T>(
-	fileNames: string[],
+	fileNames: string[] | null | undefined,
 	assetResolver: AssetResolver
 ): T[] {
 	const resources: T[] = [];
 
-	if (fileNames == null) {
-		return resources;
-	}
-
-	fileNames.forEach(fname => {
+	fileNames?.forEach(fname => {
 		const data = assetResolver.getJSON<ContainerV2>(fname);
 		checkVersion(data.version, fname);
 		resources.push(data.contents);
