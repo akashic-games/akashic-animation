@@ -9,13 +9,33 @@ import type { AOPSchema } from "./serialize/ArrayOrientedPorter";
 import type { Skin } from "./Skin";
 import type * as vfx from "./vfx";
 
-function checkVersion(version: string, fname: string): string {
-	const r = version.match(/(\d+)\.\d+.\d+/);
-	if (!r || (r[1] !== "2" && r[1] !== "3")) {
-		// v2.x.x または v3.x.x であることを確認
-		throw g.ExceptionFactory.createAssertionError("Invalid fileformat version: " + fname + ", " + version + "<2.0.0");
+const versionRegexp = /(\d+)\.\d+.\d+/;
+
+function isContaienr(container: unknown): container is Container {
+	return typeof container === "object"
+		&& container != null
+		&& "version" in container
+		&& typeof (container as any).version === "string";
+}
+
+function isContainerV2(container: unknown): container is ContainerV2 {
+	if (!isContaienr(container)) {
+		return false;
 	}
-	return r[1];
+
+	const r = container.version.match(versionRegexp);
+
+	return r && r[1] === "2";
+}
+
+function isContainerV3(container: unknown): container is ContainerV3 {
+	if (!isContaienr(container)) {
+		return false;
+	}
+
+	const r = container.version.match(versionRegexp);
+
+	return r && r[1] === "3";
 }
 
 function bindTextureFromAsset(skin: Skin, assetResolver: AssetResolver): void {
@@ -45,6 +65,8 @@ function constructBoneTree(bones: Bone[]): void {
  *
  * fileNames が null または undefined の場合、空の配列を返す。
  *
+ * 各ファイルは ContainerV2 形式でなければならない。
+ *
  * この関数はプロジェクトの持つファイル名のリストを利用してデータを読み込むため
  * に使用される。それらリストは型定義上必須プロパティであるが、歴史的経緯から古
  * いプロジェクトファイルではリストが欠落している懸念がある。そのため、この関数
@@ -55,16 +77,19 @@ function constructBoneTree(bones: Bone[]): void {
  * @param assetResolver アセットを取得するためのアクセッサ
  * @returns 読み込んだデータの配列
  */
-function loadResourceFromTextAsset<T>(
+function getAkashicAnimationData(
 	fileNames: string[] | null | undefined,
 	assetResolver: AssetResolver
-): T[] {
-	const resources: T[] = [];
+): unknown[] {
+	const resources: unknown[] = [];
 
 	fileNames?.forEach(fname => {
-		const data = assetResolver.getJSON<ContainerV2>(fname);
-		checkVersion(data.version, fname);
-		resources.push(data.contents);
+		const data = assetResolver.getJSON(fname);
+		if (isContainerV2(data)) {
+			resources.push(data.contents);
+		} else {
+			throw g.ExceptionFactory.createAssertionError("File is corrupted or has an invalid format: " + fname);
+		}
 	});
 
 	return resources;
@@ -147,15 +172,19 @@ export class Resource {
 			assetResolver = new AssetResolver(assets);
 		}
 
-		const data = assetResolver.getJSON<Container>(assetNameOrProjectPath);
-		const majorVersion = checkVersion(data.version, assetNameOrProjectPath);
+		const data = assetResolver.getJSON(assetNameOrProjectPath);
 
-		if (majorVersion === "2") {
+		if (isContainerV2(data)) {
 			this.loadProjectV2(data, assetResolver);
 			return;
 		}
 
-		this.loadProjectV3(data as ContainerV3, assetResolver);
+		if (isContainerV3(data)) {
+			this.loadProjectV3(data, assetResolver);
+			return;
+		}
+
+		throw g.ExceptionFactory.createAssertionError("File is corrupted or has an invalid format: " + assetNameOrProjectPath);
 	}
 
 	/**
@@ -222,33 +251,33 @@ export class Resource {
 		const project = container.contents as ProjectV2;
 
 		if (project.schema == null) {
-			this.boneSets = loadResourceFromTextAsset(project.boneSetFileNames, assetResolver);
+			this.boneSets = getAkashicAnimationData(project.boneSetFileNames, assetResolver) as BoneSet[];
 			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
 
-			this.skins = loadResourceFromTextAsset(project.skinFileNames, assetResolver);
+			this.skins = getAkashicAnimationData(project.skinFileNames, assetResolver) as Skin[];
 			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
 
-			this.animations = loadResourceFromTextAsset(project.animationFileNames, assetResolver);
+			this.animations = getAkashicAnimationData(project.animationFileNames, assetResolver) as Animation[];
 			this.animations.forEach(animation => assignAttributeID(animation));
 
-			this.effectParameters = loadResourceFromTextAsset(project.effectFileNames, assetResolver);
+			this.effectParameters = getAkashicAnimationData(project.effectFileNames, assetResolver) as vfx.EffectParameterObject[];
 		} else if (project.schema.type === "aop") {
 			const schema = project.schema as AOPSchema;
 			const importer = new aop.ArrayOrientedImporter(schema);
 
-			const boneSets = loadResourceFromTextAsset<any[][]>(project.boneSetFileNames, assetResolver);
+			const boneSets = getAkashicAnimationData(project.boneSetFileNames, assetResolver) as any[][];
 			this.boneSets = boneSets.map(boneSet => importer.importBoneSet(boneSet));
 			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
 
-			const skins = loadResourceFromTextAsset<any[][]>(project.skinFileNames, assetResolver);
+			const skins = getAkashicAnimationData(project.skinFileNames, assetResolver) as any[][];
 			this.skins = skins.map(skin => importer.importSkin(skin));
 			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
 
-			const animations = loadResourceFromTextAsset<any[][]>(project.animationFileNames, assetResolver);
+			const animations = getAkashicAnimationData(project.animationFileNames, assetResolver) as any[][];
 			this.animations = animations.map(animation => importer.importAnimation(animation));
 			this.animations.forEach(animation => assignAttributeID(animation));
 
-			const effectParameters = loadResourceFromTextAsset<any[][]>(project.effectFileNames, assetResolver);
+			const effectParameters = getAkashicAnimationData(project.effectFileNames, assetResolver) as any[][];
 			this.effectParameters = effectParameters.map(effectParameter => importer.importEffect(effectParameter));
 		} else {
 			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);

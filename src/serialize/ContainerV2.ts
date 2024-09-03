@@ -12,7 +12,7 @@ export class ContainerV2 {
 	/**
 	 * コンテンツ。
 	 */
-	contents: any;
+	contents: unknown;
 
 	/**
 	 * コンストラクタ。
