@@ -19,8 +19,6 @@ export * from "./Collider";
 export * from "./ColliderInfo";
 export * from "./FinalizedCell";
 export * from "./Posture";
-export * from "./serialize/ProjectV2";
-export * from "./serialize/ProjectV3";
 export * from "./Resource";
 export * from "./serialize";
 export * from "./Size2";
