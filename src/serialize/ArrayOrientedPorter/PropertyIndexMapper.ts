@@ -28,20 +28,7 @@ export class PropertyIndexMapper<T> {
 		}
 
 		this.properties.push(name);
-		return this.properties.length - 1;
-	}
 
-	/**
-	 * プロパティ名の取得。
-	 *
-	 * @param index 配列上の位置。
-	 * @returns プロパティ名。
-	 */
-	getProperty(index: number): keyof T {
-		const property = this.properties[index];
-		if (property == null) {
-			throw new Error(`Unknown index: ${index}`);
-		}
-		return property;
+		return this.properties.length - 1;
 	}
 }
