@@ -50,7 +50,7 @@ function _deepEqual(a, b, info) {
 			}
 			for (i = length; i-- !== 0;) {
 				if (!_deepEqual(a[i], b[i], info)) {
-					info.unshift(i);
+					info.push(i);
 					return false;
 				}
 			}
@@ -100,7 +100,7 @@ function _deepEqual(a, b, info) {
 		for (i = length; i-- !== 0;) {
 			if (!Object.prototype.hasOwnProperty.call(b, keys[i])) {
 				info.push("b does not have key " + keys[i]);
-				info.unshift(keys[i]);
+				info.push(keys[i]);
 				return false;
 			}
 		}
@@ -108,7 +108,7 @@ function _deepEqual(a, b, info) {
 		for (i = length; i-- !== 0;) {
 			const key = keys[i];
 			if (!_deepEqual(a[key], b[key], info)) {
-				info.unshift(key);
+				info.push(key);
 				return false;
 			}
 		}
@@ -137,6 +137,8 @@ function deepEqual(a, b) {
 	if (result) {
 		return true;
 	}
+
+	info.reverse();
 
 	const detail = info.pop();
 
