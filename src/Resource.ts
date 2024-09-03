@@ -61,7 +61,7 @@ function constructBoneTree(bones: Bone[]): void {
 }
 
 /**
- * Akashic Animation のデータを読み込む
+ * 複数のファイルを読み込む。
  *
  * fileNames が null または undefined の場合、空の配列を返す。
  *
@@ -77,7 +77,7 @@ function constructBoneTree(bones: Bone[]): void {
  * @param assetResolver アセットを取得するためのアクセッサ
  * @returns 読み込んだデータの配列
  */
-function getAkashicAnimationData(
+function getMultipleFileContents(
 	fileNames: string[] | null | undefined,
 	assetResolver: AssetResolver
 ): unknown[] {
@@ -251,33 +251,33 @@ export class Resource {
 		const project = container.contents as ProjectV2;
 
 		if (project.schema == null) {
-			this.boneSets = getAkashicAnimationData(project.boneSetFileNames, assetResolver) as BoneSet[];
+			this.boneSets = getMultipleFileContents(project.boneSetFileNames, assetResolver) as BoneSet[];
 			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
 
-			this.skins = getAkashicAnimationData(project.skinFileNames, assetResolver) as Skin[];
+			this.skins = getMultipleFileContents(project.skinFileNames, assetResolver) as Skin[];
 			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
 
-			this.animations = getAkashicAnimationData(project.animationFileNames, assetResolver) as Animation[];
+			this.animations = getMultipleFileContents(project.animationFileNames, assetResolver) as Animation[];
 			this.animations.forEach(animation => assignAttributeID(animation));
 
-			this.effectParameters = getAkashicAnimationData(project.effectFileNames, assetResolver) as vfx.EffectParameterObject[];
+			this.effectParameters = getMultipleFileContents(project.effectFileNames, assetResolver) as vfx.EffectParameterObject[];
 		} else if (project.schema.type === "aop") {
 			const schema = project.schema as AOPSchema;
 			const importer = new aop.ArrayOrientedImporter(schema);
 
-			const boneSets = getAkashicAnimationData(project.boneSetFileNames, assetResolver) as any[][];
+			const boneSets = getMultipleFileContents(project.boneSetFileNames, assetResolver) as any[][];
 			this.boneSets = boneSets.map(boneSet => importer.importBoneSet(boneSet));
 			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
 
-			const skins = getAkashicAnimationData(project.skinFileNames, assetResolver) as any[][];
+			const skins = getMultipleFileContents(project.skinFileNames, assetResolver) as any[][];
 			this.skins = skins.map(skin => importer.importSkin(skin));
 			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
 
-			const animations = getAkashicAnimationData(project.animationFileNames, assetResolver) as any[][];
+			const animations = getMultipleFileContents(project.animationFileNames, assetResolver) as any[][];
 			this.animations = animations.map(animation => importer.importAnimation(animation));
 			this.animations.forEach(animation => assignAttributeID(animation));
 
-			const effectParameters = getAkashicAnimationData(project.effectFileNames, assetResolver) as any[][];
+			const effectParameters = getMultipleFileContents(project.effectFileNames, assetResolver) as any[][];
 			this.effectParameters = effectParameters.map(effectParameter => importer.importEffect(effectParameter));
 		} else {
 			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
