@@ -5,7 +5,7 @@ import type { Bone } from "./Bone";
 import type { BoneSet } from "./BoneSet";
 import type { Container, ContainerV2, ContainerV3, ProjectV2, ProjectV3 } from "./serialize";
 import { aop } from "./serialize";
-import type { AOPSchema } from "./serialize/ArrayOrientedPorter";
+import type { Importer } from "./serialize/Importer";
 import type { Skin } from "./Skin";
 import type * as vfx from "./vfx";
 
@@ -120,6 +120,27 @@ function mergeAssetArray(assetArray: {[key: string]: g.Asset}[]): {[key: string]
 	}
 
 	return merged;
+}
+
+/**
+ * 何もしないインポーター。
+ */
+class NullImporter implements Importer {
+	importAnimation(data: unknown): Animation {
+		return data as Animation;
+	}
+
+	importBoneSet(data: unknown): BoneSet {
+		return data as BoneSet;
+	}
+
+	importSkin(data: unknown): Skin {
+		return data as Skin;
+	}
+
+	importEffect(data: unknown): vfx.EffectParameterObject {
+		return data as vfx.EffectParameterObject;
+	}
 }
 
 /**
@@ -250,38 +271,30 @@ export class Resource {
 	protected loadProjectV2(container: ContainerV2, assetResolver: AssetResolver): void {
 		const project = container.contents as ProjectV2;
 
-		if (project.schema == null) {
-			this.boneSets = getMultipleFileContents(project.boneSetFileNames, assetResolver) as BoneSet[];
-			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+		const importer: Importer = project.schema == null
+			? new NullImporter()
+			: project.schema.type === "aop"
+				? new aop.ArrayOrientedImporter(project.schema as aop.AOPSchema)
+				: null;
 
-			this.skins = getMultipleFileContents(project.skinFileNames, assetResolver) as Skin[];
-			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
-
-			this.animations = getMultipleFileContents(project.animationFileNames, assetResolver) as Animation[];
-			this.animations.forEach(animation => assignAttributeID(animation));
-
-			this.effectParameters = getMultipleFileContents(project.effectFileNames, assetResolver) as vfx.EffectParameterObject[];
-		} else if (project.schema.type === "aop") {
-			const schema = project.schema as AOPSchema;
-			const importer = new aop.ArrayOrientedImporter(schema);
-
-			const boneSets = getMultipleFileContents(project.boneSetFileNames, assetResolver) as any[][];
-			this.boneSets = boneSets.map(boneSet => importer.importBoneSet(boneSet));
-			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
-
-			const skins = getMultipleFileContents(project.skinFileNames, assetResolver) as any[][];
-			this.skins = skins.map(skin => importer.importSkin(skin));
-			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
-
-			const animations = getMultipleFileContents(project.animationFileNames, assetResolver) as any[][];
-			this.animations = animations.map(animation => importer.importAnimation(animation));
-			this.animations.forEach(animation => assignAttributeID(animation));
-
-			const effectParameters = getMultipleFileContents(project.effectFileNames, assetResolver) as any[][];
-			this.effectParameters = effectParameters.map(effectParameter => importer.importEffect(effectParameter));
-		} else {
+		if (importer == null) {
 			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
 		}
+
+		const boneSets = getMultipleFileContents(project.boneSetFileNames, assetResolver);
+		this.boneSets = boneSets.map(boneSet => importer.importBoneSet(boneSet));
+		this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+
+		const skins = getMultipleFileContents(project.skinFileNames, assetResolver) as any[][];
+		this.skins = skins.map(skin => importer.importSkin(skin));
+		this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
+
+		const animations = getMultipleFileContents(project.animationFileNames, assetResolver) as any[][];
+		this.animations = animations.map(animation => importer.importAnimation(animation));
+		this.animations.forEach(animation => assignAttributeID(animation));
+
+		const effectParameters = getMultipleFileContents(project.effectFileNames, assetResolver) as any[][];
+		this.effectParameters = effectParameters.map(effectParameter => importer.importEffect(effectParameter));
 	}
 
 	protected loadProjectV3(container: ContainerV3, assetResolver: AssetResolver): void {
@@ -302,49 +315,33 @@ export class Resource {
 			throw g.ExceptionFactory.createAssertionError("Invalid V3 container: project not found");
 		}
 
-		if (project.schema == null) {
-			this.boneSets = container.contents
-				.filter(content => content.type === "bone")
-				.map(content => content.data);
-			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+		const importer: Importer = project.schema == null
+			? new NullImporter()
+			: project.schema.type === "aop"
+				? new aop.ArrayOrientedImporter(project.schema as aop.AOPSchema)
+				: null;
 
-			this.skins = container.contents
-				.filter(content => content.type === "skin")
-				.map(content => content.data);
-			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
-
-			this.animations = container.contents
-				.filter(content => content.type === "animation")
-				.map(content => content.data);
-			this.animations.forEach(animation => assignAttributeID(animation));
-
-			this.effectParameters = container.contents
-				.filter(content => content.type === "effect")
-				.map(content => content.data);
-		} else if (project.schema.type === "aop") {
-			const schema = project.schema as AOPSchema;
-			const importer = new aop.ArrayOrientedImporter(schema);
-
-			this.boneSets = container.contents
-				.filter(content => content.type === "bone")
-				.map(content => importer.importBoneSet(content.data));
-			this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
-
-			this.skins = container.contents
-				.filter(content => content.type === "skin")
-				.map(content => importer.importSkin(content.data));
-			this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
-
-			this.animations = container.contents
-				.filter(content => content.type === "animation")
-				.map(content => importer.importAnimation(content.data));
-			this.animations.forEach(animation => assignAttributeID(animation));
-
-			this.effectParameters = container.contents
-				.filter(content => content.type === "effect")
-				.map(content => importer.importEffect(content.data));
-		} else {
+		if (importer == null) {
 			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
 		}
+
+		this.boneSets = container.contents
+			.filter(content => content.type === "bone")
+			.map(content => importer.importBoneSet(content.data));
+		this.boneSets.forEach(boneSet => constructBoneTree(boneSet.bones));
+
+		this.skins = container.contents
+			.filter(content => content.type === "skin")
+			.map(content => importer.importSkin(content.data));
+		this.skins.forEach(skin => bindTextureFromAsset(skin, assetResolver));
+
+		this.animations = container.contents
+			.filter(content => content.type === "animation")
+			.map(content => importer.importAnimation(content.data));
+		this.animations.forEach(animation => assignAttributeID(animation));
+
+		this.effectParameters = container.contents
+			.filter(content => content.type === "effect")
+			.map(content => importer.importEffect(content.data));
 	}
 }

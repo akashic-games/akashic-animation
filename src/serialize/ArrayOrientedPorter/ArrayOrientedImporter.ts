@@ -12,6 +12,7 @@ import type { Size2 } from "../../Size2";
 import type { Skin } from "../../Skin";
 import type { Vector2 } from "../../Vector2";
 import type * as vfx from "../../vfx";
+import type { Importer } from "../Importer";
 import type { AOPSchema } from "./AOPSchema";
 
 /**
@@ -392,7 +393,7 @@ function importEmitterParameters(data: any[], schema: AOPSchema): vfx.EmitterPar
 /**
  * AOP形式のインポータ。
  */
-export class ArrayOrientedImporter {
+export class ArrayOrientedImporter implements Importer {
 	private schema: AOPSchema;
 
 	/**
