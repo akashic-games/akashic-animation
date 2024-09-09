@@ -17,7 +17,7 @@ import { PropertyIndexMapper } from "./PropertyIndexMapper";
 /**
  * put() のオプション。
  */
-interface PutOption {
+interface StoreOption {
 	/**
 	 * データを格納する前に加工する。
 	 *
@@ -41,18 +41,18 @@ interface PutOption {
  * @param dst データを格納する配列
  * @param src 格納するデータを持つオブジェクト
  * @param key データのキー
- * @param mapper プロパティ名とインデックスの対応表
+ * @param mapper プロパティ名とインデックスの対応
  * @param exporter
- * @param opt オプション
+ * @param opts オプション
  */
-function put<T extends object>(
+function store<T extends object>(
 	dst: any[],
 	src: T,
 	key: Extract<keyof T, string>,
 	mapper: PropertyIndexMapper<T>,
-	opt?: PutOption,
+	opts?: StoreOption,
 ): void {
-	const { exporter, handleUndefined } = opt ?? {};
+	const { exporter, handleUndefined } = opts ?? {};
 	// undefined を配列に格納すると JSON では null になる。
 	// そのため undefined は格納しない。
 	const value = exporter != null
@@ -84,13 +84,13 @@ function exportKeyFrame(
 
 	const exported: any[] = [];
 
-	put(exported, keyFrame, "time", mapper);
-	put(exported, keyFrame, "value", mapper, { exporter });
-	put(exported, keyFrame, "ipType", mapper, {
+	store(exported, keyFrame, "time", mapper);
+	store(exported, keyFrame, "value", mapper, { exporter });
+	store(exported, keyFrame, "ipType", mapper, {
 		exporter: exportIpType,
 		handleUndefined: true,
 	});
-	put(exported, keyFrame, "ipCurve", mapper, { exporter: exportIpCurve });
+	store(exported, keyFrame, "ipCurve", mapper, { exporter: exportIpCurve });
 
 	return exported;
 }
@@ -105,7 +105,7 @@ function exportCurve(curve: Curve<any>, mapperTable: MapperTable): any[] {
 	const exported: any[] = [];
 	const mapper = mapperTable.curve;
 
-	put(exported, curve, "attribute", mapper, {
+	store(exported, curve, "attribute", mapper, {
 		exporter: attribute => {
 			const attrId = AttrId[attribute as keyof typeof AttrId];
 			if (attrId === undefined) {
@@ -128,7 +128,7 @@ function exportCurve(curve: Curve<any>, mapperTable: MapperTable): any[] {
 		keyFrameValueExporter = value => typeof value === "boolean" ? (value ? 1 : 0) : value;
 	}
 
-	put(exported, curve, "keyFrames", mapper, {
+	store(exported, curve, "keyFrames", mapper, {
 		exporter: keyFrames => exportKeyFrames(keyFrames, mapperTable, keyFrameValueExporter)
 	});
 
@@ -152,10 +152,10 @@ function exportCurveTie(
 	const exported: any[] = [];
 	const mapper = mapperTable.curveTie;
 
-	put(exported, curveTie, "boneName", mapper, {
+	store(exported, curveTie, "boneName", mapper, {
 		exporter: name => mapperTable.boneName.getIndex(name)
 	});
-	put(exported, curveTie, "curves", mapper, {
+	store(exported, curveTie, "curves", mapper, {
 		exporter: curves => exportCurves(curves, mapperTable)
 	});
 
@@ -188,14 +188,14 @@ function exportColliderInfo(colliderInfo: ColliderInfo, mapperTable: MapperTable
 	const exported: any[] = [];
 	const mapper = mapperTable.colliderInfo;
 
-	put(exported, colliderInfo, "geometryType", mapper);
-	put(exported, colliderInfo, "boundType", mapper);
-	put(exported, colliderInfo, "cellName", mapper);
-	put(exported, colliderInfo, "center", mapper, { exporter: exportVector });
-	put(exported, colliderInfo, "radius", mapper);
-	put(exported, colliderInfo, "scaleOption", mapper);
-	put(exported, colliderInfo, "width", mapper);
-	put(exported, colliderInfo, "height", mapper);
+	store(exported, colliderInfo, "geometryType", mapper);
+	store(exported, colliderInfo, "boundType", mapper);
+	store(exported, colliderInfo, "cellName", mapper);
+	store(exported, colliderInfo, "center", mapper, { exporter: exportVector });
+	store(exported, colliderInfo, "radius", mapper);
+	store(exported, colliderInfo, "scaleOption", mapper);
+	store(exported, colliderInfo, "width", mapper);
+	store(exported, colliderInfo, "height", mapper);
 
 	return exported;
 }
@@ -214,22 +214,22 @@ function exportBone(bone: Bone, mapperTable: MapperTable): any[] {
 	const exported: any[] = [];
 	const mapper = mapperTable.bone;
 
-	put(exported, bone, "parentIndex", mapper);
-	put(exported, bone, "name", mapper, {
+	store(exported, bone, "parentIndex", mapper);
+	store(exported, bone, "name", mapper, {
 		exporter: name => mapperTable.boneName.getIndex(name)
 	});
 
 	// children はエクスポートしない
 
-	put(exported, bone, "arrayIndex", mapper);
-	put(exported, bone, "colliderInfos", mapper, {
+	store(exported, bone, "arrayIndex", mapper);
+	store(exported, bone, "colliderInfos", mapper, {
 		exporter: colliderInfos => exportColliderInfos(colliderInfos, mapperTable)
 	});
-	put(exported, bone, "alphaBlendMode", mapper, {
+	store(exported, bone, "alphaBlendMode", mapper, {
 		exporter: exportAlphaBlendMode,
 		handleUndefined: true
 	});
-	put(exported, bone, "effectName", mapper, {
+	store(exported, bone, "effectName", mapper, {
 		exporter: name => mapperTable.effectName.getIndex(name)
 	});
 
@@ -254,13 +254,13 @@ function exportCell(cell: Cell, mapperTable: MapperTable): any[] {
 	const exported: any[] = [];
 	const mapper = mapperTable.cell;
 
-	put(exported, cell, "name", mapper, {
+	store(exported, cell, "name", mapper, {
 		exporter: name => mapperTable.cellName.getIndex(name)
 	});
-	put(exported, cell, "pos", mapper, { exporter: exportVector });
-	put(exported, cell, "size", mapper, { exporter: exportSize });
-	put(exported, cell, "pivot", mapper, { exporter: exportVector });
-	put(exported, cell, "rz", mapper);
+	store(exported, cell, "pos", mapper, { exporter: exportVector });
+	store(exported, cell, "size", mapper, { exporter: exportSize });
+	store(exported, cell, "pivot", mapper, { exporter: exportVector });
+	store(exported, cell, "rz", mapper);
 
 	return exported;
 }
@@ -284,7 +284,7 @@ function exportParticleInitialParameter(initParam: ParticleInitialParameterObjec
 	// 全て単純な number[] 型なのでループで処理する
 	for (const key in initParam) {
 		if (Object.prototype.hasOwnProperty.call(initParam, key)) {
-			put(exported, initParam, key as keyof typeof initParam, mapper);
+			store(exported, initParam, key as keyof typeof initParam, mapper);
 		}
 	}
 
@@ -299,13 +299,13 @@ function exportEmitterUserData(userData: EmitterParameterUserData, mapperTable: 
 	const exported: any[] = [];
 	const mapper = mapperTable.emitterUserData;
 
-	put(exported, userData, "skinName", mapper, {
+	store(exported, userData, "skinName", mapper, {
 		exporter: name => mapperTable.skinName.getIndex(name)
 	});
-	put(exported, userData, "cellName", mapper, {
+	store(exported, userData, "cellName", mapper, {
 		exporter: name => mapperTable.cellName.getIndex(name)
 	});
-	put(exported, userData, "alphaBlendMode", mapper, { exporter: exportAlphaBlendMode });
+	store(exported, userData, "alphaBlendMode", mapper, { exporter: exportAlphaBlendMode });
 
 	return exported;
 }
@@ -315,23 +315,23 @@ function exportEmitterParameter(emitterParam: EmitterParameterObject, mapperTabl
 	const mapper = mapperTable.emitterParam;
 
 	// APS
-	put(exported, emitterParam, "gx", mapper);
-	put(exported, emitterParam, "gy", mapper);
-	put(exported, emitterParam, "interval", mapper);
-	put(exported, emitterParam, "activePeriod", mapper);
-	put(exported, emitterParam, "delayEmit", mapper);
-	put(exported, emitterParam, "numParticlesPerEmit", mapper);
-	put(exported, emitterParam, "maxParticles", mapper);
+	store(exported, emitterParam, "gx", mapper);
+	store(exported, emitterParam, "gy", mapper);
+	store(exported, emitterParam, "interval", mapper);
+	store(exported, emitterParam, "activePeriod", mapper);
+	store(exported, emitterParam, "delayEmit", mapper);
+	store(exported, emitterParam, "numParticlesPerEmit", mapper);
+	store(exported, emitterParam, "maxParticles", mapper);
 	// children はエクスポートしない
-	put(exported, emitterParam, "initParam", mapper, {
+	store(exported, emitterParam, "initParam", mapper, {
 		exporter: initParam => exportParticleInitialParameter(initParam, mapperTable)
 	});
 
 	// VFX
-	put(exported, emitterParam, "parentIndex", mapper);
+	store(exported, emitterParam, "parentIndex", mapper);
 	// APS では userData: any だが、VFX つまり ASA のレイヤでは userData の型が
 	// 定義されているので、それに合わせた形でエクスポートする。
-	put(exported, emitterParam, "userData", mapper, {
+	store(exported, emitterParam, "userData", mapper, {
 		exporter: userData => exportEmitterUserData(userData, mapperTable)
 	});
 
@@ -392,10 +392,10 @@ export class ArrayOrientedExporter {
 		const exported: any[] = [];
 
 		// アニメーション名は繰り返さないのでそのまま格納する
-		put(exported, anim, "name", mapper);
-		put(exported, anim, "fps", mapper);
-		put(exported, anim, "frameCount", mapper);
-		put(exported, anim, "curveTies", mapper, {
+		store(exported, anim, "name", mapper);
+		store(exported, anim, "fps", mapper);
+		store(exported, anim, "frameCount", mapper);
+		store(exported, anim, "curveTies", mapper, {
 			exporter: curveTies => exportCurveTies(curveTies, mapperTable)
 		});
 
@@ -407,8 +407,8 @@ export class ArrayOrientedExporter {
 		const mapper = mapperTable.boneSet;
 		const exported: any[] = [];
 
-		put(exported, boneSet, "name", mapper);
-		put(exported, boneSet, "bones", mapper, {
+		store(exported, boneSet, "name", mapper);
+		store(exported, boneSet, "bones", mapper, {
 			exporter: bones => exportBones(bones, mapperTable)
 		});
 
@@ -420,13 +420,13 @@ export class ArrayOrientedExporter {
 		const mapper = mapperTable.skin;
 		const exported: any[] = [];
 
-		put(exported, skin, "name", mapper, {
+		store(exported, skin, "name", mapper, {
 			exporter: name => mapperTable.skinName.getIndex(name)
 		});
-		put(exported, skin, "imageAssetName", mapper);
-		put(exported, skin, "imageSizeH", mapper);
-		put(exported, skin, "imageSizeW", mapper);
-		put(exported, skin, "cells", mapper, {
+		store(exported, skin, "imageAssetName", mapper);
+		store(exported, skin, "imageSizeH", mapper);
+		store(exported, skin, "imageSizeW", mapper);
+		store(exported, skin, "cells", mapper, {
 			exporter: cells => exportCells(cells, mapperTable)
 		});
 
@@ -438,10 +438,10 @@ export class ArrayOrientedExporter {
 		const mapper = mapperTable.effectParam;
 		const exported: any[] = [];
 
-		put(exported, effectParam, "name", mapper, {
+		store(exported, effectParam, "name", mapper, {
 			exporter: name => mapperTable.effectName.getIndex(name)
 		});
-		put(exported, effectParam, "emitterParameters", mapper, {
+		store(exported, effectParam, "emitterParameters", mapper, {
 			exporter: emitterParams => exportEmitterParameters(emitterParams, mapperTable)
 		});
 

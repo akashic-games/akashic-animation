@@ -18,7 +18,7 @@ import type { AOPSchema } from "./AOPSchema";
 /**
  * put() のオプション。
  */
-interface PutOption {
+interface RestoreOption {
 	/**
 	 * 格納先のプロパティがオプショナルであるとき、真にする。
 	 *
@@ -35,21 +35,21 @@ interface PutOption {
 }
 
 /**
- * 配列から値を取り出してオブジェクトに格納する。
+ * 配列に格納した値を値を取り出してオブジェクトに復元する。
  *
- * @param obj 値を格納するオブジェクト
+ * @param dst 値を格納するオブジェクト
  * @param key 値を格納するプロパティ名
- * @param mapper 配列とプロパティのマッピング
- * @param data 配列
+ * @param src 配列
+ * @param mapper 配列とプロパティの対応
  * @param opts オプション
  * @returns
  */
-function put<T extends object>(
-	obj: T,
+function restore<T extends object>(
+	dst: T,
 	key: Extract<keyof T, string>,
+	src: any[],
 	mapper: Array<Extract<keyof T, string>>,
-	data: any[],
-	opts?: PutOption,
+	opts?: RestoreOption,
 ): void {
 	const { optional, importer } = opts ?? {};
 	const idx = mapper.indexOf(key);
@@ -61,10 +61,10 @@ function put<T extends object>(
 		throw new Error(`Failed to get the index of ${key}`);
 	}
 
-	const value = data[idx];
+	const value = src[idx];
 
 	// 前提:
-	// 1. mapper から key のインデックスがを取得できても optional な
+	// 1. mapper から key のインデックスを取得できても optional な
 	//    プロパティの場合 data[idx] に値が存在しないこともある。
 	// 2. data は JSON.parse() の結果であるため data 中に undefined
 	//    は存在しない(stringify() した時 null に置き換えられる)。
@@ -84,7 +84,7 @@ function put<T extends object>(
 		// { foo?: Foo | null = null } のようなプロパティの
 		// null をシリアライズできないことに注意。
 	} else {
-		obj[key] = importer ? importer(value) : value;
+		dst[key] = importer ? importer(value) : value;
 	}
 }
 
@@ -110,10 +110,10 @@ function importKeyFrame(
 	// データとして用いる。つまり new KeyFrame しない。
 	const keyFrame = {} as KeyFrame<any>;
 
-	put(keyFrame, "time", mapper, data);
-	put(keyFrame, "value", mapper, data, { importer });
-	put(keyFrame, "ipType", mapper, data, { importer: importIpType });
-	put(keyFrame, "ipCurve", mapper, data, { importer: importIpCurve, optional: true });
+	restore(keyFrame, "time", data, mapper);
+	restore(keyFrame, "value", data, mapper, { importer });
+	restore(keyFrame, "ipType", data, mapper, { importer: importIpType });
+	restore(keyFrame, "ipCurve", data, mapper, { importer: importIpCurve, optional: true });
 
 	return keyFrame;
 }
@@ -155,7 +155,7 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 	const curve = {} as Curve<any>;
 	const mapper = schema.propertyIndexMaps.curve;
 
-	put(curve, "attribute", mapper, data, {
+	restore(curve, "attribute", data, mapper, {
 		importer: value => AttrId[value]
 	});
 
@@ -171,7 +171,7 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 		// nop;
 	}
 
-	put(curve, "keyFrames", mapper, data, {
+	restore(curve, "keyFrames", data, mapper, {
 		importer: keyFrames => importKeyFrames(keyFrames, schema, keyFrameValueImporter)
 	});
 
@@ -194,10 +194,10 @@ function importCurveTie(data: any[], schema: AOPSchema): CurveTie {
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new CurveTie しない。
 	const curveTie = {} as CurveTie;
-	put(curveTie, "boneName", mapper, data, {
+	restore(curveTie, "boneName", data, mapper, {
 		importer: idx => schema.propertyIndexMaps.boneName[idx]
 	});
-	put(curveTie, "curves", mapper, data, {
+	restore(curveTie, "curves", data, mapper, {
 		importer: curves => importCurves(curves, schema)
 	});
 
@@ -239,18 +239,18 @@ function importColliderInfo(data: any[], schema: AOPSchema): ColliderInfo {
 	// データとして用いる。つまり new ColliderInfo しない。
 	const colliderInfo = {} as ColliderInfo;
 
-	put(colliderInfo, "geometryType", mapper, data);
-	put(colliderInfo, "boundType", mapper, data);
+	restore(colliderInfo, "geometryType", data, mapper);
+	restore(colliderInfo, "boundType", data, mapper);
 
 	// optional properties
 	const optional = true;
-	put(colliderInfo, "cellName", mapper, data, { optional });
-	put(colliderInfo, "center", mapper, data, { optional });
-	put(colliderInfo, "center", mapper, data, { optional, importer: importVectorLike });
-	put(colliderInfo, "radius", mapper, data, { optional });
-	put(colliderInfo, "scaleOption", mapper, data, { optional });
-	put(colliderInfo, "width", mapper, data, { optional });
-	put(colliderInfo, "height", mapper, data, { optional });
+	restore(colliderInfo, "cellName", data, mapper, { optional });
+	restore(colliderInfo, "center", data, mapper, { optional });
+	restore(colliderInfo, "center", data, mapper, { optional, importer: importVectorLike });
+	restore(colliderInfo, "radius", data, mapper, { optional });
+	restore(colliderInfo, "scaleOption", data, mapper, { optional });
+	restore(colliderInfo, "width", data, mapper, { optional });
+	restore(colliderInfo, "height", data, mapper, { optional });
 
 	return colliderInfo;
 }
@@ -272,16 +272,16 @@ function importBone(data: any[], schema: AOPSchema): Bone {
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new Bone しない。
 	const bone = {} as Bone;
-	put(bone, "parentIndex", mapper, data);
-	put(bone, "name", mapper, data, { importer: data => schema.propertyIndexMaps.boneName[data] });
+	restore(bone, "parentIndex", data, mapper);
+	restore(bone, "name", data, mapper, { importer: data => schema.propertyIndexMaps.boneName[data] });
 
 	// children は export されていない
 
-	put(bone, "arrayIndex", mapper, data);
-	put(bone, "colliderInfos", mapper, data);
-	put(bone, "colliderInfos", mapper, data, { importer: data => importColliderInfos(data, schema) });
-	put(bone, "alphaBlendMode", mapper, data, { importer: importAlphaBlendMode });
-	put(bone, "effectName", mapper, data, {
+	restore(bone, "arrayIndex", data, mapper);
+	restore(bone, "colliderInfos", data, mapper);
+	restore(bone, "colliderInfos", data, mapper, { importer: data => importColliderInfos(data, schema) });
+	restore(bone, "alphaBlendMode", data, mapper, { importer: importAlphaBlendMode });
+	restore(bone, "effectName", data, mapper, {
 		importer: data => schema.propertyIndexMaps.effectName[data],
 		optional: true,
 	});
@@ -306,11 +306,11 @@ function importCell(data: any[], schema: AOPSchema): Cell {
 	const cell = {} as Cell;
 	const mapper = schema.propertyIndexMaps.cell;
 
-	put(cell, "name", mapper, data, { importer: idx => schema.propertyIndexMaps.cellName[idx] });
-	put(cell, "pos", mapper, data, { importer: importVector });
-	put(cell, "size", mapper, data, { importer: importSize });
-	put(cell, "pivot", mapper, data, { importer: importVector });
-	put(cell, "rz", mapper, data);
+	restore(cell, "name", data, mapper, { importer: idx => schema.propertyIndexMaps.cellName[idx] });
+	restore(cell, "pos", data, mapper, { importer: importVector });
+	restore(cell, "size", data, mapper, { importer: importSize });
+	restore(cell, "pivot", data, mapper, { importer: importVector });
+	restore(cell, "rz", data, mapper);
 
 	return cell;
 }
@@ -334,9 +334,9 @@ function importEmitterUserData(data: any[], schema: AOPSchema): vfx.EmitterParam
 	const userData = {} as vfx.EmitterParameterUserData;
 	const mapper = schema.propertyIndexMaps.emitterUserData;
 
-	put(userData, "skinName", mapper, data, { importer: idx => schema.propertyIndexMaps.skinName[idx] });
-	put(userData, "cellName", mapper, data, { importer: idx => schema.propertyIndexMaps.cellName[idx] });
-	put(userData, "alphaBlendMode", mapper, data, { importer: v => importAlphaBlendMode(v) });
+	restore(userData, "skinName", data, mapper, { importer: idx => schema.propertyIndexMaps.skinName[idx] });
+	restore(userData, "cellName", data, mapper, { importer: idx => schema.propertyIndexMaps.cellName[idx] });
+	restore(userData, "alphaBlendMode", data, mapper, { importer: v => importAlphaBlendMode(v) });
 
 	return userData;
 }
@@ -347,7 +347,7 @@ function importParticleInitialParameter(data: any[], schema: AOPSchema): Particl
 
 	// 全て単純な number[] 型なのでループで処理する
 	for (const key of mapper) {
-		put(param, key, mapper, data);
+		restore(param, key, data, mapper);
 	}
 
 	return param;
@@ -358,21 +358,21 @@ function importEmitterParameter(data: any[], schema: AOPSchema): vfx.EmitterPara
 	const mapper = schema.propertyIndexMaps.emitterParam;
 
 	// APS
-	put(param, "gx", mapper, data, { optional: true });
-	put(param, "gy", mapper, data, { optional: true });
-	put(param, "interval", mapper, data, { optional: true });
-	put(param, "activePeriod", mapper, data, { optional: true });
-	put(param, "delayEmit", mapper, data, { optional: true });
-	put(param, "numParticlesPerEmit", mapper, data, { optional: true });
-	put(param, "maxParticles", mapper, data, { optional: true });
+	restore(param, "gx", data, mapper, { optional: true });
+	restore(param, "gy", data, mapper, { optional: true });
+	restore(param, "interval", data, mapper, { optional: true });
+	restore(param, "activePeriod", data, mapper, { optional: true });
+	restore(param, "delayEmit", data, mapper, { optional: true });
+	restore(param, "numParticlesPerEmit", data, mapper, { optional: true });
+	restore(param, "maxParticles", data, mapper, { optional: true });
 	// children: Emitter[] はエクスポートされない
-	put(param, "initParam", mapper, data, {
+	restore(param, "initParam", data, mapper, {
 		importer: initParam => importParticleInitialParameter(initParam, schema)
 	});
 
 	// VFX
-	put(param, "parentIndex", mapper, data);
-	put(param, "userData", mapper, data, {
+	restore(param, "parentIndex", data, mapper);
+	restore(param, "userData", data, mapper, {
 		importer: userData => importEmitterUserData(userData, schema)
 	});
 
@@ -420,10 +420,10 @@ export class ArrayOrientedImporter implements Importer {
 		// データとして用いる。つまり new Animation しない。
 		const animation = {} as Animation;
 
-		put(animation, "name", mapper, data);
-		put(animation, "fps", mapper, data);
-		put(animation, "frameCount", mapper, data);
-		put(animation, "curveTies", mapper, data, {
+		restore(animation, "name", data, mapper);
+		restore(animation, "fps", data, mapper);
+		restore(animation, "frameCount", data, mapper);
+		restore(animation, "curveTies", data, mapper, {
 			importer: curveTies => importCurveTies(curveTies, this.schema)
 		});
 
@@ -437,8 +437,8 @@ export class ArrayOrientedImporter implements Importer {
 		// データとして用いる。つまり new BoneSet しない。
 		const boneSet = {} as BoneSet;
 
-		put(boneSet, "name", mapper, data);
-		put(boneSet, "bones", mapper, data, {
+		restore(boneSet, "name", data, mapper);
+		restore(boneSet, "bones", data, mapper, {
 			importer: bones => importBones(bones, this.schema)
 		});
 
@@ -452,13 +452,13 @@ export class ArrayOrientedImporter implements Importer {
 		// データとして用いる。つまり new Skin しない。
 		const skin = {} as Skin;
 
-		put(skin, "name", mapper, data, {
+		restore(skin, "name", data, mapper, {
 			importer: idx => this.schema.propertyIndexMaps.skinName[idx]
 		});
-		put(skin, "imageAssetName", mapper, data);
-		put(skin, "imageSizeH", mapper, data);
-		put(skin, "imageSizeW", mapper, data);
-		put(skin, "cells", mapper, data, {
+		restore(skin, "imageAssetName", data, mapper);
+		restore(skin, "imageSizeH", data, mapper);
+		restore(skin, "imageSizeW", data, mapper);
+		restore(skin, "cells", data, mapper, {
 			importer: cells => importCells(cells, this.schema)
 		});
 
@@ -469,10 +469,10 @@ export class ArrayOrientedImporter implements Importer {
 		const mapper = this.schema.propertyIndexMaps.effectParam;
 		const effect = {} as vfx.EffectParameterObject;
 
-		put(effect, "name", mapper, data, {
+		restore(effect, "name", data, mapper, {
 			importer: idx => this.schema.propertyIndexMaps.effectName[idx]
 		});
-		put(effect, "emitterParameters", mapper, data, {
+		restore(effect, "emitterParameters", data, mapper, {
 			importer: emitterParameters => importEmitterParameters(emitterParameters, this.schema)
 		});
 
