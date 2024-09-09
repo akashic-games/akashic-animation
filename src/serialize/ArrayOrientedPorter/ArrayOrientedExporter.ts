@@ -1,6 +1,6 @@
 import { alphaBlendModes } from "../../AlphaBlendMode";
 import type { AlphaBlendMode } from "../../AlphaBlendMode";
-import type { Animation, Curve, CurveTie, KeyFrame } from "../../AnimeParams";
+import type { Animation, CellValue, Curve, CurveTie, KeyFrame } from "../../AnimeParams";
 import { ipTypes } from "../../AnimeParams";
 import type { ParticleInitialParameterObject } from "../../aps";
 import { AttrId } from "../../AttrId";
@@ -99,10 +99,7 @@ function exportKeyFrames(keyFrames: KeyFrame<any>[], mapperTable: MapperTable, a
 	let exporter: (value: any) => any;
 
 	if (attribute === "cv") {
-		exporter = value => [
-			mapperTable.skinName.getIndex(value.skinName),
-			mapperTable.cellName.getIndex(value.cellName)
-		];
+		exporter = value => exportKeyFrameCellValue(value, mapperTable);
 	} else if (attribute === "effect") {
 		exporter = value => value.emitterOp;
 	} else {
@@ -112,6 +109,22 @@ function exportKeyFrames(keyFrames: KeyFrame<any>[], mapperTable: MapperTable, a
 	return keyFrames.map(
 		keyFrame => exportKeyFrame(keyFrame, mapperTable, exporter)
 	);
+}
+
+/**
+ * CellValue をエクスポートする。
+ *
+ * スキン名とセル名のインデックスを、この順番で格納した配列を返す。
+ *
+ * @param value
+ * @param mapperTable
+ * @returns スキン名とセル名のインデックスの配列。
+ */
+function exportKeyFrameCellValue(value: CellValue, mapperTable: MapperTable): [number, number] {
+	return [
+		mapperTable.skinName.getIndex(value.skinName),
+		mapperTable.cellName.getIndex(value.cellName)
+	];
 }
 
 function exportCurve(curve: Curve<any>, mapperTable: MapperTable): any[] {

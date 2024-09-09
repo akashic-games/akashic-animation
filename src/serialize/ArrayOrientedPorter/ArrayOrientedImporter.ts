@@ -15,6 +15,14 @@ import type * as vfx from "../../vfx";
 import type { Importer } from "../Importer";
 import type { AOPSchema } from "./AOPSchema";
 
+const booleanAttributes = [
+	"iflh",
+	"iflv",
+	"visibility",
+	"flipH",
+	"flipV"
+];
+
 /**
  * put() のオプション。
  */
@@ -121,12 +129,33 @@ function importKeyFrame(
 function importKeyFrames(
 	data: any[],
 	schema: AOPSchema,
-	valueImporter?: (value: any) => any
+	attribute: string
 ): KeyFrame<any>[] {
-	return data.map(value => importKeyFrame(value, schema, valueImporter));
+	let importer: (value: any) => any;
+
+	if (attribute === "cv") {
+		importer = value => importKeyFrameCellValue(value, schema);
+	} else if (attribute === "effect") {
+		importer = value => ({ emitterOp: value });
+	} else if (booleanAttributes.indexOf(attribute) !== -1) {
+		importer = value => value !== 0;
+	} else {
+		// nop;
+	}
+
+	return data.map(value => importKeyFrame(value, schema, importer));
 }
 
-function importCellValueKeyFrame(indices: [number, number], schema: AOPSchema): CellValue {
+/**
+ * CellValue をインポートする。
+ *
+ * exportKeyFrameCellValue() でエクスポートした CellValue をインポートする。
+ *
+ * @param indices CellValue のスキン名とセル名のインデックスをこの順番に格納した配列。
+ * @param schema スキーマ。
+ * @returns CellValue インスタンス。
+ */
+function importKeyFrameCellValue(indices: [number, number], schema: AOPSchema): CellValue {
 	const skinMapper = schema.propertyIndexMaps.skinName;
 	const cellMapper = schema.propertyIndexMaps.cellName;
 
@@ -141,13 +170,6 @@ function importCellValueKeyFrame(indices: [number, number], schema: AOPSchema): 
 }
 
 function importCurve(data: any[], schema: AOPSchema): Curve<any> {
-	const booleanAttributes = [
-		"iflh",
-		"iflv",
-		"visibility",
-		"flipH",
-		"flipV"
-	];
 
 	// Resource クラスに倣い Curve クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
@@ -159,20 +181,8 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 		importer: value => AttrId[value]
 	});
 
-	let keyFrameValueImporter: (value: any) => any;
-
-	if (curve.attribute === "cv") {
-		keyFrameValueImporter = value => importCellValueKeyFrame(value, schema);
-	} else if (curve.attribute === "effect") {
-		keyFrameValueImporter = value => ({ emitterOp: value });
-	} else if (booleanAttributes.indexOf(curve.attribute) !== -1) {
-		keyFrameValueImporter = value => value !== 0;
-	} else {
-		// nop;
-	}
-
 	restore(curve, "keyFrames", data, mapper, {
-		importer: keyFrames => importKeyFrames(keyFrames, schema, keyFrameValueImporter)
+		importer: keyFrames => importKeyFrames(keyFrames, schema, curve.attribute)
 	});
 
 	return curve;
