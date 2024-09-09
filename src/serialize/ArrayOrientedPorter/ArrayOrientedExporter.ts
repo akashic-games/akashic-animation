@@ -95,9 +95,22 @@ function exportKeyFrame(
 	return exported;
 }
 
-function exportKeyFrames(keyFrames: KeyFrame<any>[], mapperTable: MapperTable, valuePredicate?: (value: any) => any): any[] {
+function exportKeyFrames(keyFrames: KeyFrame<any>[], mapperTable: MapperTable, attribute: string): any[] {
+	let exporter: (value: any) => any;
+
+	if (attribute === "cv") {
+		exporter = value => [
+			mapperTable.skinName.getIndex(value.skinName),
+			mapperTable.cellName.getIndex(value.cellName)
+		];
+	} else if (attribute === "effect") {
+		exporter = value => value.emitterOp;
+	} else {
+		exporter = value => typeof value === "boolean" ? (value ? 1 : 0) : value;
+	}
+
 	return keyFrames.map(
-		keyFrame => exportKeyFrame(keyFrame, mapperTable, valuePredicate)
+		keyFrame => exportKeyFrame(keyFrame, mapperTable, exporter)
 	);
 }
 
@@ -115,21 +128,8 @@ function exportCurve(curve: Curve<any>, mapperTable: MapperTable): any[] {
 		}
 	});
 
-	let keyFrameValueExporter: (value: any) => any;
-
-	if (curve.attribute === "cv") {
-		keyFrameValueExporter = value => [
-			mapperTable.skinName.getIndex(value.skinName),
-			mapperTable.cellName.getIndex(value.cellName)
-		];
-	} else if (curve.attribute === "effect") {
-		keyFrameValueExporter = value => value.emitterOp;
-	} else {
-		keyFrameValueExporter = value => typeof value === "boolean" ? (value ? 1 : 0) : value;
-	}
-
 	store(exported, curve, "keyFrames", mapper, {
-		exporter: keyFrames => exportKeyFrames(keyFrames, mapperTable, keyFrameValueExporter)
+		exporter: keyFrames => exportKeyFrames(keyFrames, mapperTable, curve.attribute)
 	});
 
 	return exported;
