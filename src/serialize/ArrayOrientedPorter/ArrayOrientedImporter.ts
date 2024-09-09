@@ -395,7 +395,20 @@ function importEmitterParameters(data: any[], schema: AOPSchema): vfx.EmitterPar
 export class ArrayOrientedImporter {
 	private schema: AOPSchema;
 
+	/**
+	 * コンストラクタ。
+	 *
+	 * スキーマのバージョンや種別が不正な時、例外を投げる。
+	 *
+	 * @param schema スキーマ。
+	 */
 	constructor(schema: AOPSchema) {
+		if (schema.type !== "aop") {
+			throw new Error(`Invalid type: ${schema.type}`);
+		}
+		if (schema.version !== "1.0.0") {
+			throw new Error(`Unsupported version: ${schema.version}`);
+		}
 		this.schema = schema;
 	}
 
