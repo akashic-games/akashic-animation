@@ -453,6 +453,7 @@ export class ArrayOrientedExporter {
 
 		return {
 			type: "aop",
+			version: "1.0.0",
 			propertyIdMaps: {
 				animation: mapperTable.animation.properties,
 				curveTie: mapperTable.curveTie.properties,

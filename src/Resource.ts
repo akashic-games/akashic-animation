@@ -61,7 +61,7 @@ function constructBoneTree(bones: Bone[]): void {
 }
 
 /**
- * 複数のファイルを読み込む。
+ * 複数のファイルの内容を取得する。
  *
  * fileNames が null または undefined の場合、空の配列を返す。
  *
