@@ -6,5 +6,5 @@ import type { PropertyIndexMaps } from "./PropertyIndexMaps";
  */
 export interface AOPSchema extends Schema {
 	type: "aop";
-	propertyIdMaps: PropertyIndexMaps;
+	propertyIndexMaps: PropertyIndexMaps;
 }

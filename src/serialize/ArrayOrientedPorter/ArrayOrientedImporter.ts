@@ -104,7 +104,7 @@ function importKeyFrame(
 	schema: AOPSchema,
 	importer?: (value: any) => any
 ): KeyFrame<any> {
-	const mapper = schema.propertyIdMaps.keyFrame;
+	const mapper = schema.propertyIndexMaps.keyFrame;
 	// Resource クラスに倣い KeyFrame クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new KeyFrame しない。
@@ -127,8 +127,8 @@ function importKeyFrames(
 }
 
 function importCellValueKeyFrame(indices: [number, number], schema: AOPSchema): CellValue {
-	const skinMapper = schema.propertyIdMaps.skinName;
-	const cellMapper = schema.propertyIdMaps.cellName;
+	const skinMapper = schema.propertyIndexMaps.skinName;
+	const cellMapper = schema.propertyIndexMaps.cellName;
 
 	// Resource クラスに倣い CellValue クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
@@ -153,7 +153,7 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new Curve しない。
 	const curve = {} as Curve<any>;
-	const mapper = schema.propertyIdMaps.curve;
+	const mapper = schema.propertyIndexMaps.curve;
 
 	put(curve, "attribute", mapper, data, {
 		importer: value => AttrId[value]
@@ -188,14 +188,14 @@ function importCurves(data: any[], schema: AOPSchema): Curve<any>[] {
 }
 
 function importCurveTie(data: any[], schema: AOPSchema): CurveTie {
-	const mapper = schema.propertyIdMaps.curveTie;
+	const mapper = schema.propertyIndexMaps.curveTie;
 
 	// Resource クラスに倣い CurveTie クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new CurveTie しない。
 	const curveTie = {} as CurveTie;
 	put(curveTie, "boneName", mapper, data, {
-		importer: idx => schema.propertyIdMaps.boneName[idx]
+		importer: idx => schema.propertyIndexMaps.boneName[idx]
 	});
 	put(curveTie, "curves", mapper, data, {
 		importer: curves => importCurves(curves, schema)
@@ -232,7 +232,7 @@ function importSize(data: [number, number]): Size2 {
 }
 
 function importColliderInfo(data: any[], schema: AOPSchema): ColliderInfo {
-	const mapper = schema.propertyIdMaps.colliderInfo;
+	const mapper = schema.propertyIndexMaps.colliderInfo;
 
 	// Resource クラスに倣い ColliderInfo クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
@@ -266,14 +266,14 @@ function importColliderInfos(data: any[], schema: AOPSchema): ColliderInfo[] {
 }
 
 function importBone(data: any[], schema: AOPSchema): Bone {
-	const mapper = schema.propertyIdMaps.bone;
+	const mapper = schema.propertyIndexMaps.bone;
 
 	// Resource クラスに倣い Bone クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new Bone しない。
 	const bone = {} as Bone;
 	put(bone, "parentIndex", mapper, data);
-	put(bone, "name", mapper, data, { importer: data => schema.propertyIdMaps.boneName[data] });
+	put(bone, "name", mapper, data, { importer: data => schema.propertyIndexMaps.boneName[data] });
 
 	// children は export されていない
 
@@ -282,7 +282,7 @@ function importBone(data: any[], schema: AOPSchema): Bone {
 	put(bone, "colliderInfos", mapper, data, { importer: data => importColliderInfos(data, schema) });
 	put(bone, "alphaBlendMode", mapper, data, { importer: importAlphaBlendMode });
 	put(bone, "effectName", mapper, data, {
-		importer: data => schema.propertyIdMaps.effectName[data],
+		importer: data => schema.propertyIndexMaps.effectName[data],
 		optional: true,
 	});
 
@@ -304,9 +304,9 @@ function importCell(data: any[], schema: AOPSchema): Cell {
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new Cell しない。
 	const cell = {} as Cell;
-	const mapper = schema.propertyIdMaps.cell;
+	const mapper = schema.propertyIndexMaps.cell;
 
-	put(cell, "name", mapper, data, { importer: idx => schema.propertyIdMaps.cellName[idx] });
+	put(cell, "name", mapper, data, { importer: idx => schema.propertyIndexMaps.cellName[idx] });
 	put(cell, "pos", mapper, data, { importer: importVector });
 	put(cell, "size", mapper, data, { importer: importSize });
 	put(cell, "pivot", mapper, data, { importer: importVector });
@@ -332,10 +332,10 @@ function importAlphaBlendMode(value: any): AlphaBlendMode {
 
 function importEmitterUserData(data: any[], schema: AOPSchema): vfx.EmitterParameterUserData {
 	const userData = {} as vfx.EmitterParameterUserData;
-	const mapper = schema.propertyIdMaps.emitterUserData;
+	const mapper = schema.propertyIndexMaps.emitterUserData;
 
-	put(userData, "skinName", mapper, data, { importer: idx => schema.propertyIdMaps.skinName[idx] });
-	put(userData, "cellName", mapper, data, { importer: idx => schema.propertyIdMaps.cellName[idx] });
+	put(userData, "skinName", mapper, data, { importer: idx => schema.propertyIndexMaps.skinName[idx] });
+	put(userData, "cellName", mapper, data, { importer: idx => schema.propertyIndexMaps.cellName[idx] });
 	put(userData, "alphaBlendMode", mapper, data, { importer: v => importAlphaBlendMode(v) });
 
 	return userData;
@@ -343,7 +343,7 @@ function importEmitterUserData(data: any[], schema: AOPSchema): vfx.EmitterParam
 
 function importParticleInitialParameter(data: any[], schema: AOPSchema): ParticleInitialParameterObject {
 	const param = {} as ParticleInitialParameterObject;
-	const mapper = schema.propertyIdMaps.particleInitialParam;
+	const mapper = schema.propertyIndexMaps.particleInitialParam;
 
 	// 全て単純な number[] 型なのでループで処理する
 	for (const key of mapper) {
@@ -355,7 +355,7 @@ function importParticleInitialParameter(data: any[], schema: AOPSchema): Particl
 
 function importEmitterParameter(data: any[], schema: AOPSchema): vfx.EmitterParameterObject {
 	const param = {} as vfx.EmitterParameterObject;
-	const mapper = schema.propertyIdMaps.emitterParam;
+	const mapper = schema.propertyIndexMaps.emitterParam;
 
 	// APS
 	put(param, "gx", mapper, data, { optional: true });
@@ -414,7 +414,7 @@ export class ArrayOrientedImporter implements Importer {
 	}
 
 	importAnimation(data: any[]): Animation {
-		const mapper = this.schema.propertyIdMaps.animation;
+		const mapper = this.schema.propertyIndexMaps.animation;
 		// Resource クラスに倣い Animation クラスを用いない。
 		// Resource クラスは JSON.parse() の結果をそのまま実行時の
 		// データとして用いる。つまり new Animation しない。
@@ -431,7 +431,7 @@ export class ArrayOrientedImporter implements Importer {
 	}
 
 	importBoneSet(data: any[]): BoneSet {
-		const mapper = this.schema.propertyIdMaps.boneSet;
+		const mapper = this.schema.propertyIndexMaps.boneSet;
 		// Resource クラスに倣い BoneSet クラスを用いない。
 		// Resource クラスは JSON.parse() の結果をそのまま実行時の
 		// データとして用いる。つまり new BoneSet しない。
@@ -446,14 +446,14 @@ export class ArrayOrientedImporter implements Importer {
 	}
 
 	importSkin(data: any[]): Skin {
-		const mapper = this.schema.propertyIdMaps.skin;
+		const mapper = this.schema.propertyIndexMaps.skin;
 		// Resource クラスに倣い Skin クラスを用いない。
 		// Resource クラスは JSON.parse() の結果をそのまま実行時の
 		// データとして用いる。つまり new Skin しない。
 		const skin = {} as Skin;
 
 		put(skin, "name", mapper, data, {
-			importer: idx => this.schema.propertyIdMaps.skinName[idx]
+			importer: idx => this.schema.propertyIndexMaps.skinName[idx]
 		});
 		put(skin, "imageAssetName", mapper, data);
 		put(skin, "imageSizeH", mapper, data);
@@ -466,11 +466,11 @@ export class ArrayOrientedImporter implements Importer {
 	}
 
 	importEffect(data: any[]): vfx.EffectParameterObject {
-		const mapper = this.schema.propertyIdMaps.effectParam;
+		const mapper = this.schema.propertyIndexMaps.effectParam;
 		const effect = {} as vfx.EffectParameterObject;
 
 		put(effect, "name", mapper, data, {
-			importer: idx => this.schema.propertyIdMaps.effectName[idx]
+			importer: idx => this.schema.propertyIndexMaps.effectName[idx]
 		});
 		put(effect, "emitterParameters", mapper, data, {
 			importer: emitterParameters => importEmitterParameters(emitterParameters, this.schema)
