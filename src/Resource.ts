@@ -3,8 +3,8 @@ import { AttrId } from "./AttrId";
 import { AssetResolver } from "./auxiliary/AssetResolver";
 import type { Bone } from "./Bone";
 import type { BoneSet } from "./BoneSet";
-import type { Container, ContainerV2, ContainerV3, ProjectV2, ProjectV3 } from "./serialize";
-import { aop } from "./serialize";
+import { ArrayOrientedImporter } from "./porter/ArrayOrientedPorter/importer";
+import type { Container, ContainerV2, ContainerV3, ProjectV2, ProjectV3, Schema } from "./serialize";
 import type { Importer } from "./serialize/Importer";
 import type { Skin } from "./Skin";
 import type * as vfx from "./vfx";
@@ -123,9 +123,20 @@ function mergeAssetArray(assetArray: {[key: string]: g.Asset}[]): {[key: string]
 }
 
 /**
- * 何もしないインポーター。
+ * デフォルトインポーター。
+ *
+ * データををそのまま返すインポーター。ポーターを利用していないデータを読み込む
+ * とき利用する。
  */
-class NullImporter implements Importer {
+class DefaultImporter implements Importer {
+	validateSchema(_schema: Schema): boolean {
+		return true;
+	}
+
+	setSchema(_schema: Schema): void {
+		// nop
+	}
+
 	importAnimation(data: unknown): Animation {
 		return data as Animation;
 	}
@@ -152,8 +163,12 @@ export class Resource {
 	animations: Animation[] = [];
 	effectParameters: vfx.EffectParameterObject[] = [];
 
+	private importers: Importer[];
+	private defaultImporter: DefaultImporter;
+
 	constructor() {
-		// ...
+		this.importers = [ new ArrayOrientedImporter() ];
+		this.defaultImporter = new DefaultImporter();
 	}
 
 	/**
@@ -271,11 +286,7 @@ export class Resource {
 	protected loadProjectV2(container: ContainerV2, assetResolver: AssetResolver): void {
 		const project = container.contents as ProjectV2;
 
-		const importer: Importer = project.schema == null
-			? new NullImporter()
-			: project.schema.type === "aop"
-				? new aop.ArrayOrientedImporter(project.schema as aop.AOPSchema)
-				: null;
+		const importer = this.getImporter(project.schema);
 
 		if (importer == null) {
 			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
@@ -303,9 +314,10 @@ export class Resource {
 		}
 
 		let project: ProjectV3;
+
 		for (const content of container.contents) {
 			if (content.type === "project") {
-				// ContainerV3 の格納するプロジェクトは必ず ProjectV3 型
+				// ContainerV3 の格納するプロジェクトは常に ProjectV3 型
 				project = content.data;
 				break;
 			}
@@ -315,11 +327,7 @@ export class Resource {
 			throw g.ExceptionFactory.createAssertionError("Invalid V3 container: project not found");
 		}
 
-		const importer: Importer = project.schema == null
-			? new NullImporter()
-			: project.schema.type === "aop"
-				? new aop.ArrayOrientedImporter(project.schema as aop.AOPSchema)
-				: null;
+		const importer = this.getImporter(project.schema);
 
 		if (importer == null) {
 			throw g.ExceptionFactory.createAssertionError(`Unknown schema: ${project.schema}`);
@@ -343,5 +351,26 @@ export class Resource {
 		this.effectParameters = container.contents
 			.filter(content => content.type === "effect")
 			.map(content => importer.importEffect(content.data));
+	}
+
+	/**
+	 * スキーマに応じたインポーターを取得する。
+	 *
+	 * @param schema スキーマ。
+	 * @returns インポーター。存在しない時、null 。
+	 */
+	protected getImporter(schema: Schema | null | undefined): Importer | null {
+		if (schema == null) {
+			return this.defaultImporter;
+		}
+
+		for (const importer of this.importers) {
+			if (importer.validateSchema(schema)) {
+				importer.setSchema(schema);
+				return importer;
+			}
+		}
+
+		return null;
 	}
 }

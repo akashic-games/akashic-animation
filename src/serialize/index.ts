@@ -1,4 +1,3 @@
-export * as aop from "./ArrayOrientedPorter";
 export * from "./Container";
 export * from "./ContainerV2";
 export * from "./ContainerV3";

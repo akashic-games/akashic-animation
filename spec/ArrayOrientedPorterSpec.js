@@ -1,5 +1,6 @@
 var utils = require("./helper/utils.js");
-var aop = require("../lib/serialize/ArrayOrientedPorter");
+var { ArrayOrientedExporter } = require("../lib/porter/ArrayOrientedPorter/exporter");
+var { ArrayOrientedImporter } = require("../lib/porter/ArrayOrientedPorter/importer");
 var fs = require("fs");
 
 describe("ArrayOrientedPorter", function () {
@@ -23,13 +24,19 @@ describe("ArrayOrientedPorter", function () {
 			return asaan.contents;
 		});
 
-		const exporter = new aop.ArrayOrientedExporter();
+		const exporter = new ArrayOrientedExporter();
 
 		const exportedBoneSets = boneSets.map(boneSet => exporter.exportBoneSet(boneSet));
 		const exportedSkins = skins.map(skin => exporter.exportSkin(skin));
 		const exportedAnimations = animations.map(animation => exporter.exportAnimation(animation));
 
-		const importer = new aop.ArrayOrientedImporter(exporter.getSchema());
+		const schema = exporter.getSchema();
+
+		const importer = new ArrayOrientedImporter();
+
+		expect(importer.validateSchema(schema)).toBe(true);
+
+		importer.setSchema(schema);
 
 		const importedBoneSets = exportedBoneSets.map(boneSet => importer.importBoneSet(boneSet));
 		const importedSkins = exportedSkins.map(skin => importer.importSkin(skin));

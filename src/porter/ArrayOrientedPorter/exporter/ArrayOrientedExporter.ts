@@ -1,16 +1,10 @@
-import { alphaBlendModes } from "../../AlphaBlendMode";
-import type { AlphaBlendMode } from "../../AlphaBlendMode";
-import type { Animation, CellValue, Curve, CurveTie, KeyFrame } from "../../AnimeParams";
-import { ipTypes } from "../../AnimeParams";
-import type { ParticleInitialParameterObject } from "../../aps";
-import { AttrId } from "../../AttrId";
-import type { Bone } from "../../Bone";
-import type { BoneSet } from "../../BoneSet";
-import type { Cell } from "../../Cell";
-import type { ColliderInfo } from "../../ColliderInfo";
-import type { Skin } from "../../Skin";
-import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
-import type { AOPSchema } from "./AOPSchema";
+import type { Animation, CellValue, Curve, CurveTie, KeyFrame } from "../../../AnimeParams";
+import { ipTypes } from "../../../AnimeParams";
+import type { ParticleInitialParameterObject } from "../../../aps";
+import type { AlphaBlendMode, Bone, BoneSet, Cell, ColliderInfo, Skin } from "../../../index";
+import { alphaBlendModes, AttrId } from "../../../index";
+import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../../vfx";
+import type { ArrayOrientedPorterSchema } from "../common";
 import type { MapperTable } from "./MapperTable";
 import { PropertyIndexMapper } from "./PropertyIndexMapper";
 
@@ -390,7 +384,7 @@ function createMappterTable(): MapperTable {
 }
 
 /**
- * AOP形式のエクスポータ。
+ * ArrayOrientedPorter 形式のエクスポータ。
  */
 export class ArrayOrientedExporter {
 	private mapperTable: MapperTable;
@@ -461,7 +455,7 @@ export class ArrayOrientedExporter {
 		return exported;
 	}
 
-	getSchema(): AOPSchema {
+	getSchema(): ArrayOrientedPorterSchema {
 		const mapperTable = this.mapperTable;
 
 		return {

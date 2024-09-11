@@ -1,19 +1,14 @@
-import type { AlphaBlendMode} from "../../AlphaBlendMode";
-import { alphaBlendModes } from "../../AlphaBlendMode";
-import type { IpType, Animation, Curve, CurveTie, KeyFrame, IpCurve, CellValue} from "../../AnimeParams";
-import { ipTypes } from "../../AnimeParams";
-import type { ParticleInitialParameterObject } from "../../aps";
-import { AttrId } from "../../AttrId";
-import type { Bone } from "../../Bone";
-import type { BoneSet } from "../../BoneSet";
-import type { Cell } from "../../Cell";
-import type { ColliderInfo } from "../../ColliderInfo";
-import type { Size2 } from "../../Size2";
-import type { Skin } from "../../Skin";
-import type { Vector2 } from "../../Vector2";
-import type * as vfx from "../../vfx";
-import type { Importer } from "../Importer";
-import type { AOPSchema } from "./AOPSchema";
+import type { AlphaBlendMode } from "../../../AlphaBlendMode";
+import { alphaBlendModes } from "../../../AlphaBlendMode";
+import type { Animation, CellValue, Curve, CurveTie, IpCurve, IpType, KeyFrame } from "../../../AnimeParams";
+import { ipTypes } from "../../../AnimeParams";
+import type { ParticleInitialParameterObject } from "../../../aps";
+import { AttrId } from "../../../AttrId";
+import type { Bone, BoneSet, Cell, ColliderInfo, Size2, Skin, Vector2 } from "../../../index";
+import type {  Schema } from "../../../serialize";
+import type { Importer } from "../../../serialize/Importer";
+import type * as vfx from "../../../vfx";
+import type { ArrayOrientedPorterSchema } from "../common/ArrayOrientedPorterSchema";
 
 const booleanAttributes = [
 	"iflh",
@@ -109,7 +104,7 @@ function importIpCurve(value: any): IpCurve {
 
 function importKeyFrame(
 	data: any[],
-	schema: AOPSchema,
+	schema: ArrayOrientedPorterSchema,
 	importer?: (value: any) => any
 ): KeyFrame<any> {
 	const mapper = schema.propertyIndexMaps.keyFrame;
@@ -128,7 +123,7 @@ function importKeyFrame(
 
 function importKeyFrames(
 	data: any[],
-	schema: AOPSchema,
+	schema: ArrayOrientedPorterSchema,
 	attribute: string
 ): KeyFrame<any>[] {
 	let importer: (value: any) => any;
@@ -155,7 +150,7 @@ function importKeyFrames(
  * @param schema スキーマ。
  * @returns CellValue インスタンス。
  */
-function importKeyFrameCellValue(indices: [number, number], schema: AOPSchema): CellValue {
+function importKeyFrameCellValue(indices: [number, number], schema: ArrayOrientedPorterSchema): CellValue {
 	const skinMapper = schema.propertyIndexMaps.skinName;
 	const cellMapper = schema.propertyIndexMaps.cellName;
 
@@ -169,7 +164,7 @@ function importKeyFrameCellValue(indices: [number, number], schema: AOPSchema): 
 	return cv;
 }
 
-function importCurve(data: any[], schema: AOPSchema): Curve<any> {
+function importCurve(data: any[], schema: ArrayOrientedPorterSchema): Curve<any> {
 
 	// Resource クラスに倣い Curve クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
@@ -188,7 +183,7 @@ function importCurve(data: any[], schema: AOPSchema): Curve<any> {
 	return curve;
 }
 
-function importCurves(data: any[], schema: AOPSchema): Curve<any>[] {
+function importCurves(data: any[], schema: ArrayOrientedPorterSchema): Curve<any>[] {
 	const curves: Curve<any>[] = [];
 	for (const value of data) {
 		const curve = importCurve(value, schema);
@@ -197,7 +192,7 @@ function importCurves(data: any[], schema: AOPSchema): Curve<any>[] {
 	return curves;
 }
 
-function importCurveTie(data: any[], schema: AOPSchema): CurveTie {
+function importCurveTie(data: any[], schema: ArrayOrientedPorterSchema): CurveTie {
 	const mapper = schema.propertyIndexMaps.curveTie;
 
 	// Resource クラスに倣い CurveTie クラスを用いない。
@@ -214,7 +209,7 @@ function importCurveTie(data: any[], schema: AOPSchema): CurveTie {
 	return curveTie;
 }
 
-function importCurveTies(data: any[], schema: AOPSchema): { [key: string]: CurveTie } {
+function importCurveTies(data: any[], schema: ArrayOrientedPorterSchema): { [key: string]: CurveTie } {
 	const curveTies: { [key: string]: CurveTie } = {};
 	for (const value of data) {
 		const curveTie = importCurveTie(value, schema);
@@ -241,7 +236,7 @@ function importSize(data: [number, number]): Size2 {
 	return { width: data[0], height: data[1] };
 }
 
-function importColliderInfo(data: any[], schema: AOPSchema): ColliderInfo {
+function importColliderInfo(data: any[], schema: ArrayOrientedPorterSchema): ColliderInfo {
 	const mapper = schema.propertyIndexMaps.colliderInfo;
 
 	// Resource クラスに倣い ColliderInfo クラスを用いない。
@@ -265,7 +260,7 @@ function importColliderInfo(data: any[], schema: AOPSchema): ColliderInfo {
 	return colliderInfo;
 }
 
-function importColliderInfos(data: any[], schema: AOPSchema): ColliderInfo[] {
+function importColliderInfos(data: any[], schema: ArrayOrientedPorterSchema): ColliderInfo[] {
 	const colliderInfos: ColliderInfo[] = [];
 
 	for (const value of data) {
@@ -275,7 +270,7 @@ function importColliderInfos(data: any[], schema: AOPSchema): ColliderInfo[] {
 	return colliderInfos;
 }
 
-function importBone(data: any[], schema: AOPSchema): Bone {
+function importBone(data: any[], schema: ArrayOrientedPorterSchema): Bone {
 	const mapper = schema.propertyIndexMaps.bone;
 
 	// Resource クラスに倣い Bone クラスを用いない。
@@ -299,7 +294,7 @@ function importBone(data: any[], schema: AOPSchema): Bone {
 	return bone;
 }
 
-function importBones(data: any[], schema: AOPSchema): Bone[] {
+function importBones(data: any[], schema: ArrayOrientedPorterSchema): Bone[] {
 	const bones: Bone[] = [];
 
 	for (const value of data) {
@@ -309,7 +304,7 @@ function importBones(data: any[], schema: AOPSchema): Bone[] {
 	return bones;
 }
 
-function importCell(data: any[], schema: AOPSchema): Cell {
+function importCell(data: any[], schema: ArrayOrientedPorterSchema): Cell {
 	// Resource クラスに倣い Cell クラスを用いない。
 	// Resource クラスは JSON.parse() の結果をそのまま実行時の
 	// データとして用いる。つまり new Cell しない。
@@ -325,7 +320,7 @@ function importCell(data: any[], schema: AOPSchema): Cell {
 	return cell;
 }
 
-function importCells(data: any[], schema: AOPSchema): { [key: string]: Cell } {
+function importCells(data: any[], schema: ArrayOrientedPorterSchema): { [key: string]: Cell } {
 	const cells: { [key: string]: Cell } = {};
 
 	for (const value of data) {
@@ -340,7 +335,7 @@ function importAlphaBlendMode(value: any): AlphaBlendMode {
 	return value === -1 ? undefined : alphaBlendModes[value];
 }
 
-function importEmitterUserData(data: any[], schema: AOPSchema): vfx.EmitterParameterUserData {
+function importEmitterUserData(data: any[], schema: ArrayOrientedPorterSchema): vfx.EmitterParameterUserData {
 	const userData = {} as vfx.EmitterParameterUserData;
 	const mapper = schema.propertyIndexMaps.emitterUserData;
 
@@ -351,7 +346,7 @@ function importEmitterUserData(data: any[], schema: AOPSchema): vfx.EmitterParam
 	return userData;
 }
 
-function importParticleInitialParameter(data: any[], schema: AOPSchema): ParticleInitialParameterObject {
+function importParticleInitialParameter(data: any[], schema: ArrayOrientedPorterSchema): ParticleInitialParameterObject {
 	const param = {} as ParticleInitialParameterObject;
 	const mapper = schema.propertyIndexMaps.particleInitialParam;
 
@@ -363,7 +358,7 @@ function importParticleInitialParameter(data: any[], schema: AOPSchema): Particl
 	return param;
 }
 
-function importEmitterParameter(data: any[], schema: AOPSchema): vfx.EmitterParameterObject {
+function importEmitterParameter(data: any[], schema: ArrayOrientedPorterSchema): vfx.EmitterParameterObject {
 	const param = {} as vfx.EmitterParameterObject;
 	const mapper = schema.propertyIndexMaps.emitterParam;
 
@@ -389,7 +384,7 @@ function importEmitterParameter(data: any[], schema: AOPSchema): vfx.EmitterPara
 	return param;
 }
 
-function importEmitterParameters(data: any[], schema: AOPSchema): vfx.EmitterParameterObject[] {
+function importEmitterParameters(data: any[], schema: ArrayOrientedPorterSchema): vfx.EmitterParameterObject[] {
 	const emitterParameters: vfx.EmitterParameterObject[] = [];
 
 	for (const value of data) {
@@ -404,23 +399,34 @@ function importEmitterParameters(data: any[], schema: AOPSchema): vfx.EmitterPar
  * AOP形式のインポータ。
  */
 export class ArrayOrientedImporter implements Importer {
-	private schema: AOPSchema;
+	private schema: ArrayOrientedPorterSchema | null;
 
-	/**
-	 * コンストラクタ。
-	 *
-	 * スキーマのバージョンや種別が不正な時、例外を投げる。
-	 *
-	 * @param schema スキーマ。
-	 */
-	constructor(schema: AOPSchema) {
+	constructor() {
+		this.schema = null;
+	}
+
+	validateSchema(schema: Schema): boolean {
+		if (schema.type !== "aop") {
+			return false;
+		}
+
+		if (schema.version !== "1.0.0") {
+			return false;
+		}
+
+		return true;
+	}
+
+	setSchema(schema: Schema): void {
 		if (schema.type !== "aop") {
 			throw new Error(`Invalid type: ${schema.type}`);
 		}
+
 		if (schema.version !== "1.0.0") {
 			throw new Error(`Unsupported version: ${schema.version}`);
 		}
-		this.schema = schema;
+
+		this.schema = schema as ArrayOrientedPorterSchema;
 	}
 
 	importAnimation(data: any[]): Animation {
@@ -434,7 +440,7 @@ export class ArrayOrientedImporter implements Importer {
 		restore(animation, "fps", data, mapper);
 		restore(animation, "frameCount", data, mapper);
 		restore(animation, "curveTies", data, mapper, {
-			importer: curveTies => importCurveTies(curveTies, this.schema)
+			importer: curveTies => importCurveTies(curveTies, this.schema!)
 		});
 
 		return animation;
@@ -449,7 +455,7 @@ export class ArrayOrientedImporter implements Importer {
 
 		restore(boneSet, "name", data, mapper);
 		restore(boneSet, "bones", data, mapper, {
-			importer: bones => importBones(bones, this.schema)
+			importer: bones => importBones(bones, this.schema!)
 		});
 
 		return boneSet;
@@ -469,7 +475,7 @@ export class ArrayOrientedImporter implements Importer {
 		restore(skin, "imageSizeH", data, mapper);
 		restore(skin, "imageSizeW", data, mapper);
 		restore(skin, "cells", data, mapper, {
-			importer: cells => importCells(cells, this.schema)
+			importer: cells => importCells(cells, this.schema!)
 		});
 
 		return skin;
@@ -483,7 +489,7 @@ export class ArrayOrientedImporter implements Importer {
 			importer: idx => this.schema.propertyIndexMaps.effectName[idx]
 		});
 		restore(effect, "emitterParameters", data, mapper, {
-			importer: emitterParameters => importEmitterParameters(emitterParameters, this.schema)
+			importer: emitterParameters => importEmitterParameters(emitterParameters, this.schema!)
 		});
 
 		return effect;

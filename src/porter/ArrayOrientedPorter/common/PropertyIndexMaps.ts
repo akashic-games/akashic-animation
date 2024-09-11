@@ -1,11 +1,7 @@
-import type { Animation, Curve, CurveTie, KeyFrame } from "../../AnimeParams";
-import type { ParticleInitialParameterObject } from "../../aps";
-import type { Bone } from "../../Bone";
-import type { BoneSet } from "../../BoneSet";
-import type { Cell } from "../../Cell";
-import type { ColliderInfo } from "../../ColliderInfo";
-import type { Skin } from "../../Skin";
-import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
+import type { Animation, Curve, CurveTie, KeyFrame } from "../../../AnimeParams";
+import type { ParticleInitialParameterObject } from "../../../aps";
+import type { Bone, BoneSet, Cell, ColliderInfo, Skin } from "../../../index";
+import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../../vfx";
 
 export interface PropertyIndexMaps {
 	animation: Array<Extract<keyof Animation, string>>;

@@ -1,11 +1,7 @@
-import type { Animation, Curve, CurveTie, KeyFrame } from "../../AnimeParams";
-import type * as aps from "../../aps";
-import type { Bone } from "../../Bone";
-import type { BoneSet } from "../../BoneSet";
-import type { Cell } from "../../Cell";
-import type { ColliderInfo } from "../../ColliderInfo";
-import type { Skin } from "../../Skin";
-import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../vfx";
+import type { Animation, Curve, CurveTie, KeyFrame } from "../../../AnimeParams";
+import type * as aps from "../../../aps";
+import type { Bone, BoneSet, Cell, ColliderInfo, Skin } from "../../../index";
+import type { EffectParameterObject, EmitterParameterObject, EmitterParameterUserData } from "../../../vfx";
 import type { PropertyIndexMapper } from "./PropertyIndexMapper";
 
 /**
