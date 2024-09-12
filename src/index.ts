@@ -18,6 +18,7 @@ export * from "./CircleVolume";
 export * from "./Collider";
 export * from "./ColliderInfo";
 export * from "./FinalizedCell";
+export * as aop from "./porter/ArrayOrientedPorter";
 export * from "./Posture";
 export * from "./Resource";
 export * from "./serialize";
