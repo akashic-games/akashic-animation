@@ -11,7 +11,7 @@ import type * as vfx from "./vfx";
 
 const versionRegexp = /(\d+)\.\d+.\d+/;
 
-function isContaienr(container: unknown): container is Container {
+function isContainer(container: unknown): container is Container {
 	return typeof container === "object"
 		&& container != null
 		&& "version" in container
@@ -19,7 +19,7 @@ function isContaienr(container: unknown): container is Container {
 }
 
 function isContainerV2(container: unknown): container is ContainerV2 {
-	if (!isContaienr(container)) {
+	if (!isContainer(container)) {
 		return false;
 	}
 
@@ -29,7 +29,7 @@ function isContainerV2(container: unknown): container is ContainerV2 {
 }
 
 function isContainerV3(container: unknown): container is ContainerV3 {
-	if (!isContaienr(container)) {
+	if (!isContainer(container)) {
 		return false;
 	}
 
