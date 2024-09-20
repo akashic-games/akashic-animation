@@ -1,9 +1,9 @@
 # ChangeLog
 
-## unreleased changes
+## 4.2.0
 
 * `Resource#loadProject()` に `g.AssetAccessor` (`scene.asset`, `game.asset`) を渡せるように修正
-* Akashic Animation のデータの容量を削減する ArrayOrientedPorter を追加
+* Akashic Animation のデータの容量を削減する `ArrayOrientedPorter` を追加
 
 ## 4.1.0
 
