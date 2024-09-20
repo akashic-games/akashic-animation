@@ -14,8 +14,7 @@
 <li><a href="ContainerV2.html">ContainerV2</a></li></ul>
 <h1>Class ContainerV2</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>v2 (旧形式) のアニメーションデータコンテナ</p>
-<p>ASAファイル(拡張子がasa...(asapj, asaan and etc))に格納されるデータにバージョン情報を追加する</p>
+<div class="tsd-comment tsd-typography"><p>V2形式のASAデータコンテナ。</p>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
@@ -43,26 +42,37 @@
 <li class="tsd-signature" id="constructor.new_ContainerV2">new <wbr/>Container<wbr/>V2<span class="tsd-signature-symbol">(</span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, contents<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ContainerV2.html" class="tsd-signature-type" data-tsd-kind="Class">ContainerV2</a></li></ul>
 <ul class="tsd-descriptions">
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>コンストラクタ。</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>version: <span class="tsd-signature-type">string</span></h5></li>
+<h5>version: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>バージョン。</p>
+</div></li>
 <li>
-<h5>contents: <span class="tsd-signature-type">any</span></h5></li></ul></div>
+<h5>contents: <span class="tsd-signature-type">any</span></h5>
+<div class="tsd-comment tsd-typography"><p>コンテンツ。</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="ContainerV2.html" class="tsd-signature-type" data-tsd-kind="Class">ContainerV2</a></h4></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="contents" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>contents</span><a href="#contents" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">contents<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div><aside class="tsd-sources">
+<div class="tsd-signature">contents<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span></div>
+<div class="tsd-comment tsd-typography"><p>コンテンツ。</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/akashic-games/akashic-animation/blob/d52299b/src/ContainerV2.ts#L9">src/ContainerV2.ts:9</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/akashic-games/akashic-animation/blob/8e2a384/src/serialize/ContainerV2.ts#L15">src/serialize/ContainerV2.ts:15</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="version" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>version</span><a href="#version" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>バージョン。</p>
+<p>メジャーバージョンが2である &quot;2.x.x&quot; のような形式でなければならない。</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/akashic-games/akashic-animation/blob/d52299b/src/ContainerV2.ts#L8">src/ContainerV2.ts:8</a></li></ul></aside></section></section></div>
+<li>Defined in <a href="https://github.com/akashic-games/akashic-animation/blob/8e2a384/src/serialize/ContainerV2.ts#L10">src/serialize/ContainerV2.ts:10</a></li></ul></aside></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -86,6 +96,7 @@
 <ul>
 <li class="tsd-kind-namespace"><a href="../modules/AnimationHandlerParams.html">Animation<wbr/>Handler<wbr/>Params</a></li>
 <li class="tsd-kind-namespace"><a href="../modules/AnimeParams.html">Anime<wbr/>Params</a></li>
+<li class="tsd-kind-namespace"><a href="../modules/aop.html">aop</a></li>
 <li class="tsd-kind-namespace"><a href="../modules/vfx.html">vfx</a></li></ul></li></ul></div></details></nav>
 <nav class="tsd-navigation secondary menu-sticky">
 <ul>
