@@ -1,7 +1,9 @@
 import type {Posture} from "./Posture";
 
 /**
- * アタッチメントクラス
+ * アタッチメント。
+ *
+ * ボーンに追従して描画するオブジェクトの基底クラス。
  */
 export abstract class Attachment {
 	/**

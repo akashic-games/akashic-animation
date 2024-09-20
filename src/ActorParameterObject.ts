@@ -1,5 +1,8 @@
 import type {Resource} from "./Resource";
 
+/**
+ * アクターコンストラクタパラメータ。
+ */
 export interface ActorParameterObject extends g.EParameterObject {
 	scene: g.Scene;
 	resource: Resource;

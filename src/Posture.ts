@@ -6,11 +6,12 @@ import {AttrId} from "./AttrId";
 import type {FinalizedCell} from "./FinalizedCell";
 import type * as vfx from "./vfx";
 
-// 動的ボーン
-// Boneが静的で様々なシステムから参照されるのに対し、
-// Postureは実行時に定まるボーンの情報を扱う
-// 主なものはAnimationの計算結果
-//
+/**
+ * ポスチャ。
+ *
+ * Boneが静的で様々なシステムから参照されるのに対し、 Postureは実行時に定まる
+ * ボーンの情報（主にアニメーションの計算結果）を扱う。
+ */
 export class Posture {
 	private static _costbl: number[] = [];
 
@@ -18,7 +19,7 @@ export class Posture {
 
 	m: g.Matrix;
 
-	alphaBlendMode: AlphaBlendMode = undefined;
+	alphaBlendMode: AlphaBlendMode | undefined = undefined;
 
 	// 以下、アニメーション結果から直接決まらないが、実行時にボーンに与えたい情報
 	attachments: Attachment[];

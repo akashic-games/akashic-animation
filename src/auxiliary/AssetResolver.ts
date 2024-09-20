@@ -44,8 +44,8 @@ export class AssetResolver {
 		}
 	}
 
-	getJSON<T>(name: string): T {
-		let data: T;
+	getJSON(name: string): unknown {
+		let data: unknown;
 
 		if (this.accessor) {
 			const assetPath = g.PathUtil.resolvePath(this.basePath, name);

@@ -342,7 +342,11 @@ export class Emitter {
 		const tvrzNTOA = this.pickParam(this.initParam.tvrzNTOA, undefined);
 		const tvrzC = this.pickParam(this.initParam.tvrzC, undefined);
 
-		let   arz = this.pickParam(this.initParam.arz, 0);
+		let arz = this.pickParam(this.initParam.arz, 0);
+		// TODO: 型定義を厳密にする
+		// pickParam() はこのケースだと undefined を返すことがあるが、型定義上
+		// 明確になっていない。コンパイラオプションで null , undefined のチェック
+		// を厳密にし、ソースコード全体について見直す必要がある。
 		const arzMax = this.pickParam(this.initParam.arzMin, undefined);
 		const arzMin = this.pickParam(this.initParam.arzMax, undefined);
 
