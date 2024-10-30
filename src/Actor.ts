@@ -61,7 +61,6 @@ function setupColliderForCell(info: ColliderInfo, bone: Bone): Collider {
 	switch (info.boundType) {
 		case "aabb":
 		case "box":
-			// eslint-disable-next-line prefer-const
 			collider = new BoneCellCollider(bone.name, info.boundType === "aabb");
 			break;
 		default:
@@ -78,7 +77,6 @@ function setupColliderForCircle(info: ColliderInfo, bone: Bone): Collider {
 	switch (info.boundType) {
 		case "aabb":
 		case "circle":
-			// eslint-disable-next-line prefer-const
 			collider = new CircleCollider(bone.name, info.boundType === "aabb", info.scaleOption);
 			break;
 		default:
