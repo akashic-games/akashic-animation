@@ -25,7 +25,7 @@ export class AssetResolver {
 				try {
 					const assetPath = g.PathUtil.resolvePath(this.basePath, `${name}${ext}`);
 					asset = this.accessor.getImage(assetPath);
-				} catch (error) {
+				} catch (_error) {
 					// nothing to do.
 				}
 				if (asset) break;
