@@ -1,75 +1,75 @@
 {
-	"width": 540,
-	"height": 405,
-	"fps": 30,
-	"main": "./script/main.js",
-	"assets": {
-		"support_image_inverted": {
-			"type": "image",
-			"width": 256,
-			"height": 256,
-			"path": "image/support_image_inverted.png"
-		},
-		"an_anime_1": {
-			"type": "text",
-			"path": "text/an_anime_1.asaan"
-		},
-		"bn_support_image_inverted": {
-			"type": "text",
-			"path": "text/bn_support_image_inverted.asabn"
-		},
-		"pj_support_image_inverted": {
-			"type": "text",
-			"path": "text/pj_support_image_inverted.asapj"
-		},
-		"sk_support_image_inverted": {
-			"type": "text",
-			"path": "text/sk_support_image_inverted.asask"
-		},
-		"main": {
-			"type": "script",
-			"path": "script/main.js",
-			"global": true
-		}
-	},
-	"environment": {
-		"sandbox-runtime": "3"
-	},
-	"globalScripts": [
-		"node_modules/@akashic-extension/akashic-animation/lib/AABB.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Actor.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/AnimationHandlerParams.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/AnimeParams.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Attachment.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/AttrId.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Bone.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/BoneCellCollider.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/BoneSet.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/BoxVolume.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Cell.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/CellAttachment.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/CellAttachmentCollider.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/CircleCollider.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/CircleVolume.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Collider.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/ContainerV2.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/ContainerV3.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Content.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/FinalizedCell.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Posture.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Resource.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Size2.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Skeleton.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Skin.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/Vector2.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/aps/Emitter.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/aps/Particle.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/aps/ParticleSystem.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/aps/index.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/index.js",
-		"node_modules/@akashic-extension/akashic-animation/lib/vfx.js"
-	],
-	"moduleMainScripts": {
-		"@akashic-extension/akashic-animation": "node_modules/@akashic-extension/akashic-animation/lib/index.js"
-	}
+  "width": 540,
+  "height": 405,
+  "fps": 30,
+  "main": "./script/main.js",
+  "assets": {
+    "support_image_inverted": {
+      "type": "image",
+      "width": 256,
+      "height": 256,
+      "path": "image/support_image_inverted.png"
+    },
+    "an_anime_1": {
+      "type": "text",
+      "path": "text/an_anime_1.asaan"
+    },
+    "bn_support_image_inverted": {
+      "type": "text",
+      "path": "text/bn_support_image_inverted.asabn"
+    },
+    "pj_support_image_inverted": {
+      "type": "text",
+      "path": "text/pj_support_image_inverted.asapj"
+    },
+    "sk_support_image_inverted": {
+      "type": "text",
+      "path": "text/sk_support_image_inverted.asask"
+    },
+    "main": {
+      "type": "script",
+      "path": "script/main.js",
+      "global": true
+    }
+  },
+  "environment": {
+    "sandbox-runtime": "3"
+  },
+  "globalScripts": [
+    "node_modules/@akashic-extension/akashic-animation/lib/AABB.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Actor.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/AnimationHandlerParams.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/AnimeParams.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Attachment.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/AttrId.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Bone.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/BoneCellCollider.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/BoneSet.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/BoxVolume.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Cell.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/CellAttachment.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/CellAttachmentCollider.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/CircleCollider.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/CircleVolume.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Collider.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/ContainerV2.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/ContainerV3.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Content.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/FinalizedCell.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Posture.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Resource.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Size2.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Skeleton.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Skin.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/Vector2.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/aps/Emitter.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/aps/Particle.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/aps/ParticleSystem.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/aps/index.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/index.js",
+    "node_modules/@akashic-extension/akashic-animation/lib/vfx.js"
+  ],
+  "moduleMainScripts": {
+    "@akashic-extension/akashic-animation": "node_modules/@akashic-extension/akashic-animation/lib/index.js"
+  }
 }
